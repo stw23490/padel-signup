@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Candy Crush Soda Saga — Org Chart</title>
+<style>
+  :root {
+    --bg: #0f172a;
+    --card: #1e293b;
+    --card-hover: #334155;
+    --border: #334155;
+    --text: #f1f5f9;
+    --text-dim: #94a3b8;
+    --accent: #6366f1;
+    --line: #475569;
+    --open-bg: #422006;
+    --open-border: #f59e0b;
+    --leave-border: #a78bfa;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  header {
+    background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+    padding: 24px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 16px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 4px 20px rgba(0,0,0,.4);
+  }
+
+  header h1 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+  }
+
+  header h1 span { font-weight: 300; opacity: .8; }
+
+  .controls {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  #search {
+    padding: 8px 14px;
+    border-radius: 8px;
+    border: 1px solid rgba(255,255,255,.25);
+    background: rgba(255,255,255,.12);
+    color: #fff;
+    font-size: .9rem;
+    width: 260px;
+    outline: none;
+    transition: border .2s;
+  }
+  #search::placeholder { color: rgba(255,255,255,.5); }
+  #search:focus { border-color: #fff; }
+
+  .btn {
+    padding: 8px 16px;
+    border-radius: 8px;
+    border: 1px solid rgba(255,255,255,.25);
+    background: rgba(255,255,255,.1);
+    color: #fff;
+    font-size: .85rem;
+    cursor: pointer;
+    transition: background .2s;
+  }
+  .btn:hover { background: rgba(255,255,255,.2); }
+
+  .stats {
+    display: flex;
+    gap: 20px;
+    padding: 16px 32px;
+    background: #1a1f35;
+    border-bottom: 1px solid var(--border);
+    flex-wrap: wrap;
+  }
+  .stat {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .stat-val { font-size: 1.3rem; font-weight: 700; color: var(--accent); }
+  .stat-label { font-size: .75rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: .5px; }
+
+  .legend {
+    display: flex;
+    gap: 16px;
+    padding: 12px 32px;
+    background: #1a1f35;
+    border-bottom: 1px solid var(--border);
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .legend-title { font-size: .75rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: .5px; margin-right: 4px; }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: .78rem;
+    color: var(--text-dim);
+  }
+  .legend-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 3px;
+  }
+
+  #tree {
+    padding: 24px 32px 48px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .node {
+    position: relative;
+  }
+
+  .node-card {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 16px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    margin-bottom: 4px;
+    cursor: pointer;
+    transition: all .15s ease;
+    border-left: 4px solid var(--craft-color, var(--accent));
+  }
+
+  .node-card:hover {
+    background: var(--card-hover);
+    transform: translateX(3px);
+  }
+
+  .node-card.highlight {
+    box-shadow: 0 0 0 2px var(--accent), 0 0 16px rgba(99,102,241,.3);
+  }
+
+  .node-card.is-open {
+    background: var(--open-bg);
+    border-color: var(--open-border);
+    border-left-color: var(--open-border);
+  }
+
+  .node-card.on-leave {
+    border-left-color: var(--leave-border);
+    opacity: .75;
+  }
+
+  .avatar {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: .85rem;
+    flex-shrink: 0;
+    color: #fff;
+  }
+
+  .info { flex: 1; min-width: 0; }
+  .info .name {
+    font-weight: 600;
+    font-size: .9rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .info .title-line {
+    font-size: .78rem;
+    color: var(--text-dim);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .meta-badges {
+    display: flex;
+    gap: 6px;
+    flex-shrink: 0;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+  .badge {
+    padding: 3px 8px;
+    border-radius: 5px;
+    font-size: .68rem;
+    font-weight: 600;
+    background: rgba(99,102,241,.15);
+    color: #818cf8;
+    white-space: nowrap;
+  }
+  .badge.loc {
+    background: rgba(34,197,94,.1);
+    color: #4ade80;
+  }
+  .badge.grade-badge {
+    background: rgba(251,191,36,.12);
+    color: #fbbf24;
+  }
+
+  .toggle-btn {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    border: 1.5px solid var(--text-dim);
+    background: transparent;
+    color: var(--text-dim);
+    font-size: .7rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: all .15s;
+  }
+  .toggle-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+  .children {
+    margin-left: 28px;
+    padding-left: 20px;
+    border-left: 2px solid var(--line);
+    overflow: hidden;
+    transition: max-height .3s ease;
+  }
+
+  .children.collapsed {
+    max-height: 0 !important;
+    opacity: 0;
+    pointer-events: none;
+  }
+  .children.expanded {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .child-count {
+    font-size: .7rem;
+    color: var(--text-dim);
+    margin-left: 4px;
+  }
+
+  /* Craft colors */
+  .craft-management    { --craft-color: #ef4444; }
+  .craft-production    { --craft-color: #f59e0b; }
+  .craft-design        { --craft-color: #10b981; }
+  .craft-programming   { --craft-color: #3b82f6; }
+  .craft-bi            { --craft-color: #8b5cf6; }
+  .craft-art           { --craft-color: #ec4899; }
+  .craft-animation     { --craft-color: #f97316; }
+  .craft-qa            { --craft-color: #14b8a6; }
+  .craft-marketing     { --craft-color: #06b6d4; }
+  .craft-admin         { --craft-color: #64748b; }
+  .craft-bizdev        { --craft-color: #a3e635; }
+  .craft-unknown       { --craft-color: #6366f1; }
+
+  .no-results {
+    text-align: center;
+    padding: 48px;
+    color: var(--text-dim);
+    font-size: 1.1rem;
+  }
+
+  @media (max-width: 768px) {
+    header { padding: 16px; }
+    #search { width: 100%; }
+    #tree { padding: 16px; }
+    .meta-badges { display: none; }
+    .children { margin-left: 16px; padding-left: 12px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Candy Crush Soda Saga <span>Org Chart</span></h1>
+  <div class="controls">
+    <input type="text" id="search" placeholder="Search name, title, location…" autocomplete="off" />
+    <button class="btn" onclick="expandAll()">Expand All</button>
+    <button class="btn" onclick="collapseAll()">Collapse All</button>
+  </div>
+</header>
+<div class="stats" id="stats"></div>
+<div class="legend" id="legend"></div>
+<div id="tree"></div>
+
+<script>
+// ─── Raw employee data ───
+const RAW = [
+  { n: "Todd Green (W_10345)", pos: "", title: "", loc: "", cc: "", lc: "", g: "", t: "", lvl: 0 },
+  { n: "Brian Burford (W_10377)", pos: "P_117194", title: "General Manager, Candy Crush Soda Saga", loc: "Stockholm", cc: "KING - SODA - LEADERSHIP", lc: "1 (Management)", g: 17, t: "Regular", lvl: 1 },
+  { n: "Ramon Martínez Orellana (W_12542)", pos: "P_111212", title: "Head of Meta", loc: "Work From Home - ESP", cc: "KING - SODA - LEADERSHIP", lc: "2 (Production)", g: 16, t: "Regular", lvl: 2 },
+  { n: "Open1", pos: "P_13350", title: "Director of Engineering", loc: "Stockholm", cc: "KING - SODA - META", lc: "3 ((blank))", g: 15, t: "Regular", lvl: 3 },
+  { n: "Carmen Hevia (W_13019)", pos: "P_89481", title: "Creative Director", loc: "Work From Home - ESP", cc: "KING - SODA - META", lc: "3 (Design)", g: 15, t: "Regular", lvl: 3 },
+  { n: "Aleksandr Bykovskii (628409)", pos: "P_12337", title: "Senior Game Designer", loc: "Stockholm", cc: "KING - SODA - META", lc: "4 (Design)", g: 11, t: "Regular", lvl: 4 },
+  { n: "Ida Andersson-Junkka (W_13678)", pos: "P_122039", title: "Lead Game Designer", loc: "Work From Home - SWE", cc: "KING - SODA - META", lc: "4 (Design)", g: 12, t: "Regular", lvl: 4 },
+  { n: "Open21", pos: "P_126625", title: "Senior Game Designer | Candy Crush Soda Saga", loc: "Stockholm", cc: "KING - SODA - META", lc: "5 ((blank))", g: "", t: "Regular", lvl: 5 },
+  { n: "Lilly Wang (624471)", pos: "P_103709", title: "Lead UI Designer", loc: "Stockholm", cc: "KING - SODA - META", lc: "4 (Design)", g: 12, t: "Regular", lvl: 4 },
+  { n: "Dan Oprea (W_12815)", pos: "P_124708", title: "UI Artist", loc: "Stockholm", cc: "KING - SODA - META", lc: "5 (Design)", g: 10, t: "Regular", lvl: 5 },
+  { n: "Chang Liu (641313)", pos: "P_112365", title: "Senior UI Designer", loc: "Stockholm", cc: "KING - SODA - META", lc: "5 (Design)", g: 11, t: "Regular", lvl: 5 },
+  { n: "Christy Bontrager (W_13191)", pos: "P_13486", title: "Senior UI Designer", loc: "Stockholm", cc: "KING - SODA - META", lc: "5 (Design)", g: 11, t: "Regular", lvl: 5 },
+  { n: "Susanna Ammon (641221)", pos: "P_111286", title: "Principal UI Designer", loc: "Malmö", cc: "KING - SODA - META", lc: "5 (Design)", g: 12, t: "Regular", lvl: 5 },
+  { n: "Valeria Matos (630912)", pos: "P_94993", title: "Senior UI Designer", loc: "Stockholm", cc: "KING - SODA - META", lc: "5 (Design)", g: 11, t: "Regular", lvl: 5 },
+  { n: "Thiago Parizi Carvalho (628616)", pos: "P_700020", title: "Associate Design Director", loc: "Berlin", cc: "KING - SODA - META", lc: "4 (Design)", g: 14, t: "Regular", lvl: 4 },
+  { n: "Anagha Nair (643337)", pos: "P_112716", title: "Senior UX Designer", loc: "Berlin", cc: "KING - SODA - META", lc: "5 (Design)", g: 11, t: "Regular", lvl: 5 },
+  { n: "Carlos Costa Mengíbar (646070)", pos: "P_112715", title: "Senior UX Designer", loc: "Barcelona", cc: "KING - SODA - META", lc: "5 (Design)", g: 11, t: "Regular", lvl: 5 },
+  { n: "Lucija Sever (644208)", pos: "P_114663", title: "UX Designer", loc: "Barcelona", cc: "KING - SODA - META", lc: "5 (Design)", g: 10, t: "Regular", lvl: 5 },
+  { n: "Tony Cardentey (621154)", pos: "P_91371", title: "Principal UX Designer", loc: "Stockholm", cc: "KING - SODA - META", lc: "5 (Design)", g: 12, t: "Regular", lvl: 5 },
+  { n: "Fernanda Ostrovski (642924)", pos: "P_112025", title: "Associate Director of Analytics", loc: "London", cc: "KING - SODA - META", lc: "3 (Business Intelligence)", g: 14, t: "Regular", lvl: 3 },
+  { n: "Ferdowsy Qureshi (625169)", pos: "P_111074", title: "Senior Data Scientist", loc: "London", cc: "KING - SODA - META", lc: "4 (Business Intelligence)", g: 11, t: "Regular", lvl: 4 },
+  { n: "Max van Esso Castellet (624638)", pos: "P_86785", title: "Senior Analytics Manager", loc: "Barcelona", cc: "KING - SODA - META", lc: "4 (Business Intelligence)", g: 13, t: "Regular", lvl: 4 },
+  { n: "Pelin Demirci (645583)", pos: "P_114873", title: "Principal Marketing Analyst", loc: "London", cc: "KING - SODA - META", lc: "5 (Business Intelligence)", g: 12, t: "Regular", lvl: 5 },
+  { n: "David Mirlas (624852)", pos: "P_92347", title: "Senior Operator", loc: "Stockholm", cc: "KING - SODA - META", lc: "5 (Administration)", g: 11, t: "Regular", lvl: 5 },
+  { n: "Joshua John-Jules (627706)", pos: "P_81312", title: "Senior Data Scientist", loc: "London", cc: "KING - SODA - META", lc: "5 (Business Intelligence)", g: 11, t: "Regular", lvl: 5 },
+  { n: "Lu Zhang (644787)", pos: "P_111550", title: "Senior Product Analyst", loc: "Malmö", cc: "KING - SODA - META", lc: "5 (Business Intelligence)", g: 11, t: "Regular", lvl: 5 },
+  { n: "Tanya Sidorina (641621)", pos: "P_112644", title: "Data Scientist", loc: "Malmö", cc: "KING - SODA - META", lc: "5 (Business Intelligence)", g: 10, t: "Regular", lvl: 5 },
+  { n: "Nina Xu (634548)", pos: "P_111073", title: "Senior Product Analyst", loc: "London", cc: "KING - SODA - META", lc: "4 (Business Intelligence)", g: 11, t: "Regular", lvl: 4 },
+  { n: "Oscar Xu (646647)", pos: "P_700033", title: "Product Analyst", loc: "Barcelona", cc: "KING - SODA - META", lc: "4 (Business Intelligence)", g: 10, t: "Regular", lvl: 4 },
+  { n: "Jéssica Leal Bernal (On Leave) (W_12462)", pos: "P_81299", title: "Senior Data Scientist", loc: "Barcelona", cc: "KING - SODA - META", lc: "4 (Business Intelligence)", g: 11, t: "Regular", lvl: 4 },
+  { n: "Andrea Klemming (641639)", pos: "P_112645", title: "Product Analyst", loc: "Stockholm", cc: "KING - SODA - META", lc: "4 (Business Intelligence)", g: 10, t: "Regular", lvl: 4 },
+  { n: "Fernando Diaz Gestal (W_11450)", pos: "P_111213", title: "Senior Product Director", loc: "Barcelona", cc: "KING - SODA - META", lc: "3 (Production)", g: 16, t: "Regular", lvl: 3 },
+  { n: "Open7", pos: "P_92969", title: "Business Performance Manager", loc: "Stockholm", cc: "KING - SODA - META", lc: "4 ((blank))", g: "", t: "Regular", lvl: 4 },
+  { n: "Segilola Jolaosho (W_11413)", pos: "P_123101", title: "Product & Live Marketing Director", loc: "Barcelona", cc: "KING - SODA - META", lc: "4 (Marketing)", g: 15, t: "Regular", lvl: 4 },
+  { n: "Open18", pos: "P_109101", title: "Product Marketing Manager I Candy Crush Soda Saga", loc: "Barcelona", cc: "KING - SODA - META", lc: "5 ((blank))", g: "", t: "Regular", lvl: 5 },
+  { n: "Open19", pos: "P_125511", title: "Senior Live Marketing Specialist", loc: "London", cc: "KING - SODA - META", lc: "5 ((blank))", g: "", t: "Regular", lvl: 5 },
+  { n: "Open20", pos: "P_126799", title: "Live Marketing Specialist", loc: "Stockholm", cc: "KING - SODA - META", lc: "5 ((blank))", g: "", t: "Fixed Term", lvl: 5 },
+  { n: "Karolina Jansson (W_10770)", pos: "P_94298", title: "Product Manager", loc: "Barcelona", cc: "KING - SODA - META", lc: "5 (Production)", g: 12, t: "Regular", lvl: 5 },
+  { n: "Evan Derian (On Leave) (635659)", pos: "P_102426", title: "Principal Live Marketing Specialist", loc: "Stockholm", cc: "KING - SODA - META", lc: "5 (Marketing)", g: 12, t: "Regular", lvl: 5 },
+  { n: "Laura Martinez Molera (651726)", pos: "P_700053", title: "Senior Product Marketing Manager", loc: "Barcelona", cc: "KING - SODA - META", lc: "5 (Marketing)", g: 13, t: "Regular", lvl: 5 },
+  { n: "Julius Markerius (633307)", pos: "P_112011", title: "Product Manager", loc: "Malmö", cc: "KING - SODA - META", lc: "4 (Production)", g: 12, t: "Regular", lvl: 4 },
+  { n: "Karolina Zając (W_12703)", pos: "P_100527", title: "Product Manager", loc: "Barcelona", cc: "KING - SODA - META", lc: "4 (Production)", g: 12, t: "Regular", lvl: 4 },
+  { n: "Guilherme Derner Targa (618587)", pos: "P_13257", title: "Principal Engineer", loc: "Stockholm", cc: "KING - SODA - META", lc: "3 (Programming)", g: 12, t: "Regular", lvl: 3 },
+  { n: "Adrián Francés Lillo (645966)", pos: "P_11573", title: "Software Engineer", loc: "Work From Home - ESP", cc: "KING - SODA - META", lc: "4 (Programming)", g: 10, t: "Regular", lvl: 4 },
+  { n: "Fabian Haglund (628698)", pos: "P_13334", title: "Software Engineer", loc: "Malmö", cc: "KING - SODA - META", lc: "4 (Programming)", g: 10, t: "Regular", lvl: 4 },
+  { n: "Gustav Rutqvist (634586)", pos: "P_111682", title: "Developer", loc: "Stockholm", cc: "KING - SODA - META", lc: "4 (Programming)", g: 10, t: "Regular", lvl: 4 },
+  { n: "Magnus Jönsson (628360)", pos: "P_10621", title: "Developer", loc: "Malmö", cc: "KING - SODA - META", lc: "4 (Programming)", g: 10, t: "Regular", lvl: 4 },
+  { n: "Marko Jelcic (633311)", pos: "P_101232", title: "Senior Developer", loc: "Stockholm", cc: "KING - SODA - META", lc: "4 (Programming)", g: 11, t: "Regular", lvl: 4 },
+  { n: "Hinrik Asgeirsson (On Leave) (W_10733)", pos: "P_116818", title: "Senior Product Director", loc: "Stockholm", cc: "KING - SODA - META", lc: "3 (Production)", g: 16, t: "Regular", lvl: 3 },
+  { n: "Juliet Singh (634615)", pos: "P_14549", title: "Engineering Manager", loc: "Stockholm", cc: "KING - SODA - META", lc: "3 (Programming)", g: 12, t: "Regular", lvl: 3 },
+  { n: "Open8", pos: "P_124188", title: "Software Engineer", loc: "Stockholm", cc: "KING - SODA - META", lc: "4 ((blank))", g: "", t: "Contract Worker", lvl: 4 },
+  { n: "Faizhal Bin Bakar (W_13526)", pos: "P_12619", title: "Senior Developer", loc: "Stockholm", cc: "KING - SODA - META", lc: "4 (Programming)", g: 11, t: "Regular", lvl: 4 },
+  { n: "Mehmet Onur Aybek (638720)", pos: "P_13894", title: "Developer", loc: "Stockholm", cc: "KING - SODA - META", lc: "4 (Programming)", g: 10, t: "Regular", lvl: 4 },
+  { n: "Mohamed Refaat (634570)", pos: "P_88806", title: "Senior Developer", loc: "Stockholm", cc: "KING - SODA - META", lc: "4 (Programming)", g: 11, t: "Regular", lvl: 4 },
+  { n: "Pol Marti Cañizares (W_12948)", pos: "P_10717", title: "Principal Engineer", loc: "Barcelona", cc: "KING - SODA - META", lc: "3 (Programming)", g: 12, t: "Regular", lvl: 3 },
+  { n: "Open6", pos: "P_102241", title: "Senior Software Engineer", loc: "Malmö", cc: "KING - SODA - META", lc: "4 ((blank))", g: 10, t: "Regular", lvl: 4 },
+  { n: "Artemis Georgakopoulou (635440)", pos: "P_85110", title: "Developer", loc: "Barcelona", cc: "KING - SODA - META", lc: "4 (Programming)", g: 10, t: "Regular", lvl: 4 },
+  { n: "Guillermo Ojeda Noda (633408)", pos: "P_10270", title: "Senior Developer", loc: "Barcelona", cc: "KING - SODA - META", lc: "4 (Programming)", g: 11, t: "Regular", lvl: 4 },
+  { n: "Tiago Moutinho (645305)", pos: "P_112364", title: "Associate Technical Director", loc: "Barcelona", cc: "KING - SODA - META", lc: "3 (Programming)", g: 14, t: "Regular", lvl: 3 },
+  { n: "Open5", pos: "P_10329", title: "Software Engineer", loc: "Barcelona", cc: "KING - SODA - META", lc: "4 ((blank))", g: 10, t: "Regular", lvl: 4 },
+  { n: "Daniel Nitsche (631573)", pos: "P_12614", title: "Principal Engineer", loc: "Stockholm", cc: "KING - SODA - META", lc: "4 (Programming)", g: 12, t: "Regular", lvl: 4 },
+  { n: "Marcos Lucas Veloso Junqueira (638463)", pos: "P_101883", title: "Senior Developer", loc: "Stockholm", cc: "KING - SODA - META", lc: "4 (Programming)", g: 11, t: "Regular", lvl: 4 },
+  { n: "Darpan Sharma (645582)", pos: "P_13640", title: "Software Engineer", loc: "London", cc: "KING - SODA - META", lc: "5 (Programming)", g: 10, t: "Regular", lvl: 5 },
+  { n: "Vladislav Shapar (650779)[C]", pos: "P_124189", title: "Software Engineer", loc: "Stockholm", cc: "KING - SODA - META", lc: "4 (Programming)", g: "", t: "Agency Temporary Worker", lvl: 4 },
+  { n: "Luke Jackson (W_10660)", pos: "P_118879", title: "Head of Gameplay and Monetisation", loc: "Stockholm", cc: "KING - SODA - LEADERSHIP", lc: "2 (Production)", g: 16, t: "Regular", lvl: 2 },
+  { n: "Open9", pos: "P_14600", title: "Director of Engineering, Gameplay & Monetisation", loc: "Barcelona", cc: "KING - SODA - GAME SYSTEMS AND MONETIZATION", lc: "3 ((blank))", g: 10, t: "Regular", lvl: 3 },
+  { n: "Open10", pos: "P_700016", title: "Creative Director, Gameplay & Monetisation", loc: "Stockholm", cc: "KING - SODA - GAME SYSTEMS AND MONETIZATION", lc: "3 ((blank))", g: 15, t: "Regular", lvl: 3 },
+  { n: "Open11", pos: "P_700022", title: "UI Design Manager | Candy Crush Soda Saga", loc: "Barcelona", cc: "KING - SODA - GAME SYSTEMS AND MONETIZATION", lc: "3 ((blank))", g: 12, t: "Regular", lvl: 3 },
+  { n: "Mattias Lyytemsen (631391)", pos: "P_114079", title: "Senior Engineering Manager", loc: "Work From Home - SWE", cc: "KING - SODA - GAME SYSTEMS AND MONETIZATION", lc: "3 (Programming)", g: 13, t: "Regular", lvl: 3 },
+  { n: "Open17", pos: "P_126770", title: "Software Engineer", loc: "Stockholm", cc: "KING - SODA - GAME SYSTEMS AND MONETIZATION", lc: "4 ((blank))", g: "", t: "Regular", lvl: 4 },
+  { n: "Damiano Calcagni (W_13957)", pos: "P_113951", title: "Senior C++ Developer", loc: "Barcelona", cc: "KING - SODA - GAME SYSTEMS AND MONETIZATION", lc: "4 (Programming)", g: 11, t: "Regular", lvl: 4 },
+  { n: "Muhammad Abdulfattah (632840)", pos: "P_98385", title: "C++ Developer", loc: "Barcelona", cc: "KING - SODA - GAME SYSTEMS AND MONETIZATION", lc: "4 (Programming)", g: 10, t: "Regular", lvl: 4 },
+  { n: "Peter Johansson (625830)", pos: "P_114112", title: "C++ Developer", loc: "Stockholm", cc: "KING - SODA - GAME SYSTEMS AND MONETIZATION", lc: "4 (Programming)", g: 10, t: "Regular", lvl: 4 },
+  { n: "Sara Martí Juanola (632075)", pos: "P_12153", title: "Software Engineer", loc: "Barcelona", cc: "KING - SODA - GAME SYSTEMS AND MONETIZATION", lc: "4 (Programming)", g: 10, t: "Regular", lvl: 4 },
+  { n: "Mirko Wolter (643808)", pos: "P_113852", title: "Associate Design Director", loc: "Berlin", cc: "KING - SODA - GAME SYSTEMS AND MONETIZATION", lc: "3 (Design)", g: 14, t: "Regular", lvl: 3 },
+  { n: "Brenda Montes (644278)", pos: "P_113133", title: "Senior UI Designer", loc: "Stockholm", cc: "KING - SODA - GAME SYSTEMS AND MONETIZATION", lc: "4 (Design)", g: 11, t: "Regular", lvl: 4 },
+  { n: "Felicia Hjärpe (642571)", pos: "P_117586", title: "UI Designer", loc: "Stockholm", cc: "KING - SODA - GAME SYSTEMS AND MONETIZATION", lc: "4 (Design)", g: 10, t: "Regular", lvl: 4 },
+  { n: "Mireia Reinal (W_13096)", pos: "P_83936", title: "Game Designer", loc: "Barcelona", cc: "KING - SODA - GAME SYSTEMS AND MONETIZATION", lc: "4 (Design)", g: 10, t: "Regular", lvl: 4 },
+  { n: "Victoria (Vito) Serrano Perez (W_13673)", pos: "P_105514", title: "Lead Level Designer", loc: "Barcelona", cc: "KING - SODA - GAME SYSTEMS AND MONETIZATION", lc: "4 (Design)", g: 12, t: "Regular", lvl: 4 },
+  { n: "Hans Litgård (W_12419)", pos: "P_13019", title: "Principal Level Designer", loc: "Stockholm", cc: "KING - SODA - GAME SYSTEMS AND MONETIZATION", lc: "5 (Design)", g: 12, t: "Regular", lvl: 5 },
+  { n: "Karina Lindkvist (634634)", pos: "P_13882", title: "Level Designer", loc: "Stockholm", cc: "KING - SODA - GAME SYSTEMS AND MONETIZATION", lc: "5 (Design)", g: 10, t: "Regular", lvl: 5 },
+  { n: "Susanne Sturesson (W_11435)", pos: "P_11427", title: "Level Designer", loc: "Stockholm", cc: "KING - SODA - GAME SYSTEMS AND MONETIZATION", lc: "5 (Design)", g: 10, t: "Regular", lvl: 5 },
+  { n: "Natalia La Rocca (621941)", pos: "P_13258", title: "Senior Level Designer", loc: "Stockholm", cc: "KING - SODA - GAME SYSTEMS AND MONETIZATION", lc: "5 (Design)", g: 11, t: "Regular", lvl: 5 },
+  { n: "Chloe Andersson (622665)", pos: "P_88225", title: "Level Designer", loc: "Stockholm", cc: "KING - SODA - GAME SYSTEMS AND MONETIZATION", lc: "5 (Design)", g: 10, t: "Regular", lvl: 5 },
+  { n: "Ove Ahlman (644413)", pos: "P_115066", title: "Senior System and Economy Designer", loc: "Stockholm", cc: "KING - SODA - GAME SYSTEMS AND MONETIZATION", lc: "4 (Design)", g: 11, t: "Regular", lvl: 4 },
+  { n: "Xaviera Torres (624828)", pos: "P_13655", title: "Senior Game Designer", loc: "Barcelona", cc: "KING - SODA - GAME SYSTEMS AND MONETIZATION", lc: "4 (Design)", g: 11, t: "Regular", lvl: 4 },
+  { n: "Tauseen Syed (W_13801)", pos: "P_114017", title: "Product Director", loc: "London", cc: "KING - SODA - GAME SYSTEMS AND MONETIZATION", lc: "3 (Production)", g: 15, t: "Regular", lvl: 3 },
+  { n: "Andrei Ghiuru (W_10912)", pos: "P_11815", title: "Senior Principal AI/ML Engineer", loc: "Barcelona", cc: "KING - SODA - GAME SYSTEMS AND MONETIZATION", lc: "4 (Programming)", g: 13, t: "Regular", lvl: 4 },
+  { n: "Annie Hammond (619284)", pos: "P_87381", title: "Product Manager", loc: "Stockholm", cc: "KING - SODA - GAME SYSTEMS AND MONETIZATION", lc: "4 (Production)", g: 12, t: "Regular", lvl: 4 },
+  { n: "Hanna Sandberg (W_13383)", pos: "P_13091", title: "Product Manager", loc: "Stockholm", cc: "KING - SODA - GAME SYSTEMS AND MONETIZATION", lc: "4 (Production)", g: 12, t: "Regular", lvl: 4 },
+  { n: "Julia Razgulyaeva (636934)", pos: "P_14132", title: "Senior Product Manager", loc: "Barcelona", cc: "KING - SODA - GAME SYSTEMS AND MONETIZATION", lc: "4 (Production)", g: 13, t: "Regular", lvl: 4 },
+  { n: "Liza Dobrovoljc (618984)", pos: "P_126247", title: "Product Director", loc: "Stockholm", cc: "KING - SODA - GAME SYSTEMS AND MONETIZATION", lc: "3 (Production)", g: 15, t: "Regular", lvl: 3 },
+  { n: "Marie Løken (623789)", pos: "P_13262", title: "Product Manager", loc: "Stockholm", cc: "KING - SODA - GAME SYSTEMS AND MONETIZATION", lc: "4 (Production)", g: 12, t: "Regular", lvl: 4 },
+  { n: "Thibault Romain (645688)", pos: "P_12963", title: "Product Manager", loc: "Stockholm", cc: "KING - SODA - GAME SYSTEMS AND MONETIZATION", lc: "4 (Production)", g: 12, t: "Regular", lvl: 4 },
+  { n: "Axel Uhrus (On Leave) (621174)", pos: "P_109641", title: "Principal Product Manager", loc: "Stockholm", cc: "KING - SODA - GAME SYSTEMS AND MONETIZATION", lc: "4 (Production)", g: 15, t: "Regular", lvl: 4 },
+  { n: "Open22", pos: "P_96670", title: "Manager, Pricing & Commercial Effectiveness", loc: "Stockholm", cc: "KING - SODA - GAME SYSTEMS AND MONETIZATION", lc: "5 ((blank))", g: 12, t: "Regular", lvl: 5 },
+  { n: "Rick Walker (W_11420)", pos: "P_700051", title: "Analytics Director", loc: "London", cc: "KING - SODA - GAME SYSTEMS AND MONETIZATION", lc: "3 (Business Intelligence)", g: 15, t: "Regular", lvl: 3 },
+  { n: "Alexandros Vamvakaris Skrivanos (646569)", pos: "P_107943", title: "Senior Data Scientist", loc: "London", cc: "KING - SODA - GAME SYSTEMS AND MONETIZATION", lc: "4 (Business Intelligence)", g: 11, t: "Regular", lvl: 4 },
+  { n: "Guillem Bonilla Montolio (643807)", pos: "P_113132", title: "Senior Data Scientist", loc: "Barcelona", cc: "KING - SODA - GAME SYSTEMS AND MONETIZATION", lc: "4 (Business Intelligence)", g: 11, t: "Regular", lvl: 4 },
+  { n: "Jina Kim (643833)", pos: "P_113950", title: "Senior Data Scientist", loc: "Berlin", cc: "KING - SODA - GAME SYSTEMS AND MONETIZATION", lc: "4 (Business Intelligence)", g: 11, t: "Regular", lvl: 4 },
+  { n: "Paul Geffert (634846)", pos: "P_14286", title: "Senior Data Scientist", loc: "London", cc: "KING - SODA - GAME SYSTEMS AND MONETIZATION", lc: "4 (Business Intelligence)", g: 11, t: "Regular", lvl: 4 },
+  { n: "Sofia Lundqvist (628182)", pos: "P_121991", title: "Senior Manager, Analytics", loc: "Stockholm", cc: "KING - SODA - GAME SYSTEMS AND MONETIZATION", lc: "4 (Business Intelligence)", g: 13, t: "Regular", lvl: 4 },
+  { n: "Defne Mevsim (636911)", pos: "P_85796", title: "Data Scientist", loc: "Barcelona", cc: "KING - SODA - GAME SYSTEMS AND MONETIZATION", lc: "5 (Business Intelligence)", g: 10, t: "Regular", lvl: 5 },
+  { n: "Joanne Hou (630541)", pos: "P_108891", title: "Senior Operator", loc: "Stockholm", cc: "KING - SODA - GAME SYSTEMS AND MONETIZATION", lc: "5 (Administration)", g: 11, t: "Regular", lvl: 5 },
+  { n: "Phong Tran (643422)", pos: "P_111283", title: "Data Scientist", loc: "Stockholm", cc: "KING - SODA - GAME SYSTEMS AND MONETIZATION", lc: "5 (Business Intelligence)", g: 10, t: "Regular", lvl: 5 },
+  { n: "Lan Yao (646648)", pos: "P_118685", title: "Senior Data Scientist", loc: "Stockholm", cc: "KING - SODA - GAME SYSTEMS AND MONETIZATION", lc: "5 (Business Intelligence)", g: 11, t: "Regular", lvl: 5 },
+  { n: "Priscila González (651727)", pos: "P_13964", title: "Product Analyst", loc: "Stockholm", cc: "KING - SODA - CORE", lc: "5 (Business Intelligence)", g: 10, t: "Regular", lvl: 5 },
+  { n: "Gareth Hughes (647717)", pos: "P_120690", title: "Senior Data Scientist", loc: "Barcelona", cc: "KING - SODA - GAME SYSTEMS AND MONETIZATION", lc: "4 (Business Intelligence)", g: 11, t: "Regular", lvl: 4 },
+  { n: "Roger Marín Plana (On Leave) (636378)", pos: "P_12128", title: "Senior Data Scientist", loc: "Barcelona", cc: "KING - SODA - GAME SYSTEMS AND MONETIZATION", lc: "4 (Business Intelligence)", g: 11, t: "Regular", lvl: 4 },
+  { n: "Elli Shapiro (647426)", pos: "P_113926", title: "Associate Technical Director", loc: "London", cc: "KING - SODA - GAME SYSTEMS AND MONETIZATION", lc: "3 (Programming)", g: 14, t: "Regular", lvl: 3 },
+  { n: "Fernando Rodríguez Martínez (W_11511)", pos: "P_10313", title: "Senior Developer", loc: "Barcelona", cc: "KING - SODA - GAME SYSTEMS AND MONETIZATION", lc: "4 (Programming)", g: 11, t: "Regular", lvl: 4 },
+  { n: "Jose Cabello (W_12301)", pos: "P_12969", title: "Principal developer", loc: "Barcelona", cc: "KING - SODA - GAME SYSTEMS AND MONETIZATION", lc: "4 (Programming)", g: 12, t: "Regular", lvl: 4 },
+  { n: "Juan Cifuentes Sans (W_12906)", pos: "P_10705", title: "Principal Engineer", loc: "Barcelona", cc: "KING - SODA - GAME SYSTEMS AND MONETIZATION", lc: "4 (Programming)", g: 12, t: "Regular", lvl: 4 },
+  { n: "Simon Dass (W_11794)", pos: "P_12458", title: "Senior Developer", loc: "Barcelona", cc: "KING - SODA - GAME SYSTEMS AND MONETIZATION", lc: "4 (Programming)", g: 11, t: "Regular", lvl: 4 },
+  { n: "Andrea Garcia Fabregas (619558)", pos: "P_14010", title: "Senior Technical Level Designer", loc: "Work From Home - ESP", cc: "KING - SODA - GAME SYSTEMS AND MONETIZATION", lc: "4 (Design)", g: 11, t: "Regular", lvl: 4 },
+  { n: "Korneel Guns (W_13781)", pos: "P_13891", title: "Senior Developer", loc: "Stockholm", cc: "KING - SODA - GAME SYSTEMS AND MONETIZATION", lc: "4 (Programming)", g: 11, t: "Regular", lvl: 4 },
+  { n: "Mikael Lagré (W_13713)", pos: "P_13863", title: "Senior Developer", loc: "Stockholm", cc: "KING - SODA - GAME SYSTEMS AND MONETIZATION", lc: "4 (Programming)", g: 11, t: "Regular", lvl: 4 },
+  { n: "Robin Fagerström (W_13216)", pos: "P_11937", title: "Principal Engineer", loc: "Stockholm", cc: "KING - SODA - GAME SYSTEMS AND MONETIZATION", lc: "4 (Programming)", g: 12, t: "Regular", lvl: 4 },
+  { n: "Anna Akulova (On Leave) (645989)", pos: "P_111216", title: "Product Director", loc: "London", cc: "KING - SODA - GAME SYSTEMS AND MONETIZATION", lc: "3 (Production)", g: 15, t: "Regular", lvl: 3 },
+  { n: "Jess Baban (651580)", pos: "P_700021", title: "UX Design Manager", loc: "Stockholm", cc: "KING - SODA - GAME SYSTEMS AND MONETIZATION", lc: "3 (Design)", g: 12, t: "Regular", lvl: 3 },
+  { n: "Darya Luchaninava (639328)", pos: "P_107686", title: "UI Designer", loc: "Work From Home - SWE", cc: "KING - SODA - GAME SYSTEMS AND MONETIZATION", lc: "4 (Design)", g: 10, t: "Regular", lvl: 4 },
+  { n: "Lucía Ojeda Domínguez (645525)", pos: "P_113131", title: "Principal UX Designer", loc: "Barcelona", cc: "KING - SODA - GAME SYSTEMS AND MONETIZATION", lc: "4 (Design)", g: 12, t: "Regular", lvl: 4 },
+  { n: "Martin Chandias (628336)", pos: "P_90988", title: "Senior UI Designer", loc: "Barcelona", cc: "KING - SODA - GAME SYSTEMS AND MONETIZATION", lc: "4 (Design)", g: 11, t: "Regular", lvl: 4 },
+  { n: "Nemanja Popovic (644357)", pos: "P_114111", title: "Senior UX Designer", loc: "Malmö", cc: "KING - SODA - GAME SYSTEMS AND MONETIZATION", lc: "4 (Design)", g: 11, t: "Regular", lvl: 4 },
+  { n: "Ida Bjurman (639241)", pos: "P_103364", title: "Lead UX Designer", loc: "Stockholm", cc: "KING - SODA - GAME SYSTEMS AND MONETIZATION", lc: "4 (Design)", g: 12, t: "Regular", lvl: 4 },
+  { n: "Johanna Betz (W_13948)", pos: "P_102282", title: "Head of Game Operations", loc: "Stockholm", cc: "KING - SODA - LEADERSHIP", lc: "2 (Business Intelligence)", g: 16, t: "Regular", lvl: 2 },
+  { n: "Open15", pos: "P_125658", title: "Art Operations Director", loc: "Stockholm", cc: "KING - SODA - GAME OPERATIONS", lc: "3 ((blank))", g: "", t: "Regular", lvl: 3 },
+  { n: "Open16", pos: "P_126377", title: "Operations Director", loc: "Stockholm", cc: "KING - SODA - GAME OPERATIONS", lc: "3 ((blank))", g: 15, t: "Regular", lvl: 3 },
+  { n: "Erik Wikström (W_13915)", pos: "P_14291", title: "Tech Art Lead", loc: "Stockholm", cc: "KING - SODA - GAME OPERATIONS", lc: "3 (Art)", g: 12, t: "Regular", lvl: 3 },
+  { n: "Daniel Reitan (642694)", pos: "P_117588", title: "Tech Artist", loc: "Stockholm", cc: "KING - SODA - GAME OPERATIONS", lc: "4 (Art)", g: 10, t: "Regular", lvl: 4 },
+  { n: "Mümin Gülerer (632686)", pos: "P_10694", title: "VFX Artist", loc: "Barcelona", cc: "KING - SODA - GAME OPERATIONS", lc: "4 (Art)", g: 10, t: "Regular", lvl: 4 },
+  { n: "Marcus Åvall (On Leave) (W_12445)", pos: "P_13677", title: "Senior Technical Animator", loc: "Work From Home - SWE", cc: "KING - SODA - GAME OPERATIONS", lc: "4 (Art)", g: 11, t: "Regular", lvl: 4 },
+  { n: "Suhaib Dehneh (On Leave) (632244)", pos: "P_14586", title: "VFX Artist | Video Editor", loc: "Stockholm", cc: "KING - SODA - GAME OPERATIONS", lc: "4 (Art)", g: 10, t: "Regular", lvl: 4 },
+  { n: "Jesper Jäder (W_12247)", pos: "P_11936", title: "Associate Art Director", loc: "Stockholm", cc: "KING - SODA - GAME OPERATIONS", lc: "3 (Art)", g: 14, t: "Regular", lvl: 3 },
+  { n: "Johan Dunge (W_11262)", pos: "P_12886", title: "Sr. Visual Development Artist", loc: "Stockholm", cc: "KING - SODA - GAME OPERATIONS", lc: "4 (Art)", g: 11, t: "Regular", lvl: 4 },
+  { n: "Richard Partridge (On Leave) (W_11643)", pos: "P_103708", title: "Senior Visual Development Artist", loc: "Stockholm", cc: "KING - SODA - GAME OPERATIONS", lc: "4 (Art)", g: 11, t: "Regular", lvl: 4 },
+  { n: "Beatrice Bencivenni (618588)", pos: "P_14588", title: "Principal Visual Development Artist", loc: "Malmö", cc: "KING - SODA - GAME OPERATIONS", lc: "4 (Art)", g: 12, t: "Regular", lvl: 4 },
+  { n: "Sandra Agudo Rodriguez (W_13975)", pos: "P_95326", title: "Principal Visual Development Artist", loc: "Berlin", cc: "KING - SODA - GAME OPERATIONS", lc: "4 (Art)", g: 12, t: "Regular", lvl: 4 },
+  { n: "Mario Santos-Ramos (W_10159)", pos: "P_11944", title: "Art Lead", loc: "Stockholm", cc: "KING - SODA - GAME OPERATIONS", lc: "3 (Art)", g: 12, t: "Regular", lvl: 3 },
+  { n: "Open2", pos: "P_103707", title: "Technical Animator", loc: "Berlin", cc: "KING - SODA - GAME OPERATIONS", lc: "4 ((blank))", g: 10, t: "Regular", lvl: 4 },
+  { n: "Anshelle Banzon (W_11558)", pos: "P_13861", title: "Senior 3D Character Artist", loc: "Stockholm", cc: "KING - SODA - GAME OPERATIONS", lc: "4 (Art)", g: 11, t: "Regular", lvl: 4 },
+  { n: "Elli Elinore Sander (W_13871)", pos: "P_14601", title: "3D Generalist Artist", loc: "Malmö", cc: "KING - SODA - GAME OPERATIONS", lc: "4 (Art)", g: 10, t: "Regular", lvl: 4 },
+  { n: "Emil Besirevic (W_10214)", pos: "P_10214", title: "Senior 3D Generalist Artist", loc: "Stockholm", cc: "KING - SODA - GAME OPERATIONS", lc: "4 (Art)", g: 11, t: "Regular", lvl: 4 },
+  { n: "Florian Satge (W_11254)", pos: "P_10698", title: "Associate Principal Artist", loc: "Barcelona", cc: "KING - SODA - GAME OPERATIONS", lc: "4 (Art)", g: 12, t: "Regular", lvl: 4 },
+  { n: "Ida Sviggum (W_12574)", pos: "P_13687", title: "Principal Animator", loc: "Stockholm", cc: "KING - SODA - GAME OPERATIONS", lc: "4 (Animation)", g: 12, t: "Regular", lvl: 4 },
+  { n: "Martin Nyberg (635274)", pos: "P_101979", title: "3D Character Animator", loc: "Stockholm", cc: "KING - SODA - GAME OPERATIONS", lc: "4 (Animation)", g: 10, t: "Regular", lvl: 4 },
+  { n: "Phil Horton (646783)", pos: "P_118392", title: "Associate Operations Director", loc: "London", cc: "KING - SODA - GAME OPERATIONS", lc: "3 (Administration)", g: 14, t: "Regular", lvl: 3 },
+  { n: "Sara Bergkvist (W_12548)", pos: "P_95562", title: "3D Art Lead", loc: "Stockholm", cc: "KING - SODA - GAME OPERATIONS", lc: "3 (Art)", g: 12, t: "Regular", lvl: 3 },
+  { n: "Isabelle Ström Gunnér (628181)", pos: "P_119295", title: "Associate Operations Director", loc: "Stockholm", cc: "KING - SODA - GAME OPERATIONS", lc: "3 (Administration)", g: 14, t: "Regular", lvl: 3 },
+  { n: "Radu Stefan Veltan (620190)", pos: "P_116876", title: "Acting Senior Technical Director", loc: "Stockholm", cc: "KING - SODA - GAME OPERATIONS", lc: "3 (Programming)", g: 15, t: "Regular", lvl: 3 },
+  { n: "Open4", pos: "P_122200", title: "Senior QA Manager", loc: "Barcelona", cc: "KING - SODA - GAME OPERATIONS", lc: "4 ((blank))", g: 13, t: "Regular", lvl: 4 },
+  { n: "Ciprian Frunza (W_10452)", pos: "P_102127", title: "Principal QA Specialist", loc: "Barcelona", cc: "KING - SODA - META", lc: "4 (Quality Assurance)", g: 12, t: "Regular", lvl: 4 },
+  { n: "Jordi Calduch Casas (W_12849)", pos: "P_112013", title: "Senior Engineering Manager", loc: "Barcelona", cc: "KING - SODA - GAME OPERATIONS", lc: "4 (Programming)", g: 13, t: "Regular", lvl: 4 },
+  { n: "Balakumaran Palanivel (W_13965)", pos: "P_110079", title: "Senior Developer", loc: "Stockholm", cc: "KING - SODA - GAME OPERATIONS", lc: "5 (Programming)", g: 11, t: "Regular", lvl: 5 },
+  { n: "Hernan Ramovecchi (623977)", pos: "P_86783", title: "Senior Developer", loc: "Barcelona", cc: "KING - SODA - GAME OPERATIONS", lc: "5 (Programming)", g: 11, t: "Regular", lvl: 5 },
+  { n: "Ingemar Finn (W_10076)", pos: "P_10076", title: "Principal developer", loc: "Stockholm", cc: "KING - SODA - GAME OPERATIONS", lc: "5 (Programming)", g: 12, t: "Regular", lvl: 5 },
+  { n: "Jessica Lee (W_13847)", pos: "P_87351", title: "Senior Developer", loc: "Work From Home - SWE", cc: "KING - SODA - GAME OPERATIONS", lc: "5 (Programming)", g: 11, t: "Regular", lvl: 5 },
+  { n: "Joakim Dahlström (W_10101)", pos: "P_10101", title: "Senior Developer", loc: "Stockholm", cc: "KING - SODA - GAME OPERATIONS", lc: "5 (Programming)", g: 11, t: "Regular", lvl: 5 },
+  { n: "Rohan Udhoji (646861)", pos: "P_117797", title: "Senior Backend Engineer", loc: "London", cc: "KING - SODA - GAME OPERATIONS", lc: "5 (Programming)", g: 11, t: "Fixed Term", lvl: 5 },
+  { n: "Razvan Ionescu (W_10800)", pos: "P_109373", title: "Tech Lead", loc: "Stockholm", cc: "KING - SODA - GAME OPERATIONS", lc: "4 (Programming)", g: 12, t: "Regular", lvl: 4 },
+  { n: "Dan Demetrescu (W_12501)", pos: "P_11186", title: "Principal QA Specialist", loc: "Barcelona", cc: "KING - SODA - GAME SYSTEMS AND MONETIZATION", lc: "4 (Quality Assurance)", g: 12, t: "Regular", lvl: 4 },
+  { n: "Eric Giraud (W_11014)", pos: "P_11339", title: "Associate Tech Director", loc: "Barcelona", cc: "KING - SODA - GAME OPERATIONS", lc: "4 (Programming)", g: 14, t: "Regular", lvl: 4 },
+  { n: "Open3", pos: "P_125546", title: "Senior Principal Software Engineer", loc: "Stockholm", cc: "KING - SODA - GAME OPERATIONS", lc: "5 ((blank))", g: "", t: "Regular", lvl: 5 },
+  { n: "Álvaro Cifuentes de la Torre (643752)", pos: "P_103340", title: "Build Engineer", loc: "Work From Home - ESP", cc: "KING - SODA - GAME OPERATIONS", lc: "5 (Programming)", g: 10, t: "Regular", lvl: 5 },
+  { n: "Daniel Sundberg (W_13041)", pos: "P_10878", title: "Principal Software Engineer", loc: "Stockholm", cc: "KING - SODA - GAME OPERATIONS", lc: "5 (Programming)", g: 12, t: "Regular", lvl: 5 },
+  { n: "Freyr Danielsson (641926)", pos: "P_107940", title: "Senior Tools Developer", loc: "Stockholm", cc: "KING - SODA - GAME OPERATIONS", lc: "5 (Programming)", g: 11, t: "Regular", lvl: 5 },
+  { n: "Jonas Haeggström (W_10780)", pos: "P_13856", title: "Senior Principal Software Engineer", loc: "Stockholm", cc: "KING - SODA - GAME OPERATIONS", lc: "5 (Programming)", g: 14, t: "Regular", lvl: 5 },
+  { n: "Ray Reynolds (624639)", pos: "P_13279", title: "Principal Build Engineer", loc: "London", cc: "KING - SODA - GAME OPERATIONS", lc: "5 (Programming)", g: 12, t: "Regular", lvl: 5 },
+  { n: "Nour Almarsoomi (621264)", pos: "P_113128", title: "Senior Software Engineer", loc: "Stockholm", cc: "KING - SODA - GAME OPERATIONS", lc: "5 (Programming)", g: 11, t: "Regular", lvl: 5 },
+  { n: "Mariano González (W_13116)", pos: "P_13401", title: "Principal Graphics Engineer", loc: "Barcelona", cc: "KING - SODA - GAME OPERATIONS", lc: "5 (Programming)", g: 12, t: "Regular", lvl: 5 },
+  { n: "Antonio (Tony) Hanczaruk (W_12544)", pos: "P_12603", title: "Senior QA Specialist", loc: "Stockholm", cc: "KING - SODA - GAME SYSTEMS AND MONETIZATION", lc: "4 (Quality Assurance)", g: 11, t: "Regular", lvl: 4 },
+  { n: "Miranda Fondin (623504)", pos: "P_14593", title: "QA Specialist", loc: "Stockholm", cc: "KING - SODA - META", lc: "4 (Quality Assurance)", g: 10, t: "Regular", lvl: 4 },
+  { n: "Tina Funayama (W_13964)", pos: "P_14592", title: "Senior QA Specialist", loc: "Stockholm", cc: "KING - SODA - META", lc: "4 (Quality Assurance)", g: 11, t: "Regular", lvl: 4 },
+  { n: "Sara Álvarez Gurdiel (631554)", pos: "P_124262", title: "Senior QA Specialist", loc: "Barcelona", cc: "KING - SODA - META", lc: "4 (Quality Assurance)", g: 11, t: "Regular", lvl: 4 },
+  { n: "Laura (Lau) Vallhonrat (On Leave) (634050)", pos: "P_86784", title: "Senior QA Specialist", loc: "Barcelona", cc: "KING - SODA - META", lc: "4 (Quality Assurance)", g: 11, t: "Regular", lvl: 4 },
+  { n: "Katie Harris (626735)", pos: "P_122052", title: "Senior Director of Analytics & Reporting", loc: "London", cc: "KING - SODA - GAME OPERATIONS", lc: "3 (Business Intelligence)", g: 16, t: "Regular", lvl: 3 },
+  { n: "Open12", pos: "P_109897", title: "Analytics Director", loc: "Stockholm", cc: "KING - SODA - GAME OPERATIONS", lc: "4 ((blank))", g: 15, t: "Regular", lvl: 4 },
+  { n: "Open13", pos: "P_700023", title: "UX Research Manager", loc: "Barcelona", cc: "KING - SODA - GAME OPERATIONS", lc: "4 ((blank))", g: 12, t: "Regular", lvl: 4 },
+  { n: "Open14", pos: "P_700019", title: "Senior UX Researcher | Candy Crush Soda Saga", loc: "Stockholm", cc: "KING - SODA - GAME OPERATIONS", lc: "4 ((blank))", g: 11, t: "Regular", lvl: 4 },
+  { n: "Cesare Di Timoteo (629272)", pos: "P_112498", title: "Principal Product Analyst", loc: "Barcelona", cc: "KING - SODA - GAME OPERATIONS", lc: "4 (Business Intelligence)", g: 12, t: "Regular", lvl: 4 },
+  { n: "Erik Ahlmark (618749)", pos: "P_111929", title: "Analytics Manager", loc: "Stockholm", cc: "KING - SODA - GAME OPERATIONS", lc: "4 (Production)", g: 12, t: "Regular", lvl: 4 },
+  { n: "Catherine Andreichuk (639685)", pos: "P_113952", title: "Data Scientist", loc: "London", cc: "KING - SODA - GAME OPERATIONS", lc: "5 (Business Intelligence)", g: 10, t: "Regular", lvl: 5 },
+  { n: "Preston HC Pao (651623)", pos: "P_700025", title: "Business Analyst", loc: "Stockholm", cc: "KING - SODA - GAME OPERATIONS", lc: "5 (Business Intelligence)", g: 10, t: "Regular", lvl: 5 },
+  { n: "Ivan Jokic (630494)", pos: "P_92530", title: "Senior Principal Data Scientist", loc: "Stockholm", cc: "KING - SODA - GAME OPERATIONS", lc: "4 (Business Intelligence)", g: 13, t: "Regular", lvl: 4 },
+  { n: "Oscar Brusse (627708)", pos: "P_96731", title: "Senior UX Researcher", loc: "Stockholm", cc: "KING - SODA - GAME OPERATIONS", lc: "4 (Design)", g: 11, t: "Regular", lvl: 4 },
+  { n: "Kim Feenstra Kuiper (648143)[C]", pos: "P_119021", title: "Senior User Researcher", loc: "Stockholm", cc: "KING - SODA - GAME OPERATIONS", lc: "4 ((blank))", g: "", t: "Agency Temporary Worker", lvl: 4 },
+  { n: "Jacqueline Jordan (643158)", pos: "P_112053", title: "Senior User Researcher", loc: "London", cc: "KING - SODA - GAME OPERATIONS", lc: "4 (Design)", g: 11, t: "Regular", lvl: 4 },
+  { n: "Anna Bach (647563)", pos: "P_112789", title: "Product Business & Reporting Lead", loc: "Barcelona", cc: "KING - SODA - GAME OPERATIONS", lc: "3 (Business Development)", g: 12, t: "Regular", lvl: 3 },
+  { n: "Belén Senra (W_11638)", pos: "P_13886", title: "Organisational Development Specialist", loc: "Barcelona", cc: "KING - SODA - GAME OPERATIONS", lc: "3 (Production)", g: 14, t: "Regular", lvl: 3 }
+];
+
+// ─── Craft extraction ───
+function getCraft(lc) {
+  if (!lc) return "unknown";
+  const m = lc.match(/\(([^)]+)\)/);
+  if (!m) return "unknown";
+  const c = m[1].toLowerCase().trim();
+  if (c === "(blank)" || c === "blank") return "unknown";
+  if (c.includes("business")) return "bi";
+  if (c.includes("admin")) return "admin";
+  if (c.includes("quality")) return "qa";
+  if (c.includes("market")) return "marketing";
+  if (c.includes("anim")) return "animation";
+  if (c.includes("business dev")) return "bizdev";
+  return c;
+}
+
+const craftColors = {
+  management: "#ef4444", production: "#f59e0b", design: "#10b981",
+  programming: "#3b82f6", bi: "#8b5cf6", art: "#ec4899",
+  animation: "#f97316", qa: "#14b8a6", marketing: "#06b6d4",
+  admin: "#64748b", "business development": "#a3e635", unknown: "#6366f1"
+};
+const craftLabels = {
+  management: "Management", production: "Production", design: "Design",
+  programming: "Programming", bi: "Business Intelligence", art: "Art",
+  animation: "Animation", qa: "Quality Assurance", marketing: "Marketing",
+  admin: "Administration", "business development": "Business Dev", unknown: "Other"
+};
+
+// ─── Build tree ───
+function buildTree(data) {
+  const nodes = data.map((d, i) => ({
+    id: i,
+    name: d.n.replace(/\s*\(On Leave\)/i, "").replace(/\s*\[C\]/i, "").replace(/\s*\(\w+_?\d+\)/g, "").trim(),
+    fullName: d.n,
+    position: d.pos,
+    title: d.title || "(No title)",
+    location: d.loc || "",
+    costCenter: d.cc || "",
+    levelCraft: d.lc || "",
+    grade: d.g,
+    type: d.t || "",
+    level: d.lvl,
+    craft: getCraft(d.lc),
+    isOpen: /^Open\d*$/i.test(d.n.replace(/\s*\(\w+_?\d+\)/g, "").trim()),
+    onLeave: /on leave/i.test(d.n),
+    children: []
+  }));
+
+  const root = nodes[0];
+  const stack = [root];
+
+  for (let i = 1; i < nodes.length; i++) {
+    const node = nodes[i];
+    while (stack.length > 1 && stack[stack.length - 1].level >= node.level) {
+      stack.pop();
+    }
+    stack[stack.length - 1].children.push(node);
+    stack.push(node);
+  }
+  return root;
+}
+
+// ─── Count descendants ───
+function countDescendants(node) {
+  let c = 0;
+  for (const ch of node.children) {
+    c += 1 + countDescendants(ch);
+  }
+  return c;
+}
+
+// ─── Render ───
+function getInitials(name) {
+  const parts = name.split(/\s+/).filter(p => !p.startsWith("("));
+  return (parts[0]?.[0] || "") + (parts[1]?.[0] || "");
+}
+
+function shortLoc(loc) {
+  if (!loc) return "";
+  if (loc.includes("Stockholm")) return "Stockholm";
+  if (loc.includes("Barcelona")) return "Barcelona";
+  if (loc.includes("London")) return "London";
+  if (loc.includes("Berlin")) return "Berlin";
+  if (loc.includes("Malmö")) return "Malmö";
+  if (loc.includes("Work From Home")) return "WFH";
+  return loc;
+}
+
+function renderNode(node, depth = 0) {
+  const hasChildren = node.children.length > 0;
+  const descCount = countDescendants(node);
+  const craftClass = `craft-${node.craft}`;
+  const color = craftColors[node.craft] || craftColors.unknown;
+  const isOpenClass = node.isOpen ? "is-open" : "";
+  const leaveClass = node.onLeave ? "on-leave" : "";
+
+  let html = `<div class="node" data-id="${node.id}">`;
+  html += `<div class="node-card ${craftClass} ${isOpenClass} ${leaveClass}" onclick="toggleNode(${node.id})" data-search="${(node.name + ' ' + node.title + ' ' + node.location + ' ' + node.craft).toLowerCase()}">`;
+
+  // Avatar
+  html += `<div class="avatar" style="background:${color}">${node.isOpen ? "?" : getInitials(node.name)}</div>`;
+
+  // Info
+  html += `<div class="info">`;
+  html += `<div class="name">${node.isOpen ? node.fullName + " (Vacant)" : node.name}${node.onLeave ? ' <span style="color:#a78bfa;font-size:.75rem">(On Leave)</span>' : ""}</div>`;
+  html += `<div class="title-line">${node.title}${node.grade ? " · G" + node.grade : ""}</div>`;
+  html += `</div>`;
+
+  // Badges
+  html += `<div class="meta-badges">`;
+  if (node.location) html += `<span class="badge loc">${shortLoc(node.location)}</span>`;
+  html += `<span class="badge">${craftLabels[node.craft] || node.craft}</span>`;
+  if (node.type && node.type !== "Regular") html += `<span class="badge grade-badge">${node.type}</span>`;
+  html += `</div>`;
+
+  // Toggle
+  if (hasChildren) {
+    html += `<button class="toggle-btn" id="tbtn-${node.id}">&#9660;</button>`;
+    html += `<span class="child-count">${descCount}</span>`;
+  }
+
+  html += `</div>`; // end node-card
+
+  if (hasChildren) {
+    const expanded = depth < 2;
+    html += `<div class="children ${expanded ? "expanded" : "collapsed"}" id="ch-${node.id}">`;
+    for (const ch of node.children) {
+      html += renderNode(ch, depth + 1);
+    }
+    html += `</div>`;
+  }
+
+  html += `</div>`; // end node
+  return html;
+}
+
+// ─── Build and render ───
+const tree = buildTree(RAW);
+
+document.getElementById("tree").innerHTML = renderNode(tree);
+
+// Stats
+const totalFilled = RAW.filter(d => !/^Open\d*$/i.test(d.n.replace(/\s*\(\w+_?\d+\)/g, "").trim())).length;
+const totalOpen = RAW.length - totalFilled;
+const onLeave = RAW.filter(d => /on leave/i.test(d.n)).length;
+const locations = new Set(RAW.map(d => shortLoc(d.loc)).filter(Boolean));
+
+document.getElementById("stats").innerHTML = `
+  <div class="stat"><span class="stat-val">${RAW.length}</span><span class="stat-label">Total Positions</span></div>
+  <div class="stat"><span class="stat-val">${totalFilled}</span><span class="stat-label">Filled</span></div>
+  <div class="stat"><span class="stat-val">${totalOpen}</span><span class="stat-label">Open Positions</span></div>
+  <div class="stat"><span class="stat-val">${onLeave}</span><span class="stat-label">On Leave</span></div>
+  <div class="stat"><span class="stat-val">${locations.size}</span><span class="stat-label">Locations</span></div>
+`;
+
+// Legend
+const craftsUsed = [...new Set(RAW.map(d => getCraft(d.lc)))].sort();
+document.getElementById("legend").innerHTML = `<span class="legend-title">Crafts:</span>` +
+  craftsUsed.map(c => `<span class="legend-item"><span class="legend-dot" style="background:${craftColors[c] || craftColors.unknown}"></span>${craftLabels[c] || c}</span>`).join("");
+
+// ─── Interactions ───
+function toggleNode(id) {
+  const el = document.getElementById("ch-" + id);
+  if (!el) return;
+  const btn = document.getElementById("tbtn-" + id);
+  if (el.classList.contains("collapsed")) {
+    el.classList.remove("collapsed");
+    el.classList.add("expanded");
+    el.style.maxHeight = el.scrollHeight + "px";
+    if (btn) btn.innerHTML = "&#9650;";
+  } else {
+    el.classList.remove("expanded");
+    el.classList.add("collapsed");
+    el.style.maxHeight = "0px";
+    if (btn) btn.innerHTML = "&#9660;";
+  }
+}
+
+function expandAll() {
+  document.querySelectorAll(".children").forEach(el => {
+    el.classList.remove("collapsed");
+    el.classList.add("expanded");
+    el.style.maxHeight = el.scrollHeight + 9999 + "px";
+  });
+  document.querySelectorAll(".toggle-btn").forEach(b => b.innerHTML = "&#9650;");
+}
+
+function collapseAll() {
+  document.querySelectorAll(".children").forEach(el => {
+    el.classList.remove("expanded");
+    el.classList.add("collapsed");
+    el.style.maxHeight = "0px";
+  });
+  document.querySelectorAll(".toggle-btn").forEach(b => b.innerHTML = "&#9660;");
+}
+
+// Search
+document.getElementById("search").addEventListener("input", function() {
+  const q = this.value.toLowerCase().trim();
+  document.querySelectorAll(".node-card").forEach(card => {
+    const match = !q || card.dataset.search.includes(q);
+    card.classList.toggle("highlight", match && q.length > 0);
+    card.style.display = "";
+  });
+  if (q.length > 0) expandAll();
+});
+
+// Fix max-heights after load
+setTimeout(() => {
+  document.querySelectorAll(".children.expanded").forEach(el => {
+    el.style.maxHeight = el.scrollHeight + 9999 + "px";
+  });
+}, 100);
+</script>
+</body>
+</html>
