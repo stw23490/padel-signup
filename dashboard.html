@@ -95,17 +95,125 @@
         }
 
         .container {
-            max-width: 1440px;
-            margin: 0 auto;
+            max-width: 100%;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            height: calc(100vh - 74px);
+            overflow: hidden;
+        }
+
+        /* Sidebar Navigation */
+        .sidebar {
+            width: 260px;
+            min-width: 260px;
+            background: var(--card-bg);
+            border-right: 1px solid var(--border);
+            overflow-y: auto;
+            padding: 16px 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar-nav {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .sidebar-nav li {
+            margin: 2px 8px;
+        }
+
+        .sidebar-nav a {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 16px;
+            border-radius: 8px;
+            text-decoration: none;
+            color: var(--text);
+            font-size: 13px;
+            font-weight: 500;
+            transition: all 0.2s;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .sidebar-nav a:hover {
+            background: var(--table-hover);
+        }
+
+        .sidebar-nav a.active {
+            background: var(--accent);
+            color: white;
+        }
+
+        .sidebar-nav a .nav-icon {
+            font-size: 16px;
+            width: 22px;
+            text-align: center;
+            flex-shrink: 0;
+        }
+
+        .sidebar-nav a .nav-badge {
+            margin-left: auto;
+            font-size: 11px;
+            font-weight: 600;
+            background: var(--table-stripe);
+            padding: 2px 8px;
+            border-radius: 10px;
+            color: var(--text-light);
+        }
+
+        .sidebar-nav a.active .nav-badge {
+            background: rgba(255,255,255,0.2);
+            color: white;
+        }
+
+        .sidebar-section-label {
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-light);
+            padding: 16px 24px 6px;
+        }
+
+        /* Main Content Area */
+        .main-content {
+            flex: 1;
+            overflow-y: auto;
             padding: 24px;
+        }
+
+        /* Panel visibility */
+        .panel {
+            display: none;
+            animation: fadeIn 0.25s ease;
+        }
+
+        .panel.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .kpi-overview {
+            margin-bottom: 20px;
+            flex-shrink: 0;
         }
 
         /* Summary KPI Cards */
         .kpi-row {
             display: grid;
-            grid-template-columns: repeat(8, 1fr);
+            grid-template-columns: repeat(9, 1fr);
             gap: 16px;
             margin-bottom: 24px;
+            align-items: stretch;
         }
 
         .kpi-card {
@@ -116,6 +224,9 @@
             box-shadow: 0 2px 8px var(--shadow);
             border-top: 4px solid var(--accent);
             transition: transform 0.2s, box-shadow 0.2s;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
         }
 
         .kpi-card:hover {
@@ -133,6 +244,17 @@
         .kpi-card.hiring-active { border-top-color: var(--orange); }
         .kpi-card.hiring-inactive { border-top-color: #e67e22; }
         .kpi-card.gap { border-top-color: var(--highlight); }
+        .kpi-card.outlook { border-top-color: var(--accent); }
+
+        /* Total KPI cards - highlighted */
+        .kpi-card.kpi-total {
+            border-top-width: 5px;
+            background: linear-gradient(to bottom, var(--card-bg), var(--table-stripe));
+            box-shadow: 0 3px 12px var(--shadow-hover);
+            ring: 1px solid var(--border);
+            outline: 2px solid var(--accent);
+            outline-offset: -2px;
+        }
 
         .kpi-card .kpi-value {
             font-size: 36px;
@@ -150,6 +272,7 @@
         .kpi-card.hiring-active .kpi-value { color: var(--orange); }
         .kpi-card.hiring-inactive .kpi-value { color: #e67e22; }
         .kpi-card.gap .kpi-value { color: var(--highlight); }
+        .kpi-card.outlook .kpi-value { color: var(--accent); }
 
         .kpi-card .kpi-label {
             font-size: 11px;
@@ -160,10 +283,11 @@
         }
 
         .kpi-card .kpi-desc {
-            font-size: 10px;
-            color: var(--text-light);
-            margin-top: 6px;
-            line-height: 1.4;
+            display: none;
+        }
+
+        .kpi-card {
+            cursor: default;
         }
 
         .kpi-sub {
@@ -236,48 +360,11 @@
         }
 
         .section-header {
-            padding: 16px 24px;
-            border-bottom: 1px solid var(--border);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            cursor: pointer;
-            user-select: none;
-        }
-
-        .section-header:hover {
-            background: var(--table-stripe);
-        }
-
-        .section-header h2 {
-            font-size: 15px;
-            font-weight: 600;
-            color: var(--text);
-        }
-
-        .section-header .section-desc {
-            font-size: 12px;
-            color: var(--text-light);
-            margin-left: 12px;
-        }
-
-        .section-header .toggle {
-            font-size: 18px;
-            color: var(--text-light);
-            transition: transform 0.3s;
-        }
-
-        .section-header .toggle.collapsed {
-            transform: rotate(-90deg);
+            display: none;
         }
 
         .section-body {
             overflow-x: auto;
-            transition: max-height 0.3s ease;
-        }
-
-        .section-body.collapsed {
-            display: none;
         }
 
         .badge {
@@ -408,6 +495,18 @@
             border-color: var(--accent);
         }
 
+        .global-filter-bar {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 16px;
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            margin-bottom: 18px;
+            flex-wrap: wrap;
+        }
+
         /* Tab navigation (kept for edit log toggle only) */
         .tab-nav {
             display: none;
@@ -533,11 +632,14 @@
         /* Responsive */
         @media (max-width: 1024px) {
             .kpi-row { grid-template-columns: repeat(4, 1fr); }
+            .sidebar { width: 220px; min-width: 220px; }
         }
 
         @media (max-width: 640px) {
             .kpi-row { grid-template-columns: repeat(2, 1fr); }
-            .container { padding: 12px; }
+            .container { flex-direction: column; height: auto; }
+            .sidebar { width: 100%; min-width: 100%; max-height: 200px; border-right: none; border-bottom: 1px solid var(--border); }
+            .main-content { height: calc(100vh - 274px); }
             .header { flex-direction: column; gap: 12px; text-align: center; }
         }
 
@@ -551,7 +653,7 @@
 
         /* Employee list max height with scroll */
         .scrollable-table {
-            max-height: 500px;
+            max-height: calc(100vh - 220px);
             overflow-y: auto;
             border: 1px solid var(--border);
             border-radius: 8px;
@@ -1000,6 +1102,111 @@
             border-color: var(--orange) !important;
             box-shadow: 0 0 0 3px rgba(237,125,49,.35);
         }
+
+        /* Export Menu */
+        .export-wrapper {
+            position: relative;
+        }
+
+        .export-btn-group {
+            display: flex;
+            gap: 6px;
+        }
+
+        .export-trigger {
+            background: rgba(255,255,255,0.15);
+            border: 1px solid rgba(255,255,255,0.3);
+            color: white;
+            border-radius: 8px;
+            padding: 7px 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s;
+        }
+
+        .export-trigger:hover {
+            background: rgba(255,255,255,0.25);
+        }
+
+        .export-menu {
+            display: none;
+            position: absolute;
+            top: calc(100% + 8px);
+            right: 0;
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+            min-width: 220px;
+            z-index: 1000;
+            overflow: hidden;
+        }
+
+        .export-menu.open {
+            display: block;
+            animation: fadeIn 0.2s ease;
+        }
+
+        .export-menu-header {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-light);
+            padding: 12px 16px 6px;
+        }
+
+        .export-options {
+            padding: 4px 0;
+        }
+
+        .export-option-btn {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            width: 100%;
+            padding: 10px 16px;
+            border: none;
+            background: none;
+            color: var(--text);
+            font-size: 13px;
+            font-family: inherit;
+            cursor: pointer;
+            transition: background 0.15s;
+            text-align: left;
+        }
+
+        .export-option-btn:hover {
+            background: var(--table-hover);
+        }
+
+        /* Sheet selection checkboxes */
+        .sheet-check {
+            display: none;
+            width: 16px;
+            height: 16px;
+            margin-right: 4px;
+            accent-color: var(--accent);
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        .sidebar.select-mode .sheet-check {
+            display: inline-block;
+        }
+
+        .sidebar.select-mode .sidebar-section-label:first-child::before {
+            content: '✓ Select sheets to export';
+            display: block;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--accent);
+            margin-bottom: 4px;
+            text-transform: none;
+            letter-spacing: 0;
+        }
     </style>
 </head>
 <body>
@@ -1063,59 +1270,69 @@ async function checkPassword() {
             <option value="light" style="color:#333;">&#9788; Light</option>
             <option value="dark" style="color:#333;">&#9790; Dark</option>
         </select>
+        <!-- Export Buttons -->
+        <div class="export-wrapper">
+            <div class="export-btn-group">
+                <button class="export-trigger" onclick="openExportScope('pdf')" title="Export as PDF">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><text x="8" y="17" font-size="6" fill="currentColor" stroke="none" font-weight="bold">PDF</text></svg>
+                </button>
+                <button class="export-trigger" onclick="openExportScope('excel')" title="Export as Excel">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><text x="7" y="17" font-size="5" fill="currentColor" stroke="none" font-weight="bold">XLS</text></svg>
+                </button>
+                <button class="export-trigger" onclick="openExportScope('email')" title="Export as Email">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><polyline points="22,6 12,13 2,6"/></svg>
+                </button>
+            </div>
+            <div class="export-menu" id="exportMenu">
+                <div class="export-menu-header" id="exportOptionsTitle">Export Options</div>
+                <div class="export-options">
+                    <button class="export-option-btn" onclick="doExport('current')">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>
+                        Current Sheet
+                    </button>
+                    <button class="export-option-btn" onclick="doExport('all')">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+                        All Sheets
+                    </button>
+                    <button class="export-option-btn" onclick="doExport('selected')">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+                        Selected Sheets
+                    </button>
+                </div>
+            </div>
+        </div>
         <div class="date">24 / 04 / 2026</div>
     </div>
 </div>
 
 <div class="container">
 
-    <!-- KPI Summary -->
-    <div class="kpi-row">
-        <div class="kpi-card target">
-            <div class="kpi-label">Target</div>
-            <div class="kpi-value" id="kpiTarget">104</div>
-            <div class="kpi-desc">Headcount target. All headcount exc. signed future starters.</div>
-        </div>
-        <div class="kpi-card filled">
-            <div class="kpi-label">Filled</div>
-            <div class="kpi-value">90</div>
-            <div class="kpi-desc">All headcount inc. long-term leave, exc. signed future starters.</div>
-        </div>
-        <div class="kpi-card joiners">
-            <div class="kpi-label">Joiners</div>
-            <div class="kpi-value">2</div>
-            <div class="kpi-desc">Open roles, signed with start date, not yet receiving a salary.</div>
-        </div>
-        <div class="kpi-card leavers-cwr">
-            <div class="kpi-label">Leavers (CWR)</div>
-            <div class="kpi-value">-2</div>
-            <div class="kpi-desc">Contract/temp workers leaving.</div>
-        </div>
-        <div class="kpi-card leavers-notice">
-            <div class="kpi-label">Leavers (On Notice)</div>
-            <div class="kpi-value">-1</div>
-            <div class="kpi-desc">Permanent employees who have given notice.</div>
-        </div>
-        <div class="kpi-card hiring-active">
-            <div class="kpi-label">Hiring (Active)</div>
-            <div class="kpi-value">10</div>
-            <div class="kpi-desc">Open roles with an active job requisition.</div>
-        </div>
-        <div class="kpi-card hiring-inactive">
-            <div class="kpi-label">Hiring (Inactive)</div>
-            <div class="kpi-value" id="kpiHiringInactive">2</div>
-            <div class="kpi-desc">Open roles with no active job requisition.</div>
-        </div>
-        <div class="kpi-card gap">
-            <div class="kpi-label">Gap</div>
-            <div class="kpi-value" id="kpiGap">-3</div>
-            <div class="kpi-desc">Available for recruitment. Includes open with no active job requisition.</div>
-        </div>
-    </div>
+    <!-- Sidebar Navigation -->
+    <nav class="sidebar">
+        <ul class="sidebar-nav">
+            <li><a onclick="switchPanel('emplist')" data-panel="emplist"><input type="checkbox" class="sheet-check" data-sheet="emplist" onclick="event.stopPropagation()"> Employee List <span class="nav-badge">104</span></a></li>
+            <li style="border-bottom:1px solid var(--border);margin:6px 0;padding:0;list-style:none;"></li>
+            <li><a class="active" onclick="switchPanel('filled')" data-panel="filled"><input type="checkbox" class="sheet-check" data-sheet="filled" onclick="event.stopPropagation()"> Filled <span class="nav-badge" style="background:#d4edda;color:#155724;">90</span></a></li>
+            <li><a onclick="switchPanel('joiners')" data-panel="joiners"><input type="checkbox" class="sheet-check" data-sheet="joiners" onclick="event.stopPropagation()"> Upcoming Joiners <span class="nav-badge" style="background:#d4edda;color:#155724;">2</span></a></li>
+            <li><a onclick="switchPanel('leavers-cwr')" data-panel="leavers-cwr"><input type="checkbox" class="sheet-check" data-sheet="leavers-cwr" onclick="event.stopPropagation()"> Leavers (CWR) <span class="nav-badge" style="background:#f8d7da;color:#721c24;">2</span></a></li>
+            <li><a onclick="switchPanel('leavers-notice')" data-panel="leavers-notice"><input type="checkbox" class="sheet-check" data-sheet="leavers-notice" onclick="event.stopPropagation()"> Leavers <span class="nav-badge" style="background:#f8d7da;color:#721c24;">1</span></a></li>
+            <li><a onclick="switchPanel('openreq')" data-panel="openreq"><input type="checkbox" class="sheet-check" data-sheet="openreq" onclick="event.stopPropagation()"> Active Hires <span class="nav-badge">10</span></a></li>
+            <li><a onclick="switchPanel('opennoreq')" data-panel="opennoreq"><input type="checkbox" class="sheet-check" data-sheet="opennoreq" onclick="event.stopPropagation()"> Inactive Hires <span class="nav-badge">2</span></a></li>
+            <li style="border-bottom:1px solid var(--border);margin:6px 0;padding:0;list-style:none;"></li>
+            <li><a onclick="switchPanel('starters')" data-panel="starters"><input type="checkbox" class="sheet-check" data-sheet="starters" onclick="event.stopPropagation()"> New Starters <span class="nav-badge" style="background:#d4edda;color:#155724;">3</span></a></li>
+            <li><a onclick="switchPanel('onleave')" data-panel="onleave"><input type="checkbox" class="sheet-check" data-sheet="onleave" onclick="event.stopPropagation()"> Absent or Part-time <span class="nav-badge" style="background:#fff3cd;color:#856404;">5</span></a></li>
+            <li><a onclick="switchPanel('anniversaries')" data-panel="anniversaries"><input type="checkbox" class="sheet-check" data-sheet="anniversaries" onclick="event.stopPropagation()"> Work Anniversaries <span class="nav-badge" style="background:#cce5ff;color:#004085;">6</span></a></li>
+            <li><a onclick="switchPanel('changelog')" data-panel="changelog"><input type="checkbox" class="sheet-check" data-sheet="changelog" onclick="event.stopPropagation()"> Revision History</a></li>
+            <li><a onclick="switchPanel('orgchart')" data-panel="orgchart"><input type="checkbox" class="sheet-check" data-sheet="orgchart" onclick="event.stopPropagation()"> Organisation Chart</a></li>
+        </ul>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="main-content">
 
     <!-- Floating Edit Change Log Button -->
-    <button class="edit-log-fab" onclick="toggleEditPanel()" title="View Edit Change Log">
-        &#9998; Edit Change Log
+    <button class="edit-log-fab" onclick="toggleEditPanel()" title="View Change Requests">
+        &#9998; Change Requests
         <span class="fab-badge" id="editCountBadge">0</span>
     </button>
 
@@ -1123,7 +1340,7 @@ async function checkPassword() {
     <div class="edit-log-backdrop" id="editLogBackdrop" onclick="toggleEditPanel()"></div>
     <div class="edit-log-panel" id="editLogPanel">
         <div class="edit-log-panel-header">
-            <h3>&#9998; Edit Change Log</h3>
+            <h3>&#9998; Change Requests</h3>
             <button class="edit-log-panel-close" onclick="toggleEditPanel()">&times;</button>
         </div>
         <div class="edit-log-panel-body">
@@ -1159,179 +1376,62 @@ async function checkPassword() {
         </div>
     </div>
 
-    <!-- Cost Centre Breakdown -->
+    <!-- Dashboard Overview (KPIs) - Always visible -->
+    <div class="kpi-overview">
+    <div class="kpi-row">
+        <div class="kpi-card target kpi-total" title="Headcount target. All headcount exc. signed future starters.">
+            <div class="kpi-label">Target</div>
+            <div class="kpi-value" id="kpiTarget">104</div>
+        </div>
+        <div class="kpi-card filled" title="All headcount inc. long-term leave, exc. signed future starters.">
+            <div class="kpi-label">Filled</div>
+            <div class="kpi-value">90</div>
+        </div>
+        <div class="kpi-card joiners" title="Open roles, signed with start date, not yet receiving a salary.">
+            <div class="kpi-label">Upcoming Joiners</div>
+            <div class="kpi-value">2</div>
+        </div>
+        <div class="kpi-card leavers-cwr" title="Contract/temp workers leaving.">
+            <div class="kpi-label">Leavers (CWR)</div>
+            <div class="kpi-value">-2</div>
+        </div>
+        <div class="kpi-card leavers-notice" title="Permanent employees who have given notice.">
+            <div class="kpi-label">Leavers</div>
+            <div class="kpi-value">-1</div>
+        </div>
+        <div class="kpi-card hiring-active" title="Open roles with an active job requisition.">
+            <div class="kpi-label">Active Hires</div>
+            <div class="kpi-value">10</div>
+        </div>
+        <div class="kpi-card hiring-inactive" title="Open roles with no active job requisition.">
+            <div class="kpi-label">Inactive Hires</div>
+            <div class="kpi-value" id="kpiHiringInactive">2</div>
+        </div>
+        <div class="kpi-card outlook kpi-total" title="Filled + Joiners + Leavers + Hiring. Projected headcount.">
+            <div class="kpi-label">Outlook</div>
+            <div class="kpi-value" id="kpiOutlook">101</div>
+        </div>
+        <div class="kpi-card gap" title="Available for recruitment. Includes open with no active job requisition.">
+            <div class="kpi-label">Gap</div>
+            <div class="kpi-value" id="kpiGap">-3</div>
+        </div>
+    </div><!-- /kpi-row -->
+    </div><!-- /kpi-overview -->
+
+    <!-- Global Cost Centre Filter -->
+    <div class="global-filter-bar" id="globalFilterBar">
+        <span style="font-size:13px;font-weight:600;color:var(--text);margin-right:8px;">Filter by Cost Centre:</span>
+        <button class="filter-btn active" onclick="globalFilterCC('all', this)">All</button>
+        <button class="filter-btn" onclick="globalFilterCC('6153', this)">6153 Shared</button>
+        <button class="filter-btn" onclick="globalFilterCC('6249', this)">6249 Candy Solitaire</button>
+        <button class="filter-btn" onclick="globalFilterCC('6958', this)">6958 Diamonds</button>
+        <button class="filter-btn" onclick="globalFilterCC('6294', this)">6294 Primo</button>
+    </div>
+
+    <!-- Panel: Active Hires -->
+    <div class="panel" id="panel-openreq">
+    <h2 style="font-size:18px;font-weight:600;margin-bottom:16px;color:var(--text);">Active Hires <span class="badge badge-count">10</span> <span style="font-size:13px;font-weight:400;color:var(--text-light);margin-left:8px;">Open roles actively being recruited for with an active requisition number.</span></h2>
     <div class="section">
-            <div class="section-header" onclick="toggleSection(this)">
-                <div>
-                    <h2>Cost Centre Breakdown <span class="section-desc">Detailed walk of headcount by cost centre</span></h2>
-                </div>
-                <span class="toggle">&#9660;</span>
-            </div>
-            <div class="section-body">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Cost Center</th>
-                            <th>Target</th>
-                            <th>Filled</th>
-                            <th>Open Req</th>
-                            <th>Open No Req</th>
-                            <th>Due Leaver</th>
-                            <th>Due Joiner</th>
-                            <th>Outlook</th>
-                            <th>Var</th>
-                            <th>On Leave*</th>
-                            <th>Var ex.Leave</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>6153 KING - NEW GAMES - SHARED</td>
-                            <td>15</td>
-                            <td>16</td>
-                            <td class="neutral">-</td>
-                            <td>1</td>
-                            <td class="neutral">-</td>
-                            <td class="neutral">-</td>
-                            <td>17</td>
-                            <td class="positive">+2</td>
-                            <td class="neutral">-</td>
-                            <td class="positive">+2</td>
-                        </tr>
-                        <tr>
-                            <td>6249 KING - NEW GAMES - CANDY SOLITAIRE</td>
-                            <td>11</td>
-                            <td>11</td>
-                            <td>1</td>
-                            <td class="neutral">-</td>
-                            <td class="negative">-1</td>
-                            <td class="neutral">-</td>
-                            <td>11</td>
-                            <td class="neutral">-</td>
-                            <td class="neutral">-</td>
-                            <td class="neutral">-</td>
-                        </tr>
-                        <tr>
-                            <td>6958 KING - NEW GAMES - DIAMONDS</td>
-                            <td>69</td>
-                            <td>56</td>
-                            <td>9</td>
-                            <td>1</td>
-                            <td class="negative">-2</td>
-                            <td>2</td>
-                            <td>66</td>
-                            <td class="negative">-3</td>
-                            <td class="neutral">-</td>
-                            <td class="negative">-3</td>
-                        </tr>
-                        <tr>
-                            <td>6294 KING DIGITAL - NEW GAMES - PRIMO</td>
-                            <td>9</td>
-                            <td>7</td>
-                            <td class="neutral">-</td>
-                            <td class="neutral">-</td>
-                            <td class="neutral">-</td>
-                            <td class="neutral">-</td>
-                            <td>7</td>
-                            <td class="negative">-2</td>
-                            <td class="neutral">-</td>
-                            <td class="negative">-2</td>
-                        </tr>
-                        <tr>
-                            <td>Other</td>
-                            <td class="neutral">-</td>
-                            <td class="neutral">-</td>
-                            <td class="neutral">-</td>
-                            <td class="neutral">-</td>
-                            <td class="neutral">-</td>
-                            <td class="neutral">-</td>
-                            <td class="neutral">-</td>
-                            <td class="neutral">-</td>
-                            <td class="neutral">-</td>
-                            <td class="neutral">-</td>
-                        </tr>
-                        <tr class="total-row">
-                            <td>Total</td>
-                            <td>104</td>
-                            <td>90</td>
-                            <td>10</td>
-                            <td>2</td>
-                            <td class="negative">-3</td>
-                            <td>2</td>
-                            <td>101</td>
-                            <td class="negative">-3</td>
-                            <td class="neutral">-</td>
-                            <td class="negative">-3</td>
-                        </tr>
-                    </tbody>
-                </table>
-                <div class="footnote">*More than 6 months from date of report.</div>
-            </div>
-        </div>
-
-
-
-    <!-- Employee Type Breakdown -->
-        <div class="section">
-            <div class="section-header" onclick="toggleSection(this)">
-                <div><h2>Employee Type Breakdown <span class="section-desc">Detailed walk of employees by employment type</span></h2></div>
-                <span class="toggle">&#9660;</span>
-            </div>
-            <div class="section-body">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Type</th>
-                            <th>AOP</th>
-                            <th>Filled</th>
-                            <th>Open Req</th>
-                            <th>Open No Req</th>
-                            <th>Due Leaver</th>
-                            <th>Due Joiner</th>
-                            <th>Outlook</th>
-                            <th>Var</th>
-                            <th>On Leave**</th>
-                            <th>Var ex.Leave</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>Regular</td>
-                            <td>104</td>
-                            <td>88</td>
-                            <td>10</td>
-                            <td>2</td>
-                            <td class="negative">-1</td>
-                            <td>2</td>
-                            <td>101</td>
-                            <td class="positive">3</td>
-                            <td class="neutral">-</td>
-                            <td class="positive">3</td>
-                        </tr>
-                        <tr>
-                            <td>Agency Temporary Worker</td>
-                            <td class="neutral">-</td>
-                            <td>2</td>
-                            <td class="neutral">-</td>
-                            <td class="neutral">-</td>
-                            <td class="negative">-2</td>
-                            <td class="neutral">-</td>
-                            <td class="neutral">-</td>
-                            <td class="neutral">-</td>
-                            <td class="neutral">-</td>
-                            <td class="neutral">-</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-    <!-- Open Req -->
-        <div class="section">
-            <div class="section-header" onclick="toggleSection(this)">
-                <div><h2>Open Req <span class="badge badge-count">10</span> <span class="section-desc">Open roles actively being recruited for with an active requisition number, excluding those already signed but not yet started.</span></h2></div>
-                <span class="toggle">&#9660;</span>
-            </div>
             <div class="section-body">
                 <table>
                     <thead>
@@ -1462,13 +1562,12 @@ async function checkPassword() {
                 </table>
             </div>
         </div>
+    </div><!-- /panel-openreq -->
 
-    <!-- Open No Req -->
-        <div class="section" id="sectionOpenNoReq">
-            <div class="section-header" onclick="toggleSection(this)">
-                <div><h2>Open No Req <span class="badge badge-count" id="badgeOpenNoReq">2</span> <span class="section-desc">Open roles not actively being recruited for (no active requisition number).</span></h2></div>
-                <span class="toggle">&#9660;</span>
-            </div>
+    <!-- Panel: Inactive Hires -->
+    <div class="panel" id="panel-opennoreq">
+    <h2 style="font-size:18px;font-weight:600;margin-bottom:16px;color:var(--text);">Inactive Hires <span class="badge badge-count" id="badgeOpenNoReq">2</span> <span style="font-size:13px;font-weight:400;color:var(--text-light);margin-left:8px;">Open roles not actively being recruited for (no active requisition number).</span></h2>
+    <div class="section" id="sectionOpenNoReq">
             <div class="section-body">
                 <table id="tableOpenNoReq">
                     <thead>
@@ -1509,13 +1608,57 @@ async function checkPassword() {
                 <button class="btn btn-primary" style="margin-top:12px;" onclick="showAddRoleModal()">+ Add New Open Role</button>
             </div>
         </div>
+    </div><!-- /panel-opennoreq -->
 
-    <!-- Due Leavers -->
-        <div class="section">
-            <div class="section-header" onclick="toggleSection(this)">
-                <div><h2>Due Leaver(s) <span class="badge badge-red">3</span> <span class="section-desc">Employees with a future leave date (notice given or temporary contract)</span></h2></div>
-                <span class="toggle">&#9660;</span>
+    <!-- Panel: Leavers (CWR) -->
+    <div class="panel" id="panel-leavers-cwr">
+    <h2 style="font-size:18px;font-weight:600;margin-bottom:16px;color:var(--text);">Leavers (CWR) <span class="badge badge-red">2</span> <span style="font-size:13px;font-weight:400;color:var(--text-light);margin-left:8px;">Contract/temp workers with a future leave date</span></h2>
+    <div class="section">
+            <div class="section-body">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Employee Name</th>
+                            <th>Position</th>
+                            <th>Position Description</th>
+                            <th>Location</th>
+                            <th>Cost Center</th>
+                            <th>Last Day</th>
+                            <th>Type</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1</td>
+                            <td>Magnus Melander (647021)[C]</td>
+                            <td>P_124831</td>
+                            <td>Principal Backend Engineer</td>
+                            <td>Stockholm - King - Malmskillnadsgatan</td>
+                            <td>6249 KING - NEW GAMES - CANDY SOLITAIRE</td>
+                            <td>01/05/2026</td>
+                            <td>Agency Temporary Worker</td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td>Sandra Traven (651795)[C]</td>
+                            <td>P_126360</td>
+                            <td>Senior Unity Core Developer</td>
+                            <td>Stockholm - King - Malmskillnadsgatan</td>
+                            <td>6958 KING - NEW GAMES - DIAMONDS</td>
+                            <td>19/07/2026</td>
+                            <td>Agency Temporary Worker</td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
+        </div>
+    </div><!-- /panel-leavers-cwr -->
+
+    <!-- Panel: Leavers -->
+    <div class="panel" id="panel-leavers-notice">
+    <h2 style="font-size:18px;font-weight:600;margin-bottom:16px;color:var(--text);">Leavers <span class="badge badge-red">1</span> <span style="font-size:13px;font-weight:400;color:var(--text-light);margin-left:8px;">Permanent employees who have given notice</span></h2>
+    <div class="section">
             <div class="section-body">
                 <table>
                     <thead>
@@ -1541,37 +1684,43 @@ async function checkPassword() {
                             <td>07/08/2026</td>
                             <td>Regular</td>
                         </tr>
-                        <tr>
-                            <td>2</td>
-                            <td>Magnus Melander (647021)[C]</td>
-                            <td>P_124831</td>
-                            <td>Principal Backend Engineer</td>
-                            <td>Stockholm - King - Malmskillnadsgatan</td>
-                            <td>6249 KING - NEW GAMES - CANDY SOLITAIRE</td>
-                            <td>01/05/2026</td>
-                            <td>Agency Temporary Worker</td>
-                        </tr>
-                        <tr>
-                            <td>3</td>
-                            <td>Sandra Traven (651795)[C]</td>
-                            <td>P_126360</td>
-                            <td>Senior Unity Core Developer</td>
-                            <td>Stockholm - King - Malmskillnadsgatan</td>
-                            <td>6958 KING - NEW GAMES - DIAMONDS</td>
-                            <td>19/07/2026</td>
-                            <td>Agency Temporary Worker</td>
-                        </tr>
                     </tbody>
                 </table>
             </div>
         </div>
+    </div><!-- /panel-leavers-notice -->
 
-    <!-- Due Joiners -->
-        <div class="section">
-            <div class="section-header" onclick="toggleSection(this)">
-                <div><h2>Due Joiner(s) <span class="badge badge-green">2</span> <span class="section-desc">Open roles filled with a future start date. Not yet started/earning a salary.</span></h2></div>
-                <span class="toggle">&#9660;</span>
+    <!-- Panel: Filled -->
+    <div class="panel active" id="panel-filled">
+    <h2 style="font-size:18px;font-weight:600;margin-bottom:16px;color:var(--text);">Filled <span class="badge badge-green" id="badgeFilled">90</span> <span style="font-size:13px;font-weight:400;color:var(--text-light);margin-left:8px;">All headcount inc. long-term leave, exc. signed future starters</span></h2>
+    <div class="section">
+            <div class="section-body">
+                <div class="scrollable-table">
+                    <table id="filledTable">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Employee Name</th>
+                                <th>Position</th>
+                                <th>Position Description</th>
+                                <th>Location</th>
+                                <th>Cost Center</th>
+                                <th>Grade</th>
+                                <th>Type</th>
+                            </tr>
+                        </thead>
+                        <tbody id="filledTableBody">
+                        </tbody>
+                    </table>
+                </div>
             </div>
+        </div>
+    </div><!-- /panel-filled -->
+
+    <!-- Panel: Upcoming Joiners -->
+    <div class="panel" id="panel-joiners">
+    <h2 style="font-size:18px;font-weight:600;margin-bottom:16px;color:var(--text);">Upcoming Joiner(s) <span class="badge badge-green">2</span> <span style="font-size:13px;font-weight:400;color:var(--text-light);margin-left:8px;">Open roles filled with a future start date. Not yet started/earning a salary.</span></h2>
+    <div class="section">
             <div class="section-body">
                 <table>
                     <thead>
@@ -1611,13 +1760,12 @@ async function checkPassword() {
                 </table>
             </div>
         </div>
+    </div><!-- /panel-joiners -->
 
-    <!-- New Starters -->
-        <div class="section">
-            <div class="section-header" onclick="toggleSection(this)">
-                <div><h2>New Starter(s) <span class="badge badge-green">3</span> <span class="section-desc">New joiners starting in the last five weeks from the report date</span></h2></div>
-                <span class="toggle">&#9660;</span>
-            </div>
+    <!-- Panel: New Starters -->
+    <div class="panel" id="panel-starters">
+    <h2 style="font-size:18px;font-weight:600;margin-bottom:16px;color:var(--text);">New Starter(s) <span class="badge badge-green">3</span> <span style="font-size:13px;font-weight:400;color:var(--text-light);margin-left:8px;">New joiners starting in the last five weeks from the report date</span></h2>
+    <div class="section">
             <div class="section-body">
                 <table>
                     <thead>
@@ -1667,13 +1815,12 @@ async function checkPassword() {
                 </table>
             </div>
         </div>
+    </div><!-- /panel-starters -->
 
-    <!-- On Leave -->
-        <div class="section">
-            <div class="section-header" onclick="toggleSection(this)">
-                <div><h2>On Leave / Part-time <span class="badge badge-orange">5</span> <span class="section-desc">Employees on long-term leave. If &gt;6 months, a temporary backfill should be considered.</span></h2></div>
-                <span class="toggle">&#9660;</span>
-            </div>
+    <!-- Panel: On Leave -->
+    <div class="panel" id="panel-onleave">
+    <h2 style="font-size:18px;font-weight:600;margin-bottom:16px;color:var(--text);">Absent or Part-time <span class="badge badge-orange">5</span> <span style="font-size:13px;font-weight:400;color:var(--text-light);margin-left:8px;">Employees on long-term leave. If &gt;6 months, a temporary backfill should be considered.</span></h2>
+    <div class="section">
             <div class="section-body">
                 <table>
                     <thead>
@@ -1743,13 +1890,12 @@ async function checkPassword() {
                 </table>
             </div>
         </div>
+    </div><!-- /panel-onleave -->
 
-    <!-- Work Anniversaries -->
-        <div class="section">
-            <div class="section-header" onclick="toggleSection(this)">
-                <div><h2>Work Anniversaries <span class="badge badge-blue">6</span> <span class="section-desc">Employees celebrating a yearly work anniversary this month</span></h2></div>
-                <span class="toggle">&#9660;</span>
-            </div>
+    <!-- Panel: Work Anniversaries -->
+    <div class="panel" id="panel-anniversaries">
+    <h2 style="font-size:18px;font-weight:600;margin-bottom:16px;color:var(--text);">Work Anniversaries <span class="badge badge-blue">6</span> <span style="font-size:13px;font-weight:400;color:var(--text-light);margin-left:8px;">Employees celebrating a yearly work anniversary this month</span></h2>
+    <div class="section">
             <div class="section-body">
                 <table>
                     <thead>
@@ -1829,12 +1975,13 @@ async function checkPassword() {
                 </table>
             </div>
         </div>
+    </div><!-- /panel-anniversaries -->
 
     <!-- Complete Modal -->
     <div class="modal-overlay" id="completeModal">
         <div class="modal">
             <div class="modal-header">
-                <h3>Review Change Log for Approval</h3>
+                <h3>Review Change Requests for Approval</h3>
                 <button class="modal-close" onclick="closeCompleteModal()">&times;</button>
             </div>
             <div class="modal-body">
@@ -1907,21 +2054,14 @@ async function checkPassword() {
         </div>
     </div>
 
-    <!-- Employee List -->
+    <!-- Panel: Employee List -->
+    <div class="panel" id="panel-emplist">
+    <h2 style="font-size:18px;font-weight:600;margin-bottom:16px;color:var(--text);">Employee List <span class="badge badge-count" id="badgeEmpList">104</span> <span style="font-size:13px;font-weight:400;color:var(--text-light);margin-left:8px;" id="empViewDesc">Full list of employees (Alphabetical)</span></h2>
     <div class="section">
-            <div class="section-header" onclick="toggleSection(this)">
-                <div><h2>Employee List <span class="badge badge-count" id="badgeEmpList">104</span> <span class="section-desc" id="empViewDesc">Full list of employees (Alphabetical)</span></h2></div>
-                <span class="toggle">&#9660;</span>
-            </div>
             <div class="section-body">
             <div class="controls">
                 <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;width:100%;">
                     <input type="text" class="search-box" id="empSearch" placeholder="Search employees..." oninput="handleEmpSearch()">
-                    <button class="filter-btn" onclick="filterByCostCenter('all', this)">All</button>
-                    <button class="filter-btn" onclick="filterByCostCenter('6153', this)">6153 Shared</button>
-                    <button class="filter-btn" onclick="filterByCostCenter('6249', this)">6249 Candy Solitaire</button>
-                    <button class="filter-btn" onclick="filterByCostCenter('6958', this)">6958 Diamonds</button>
-                    <button class="filter-btn" onclick="filterByCostCenter('6294', this)">6294 Primo</button>
                     <span style="flex:1;"></span>
                     <div class="view-toggle">
                         <button class="view-btn active" id="btnAlpha" onclick="switchView('alpha')">&#9776; Alphabetical</button>
@@ -1974,13 +2114,12 @@ async function checkPassword() {
             </div>
             </div>
         </div>
+    </div><!-- /panel-emplist -->
 
-    <!-- Change Log -->
-        <div class="section">
-            <div class="section-header" onclick="toggleSection(this)">
-                <div><h2>Change Log <span class="section-desc">All changes in Workday between previous report date (16/03/2026 &ndash; 24/04/2026). Excludes changes to open roles.</span></h2></div>
-                <span class="toggle">&#9660;</span>
-            </div>
+    <!-- Panel: Revision History -->
+    <div class="panel" id="panel-changelog">
+    <h2 style="font-size:18px;font-weight:600;margin-bottom:16px;color:var(--text);">Revision History <span style="font-size:13px;font-weight:400;color:var(--text-light);margin-left:8px;">All changes in Workday between previous report date (16/03/2026 &ndash; 24/04/2026). Excludes changes to open roles.</span></h2>
+    <div class="section">
             <div class="section-body">
                 <div class="scrollable-table">
                 <table>
@@ -2416,8 +2555,33 @@ async function checkPassword() {
                 </div>
             </div>
         </div>
+    </div><!-- /panel-changelog -->
 
-</div>
+    <!-- Panel: Organisation Chart -->
+    <div class="panel" id="panel-orgchart">
+    <h2 style="font-size:18px;font-weight:600;margin-bottom:16px;color:var(--text);">Organisation Chart <span style="font-size:13px;font-weight:400;color:var(--text-light);margin-left:8px;">Visual hierarchy of the team reporting structure</span></h2>
+    <div class="section">
+            <div class="section-body">
+                <div class="org-chart-controls">
+                    <button onclick="orgChartZoom(-0.1)" title="Zoom out">&#8722;</button>
+                    <span id="orgZoomLevel">100%</span>
+                    <button onclick="orgChartZoom(0.1)" title="Zoom in">&#43;</button>
+                    <button onclick="orgChartZoom(0, true)" title="Reset zoom">&#8634;</button>
+                    <button onclick="orgExpandAll()" title="Expand all">&#9654; All</button>
+                    <button onclick="orgCollapseAll()" title="Collapse all" style="width:auto;padding:0 10px;">&#9664; All</button>
+                    <div class="org-chart-search">
+                        <input type="text" id="orgChartSearch" placeholder="Search employee..." oninput="highlightOrgNode(this.value)">
+                    </div>
+                </div>
+                <div class="org-chart-container" id="orgChartContainer">
+                    <div class="org-tree" id="orgTree"></div>
+                </div>
+            </div>
+        </div>
+    </div><!-- /panel-orgchart -->
+
+    </div><!-- /main-content -->
+</div><!-- /container -->
 
 <script>
 // ============ THEME TOGGLE ============
@@ -2986,7 +3150,7 @@ function clearAllEdits() {
 function generateEmailContent() {
     const activeEdits = editLog.filter(e => !e.undone);
     const now = new Date().toLocaleString();
-    let text = 'HEADCOUNT DASHBOARD - CHANGE LOG FOR APPROVAL\n';
+    let text = 'HEADCOUNT DASHBOARD - CHANGE REQUESTS FOR APPROVAL\n';
     text += '='.repeat(55) + '\n\n';
     text += 'Report: L1 - New Games Headcount Dashboard\n';
     text += 'Date: 24/04/2026\n';
@@ -3047,7 +3211,7 @@ function downloadEmail() {
 
 function openMailto() {
     const activeEdits = editLog.filter(e => !e.undone);
-    const subject = encodeURIComponent('Headcount Dashboard - Change Log for Approval (' + activeEdits.length + ' changes)');
+    const subject = encodeURIComponent('Headcount Dashboard - Change Requests for Approval (' + activeEdits.length + ' changes)');
     const content = generateEmailContent();
     const body = encodeURIComponent(content);
     let mailto = 'mailto:?subject=' + subject + '&body=' + body;
@@ -3100,7 +3264,7 @@ function addNewOpenRole() {
 
     const posId = pos || 'P_NEW_' + (++addedRolesCount);
 
-    // 1. Add row to Open No Req table
+    // 1. Add row to Inactive Hires table
     const table = document.getElementById('tableOpenNoReq');
     const tbody = table.querySelector('tbody');
     const rowCount = tbody.rows.length + 1;
@@ -3116,7 +3280,7 @@ function addNewOpenRole() {
         <td>${type}</td>
     `;
 
-    // 2. Update Open No Req badge
+    // 2. Update Inactive Hires badge
     document.getElementById('badgeOpenNoReq').textContent = rowCount;
 
     // 3. Add to employees array and re-render employee list
@@ -3137,7 +3301,7 @@ function addNewOpenRole() {
     // 5. Log to edit change log
     const editEntry = {
         id: ++editIdCounter,
-        section: 'Open No Req',
+        section: 'Inactive Hires',
         row: posId,
         column: 'New Role Added',
         oldValue: '',
@@ -3326,17 +3490,134 @@ function filterEmployees() {
         );
     }
     renderEmployees(filtered);
+    // Update employee list badge
+    const badge = document.getElementById('badgeEmpList');
+    if (badge) badge.textContent = filtered.length;
 }
 
 function filterByCostCenter(cc, btn) {
     currentFilter = cc;
-    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('#globalFilterBar .filter-btn').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
     filterEmployees();
 }
 
+// Global cost centre filter
+let globalCCFilter = 'all';
+
+function globalFilterCC(cc, btn) {
+    globalCCFilter = cc;
+    // Update filter button styles
+    document.querySelectorAll('#globalFilterBar .filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+
+    // Re-render dynamic tables (Filled, Employee List)
+    currentFilter = cc;
+    filterEmployees();
+    renderFilledTable();
+
+    // Filter all static panel tables by hiding rows
+    const panels = document.querySelectorAll('.panel');
+    panels.forEach(panel => {
+        const pid = panel.id;
+        // Skip dynamically-rendered panels (handled above) and panels without CC data
+        if (['panel-filled', 'panel-emplist', 'panel-changelog', 'panel-orgchart'].includes(pid)) return;
+
+        const table = panel.querySelector('table');
+        if (!table) return;
+
+        // Find the "Cost Center" column index
+        const headers = table.querySelectorAll('thead th');
+        let ccColIdx = -1;
+        headers.forEach((th, idx) => {
+            if (th.textContent.trim() === 'Cost Center') ccColIdx = idx;
+        });
+        if (ccColIdx === -1) return;
+
+        const rows = table.querySelectorAll('tbody tr');
+        let visibleCount = 0;
+        rows.forEach(row => {
+            const cells = row.querySelectorAll('td');
+            if (cells.length <= ccColIdx) return;
+            const cellText = cells[ccColIdx].textContent.trim();
+            if (cc === 'all' || cellText.startsWith(cc)) {
+                row.style.display = '';
+                visibleCount++;
+            } else {
+                row.style.display = 'none';
+            }
+        });
+
+        // Update row numbers for visible rows
+        let num = 0;
+        rows.forEach(row => {
+            if (row.style.display !== 'none') {
+                const firstCell = row.querySelector('td');
+                if (firstCell && !isNaN(parseInt(firstCell.textContent))) {
+                    firstCell.textContent = ++num;
+                }
+            }
+        });
+
+        // Update badge count in panel heading
+        const badge = panel.querySelector('.badge');
+        if (badge) badge.textContent = visibleCount;
+    });
+
+    // Update sidebar badge counts
+    updateSidebarBadges();
+}
+
+function updateSidebarBadges() {
+    const panelBadgeMap = {
+        'filled': 'panel-filled',
+        'openreq': 'panel-openreq',
+        'opennoreq': 'panel-opennoreq',
+        'leavers-cwr': 'panel-leavers-cwr',
+        'leavers-notice': 'panel-leavers-notice',
+        'joiners': 'panel-joiners',
+        'starters': 'panel-starters',
+        'onleave': 'panel-onleave',
+        'anniversaries': 'panel-anniversaries',
+        'emplist': 'panel-emplist'
+    };
+    Object.entries(panelBadgeMap).forEach(([navId, panelId]) => {
+        const panel = document.getElementById(panelId);
+        if (!panel) return;
+        const badge = panel.querySelector('.badge');
+        if (!badge) return;
+        const navLink = document.querySelector(`[data-panel="${navId}"]`);
+        if (!navLink) return;
+        const navBadge = navLink.querySelector('.nav-badge');
+        if (navBadge) navBadge.textContent = badge.textContent;
+    });
+}
+
+// Render filled table (non-open roles, respects global CC filter)
+function renderFilledTable() {
+    let filled = employees.filter(e => e.n !== 'Open Role');
+    if (globalCCFilter !== 'all') {
+        filled = filled.filter(e => e.cc.startsWith(globalCCFilter));
+    }
+    const tbody = document.getElementById('filledTableBody');
+    tbody.innerHTML = filled.map((e, i) => `<tr>
+        <td>${i + 1}</td>
+        <td>${e.n}</td>
+        <td>${e.pos}</td>
+        <td>${e.desc}</td>
+        <td>${e.loc}</td>
+        <td>${e.cc}</td>
+        <td>${e.grade}</td>
+        <td>${e.type}</td>
+    </tr>`).join('');
+    // Update badge
+    const badge = document.getElementById('badgeFilled');
+    if (badge) badge.textContent = filled.length;
+}
+
 // Initial render
 renderEmployees(employees);
+renderFilledTable();
 renderHierarchyTable();
 
 // Re-init editable cells for employee table (rendered dynamically)
@@ -3496,13 +3777,185 @@ function highlightOrgNode(query) {
     renderVisualOrgChart();
 })();
 
-// Collapse all sections on page load
-document.querySelectorAll('.section-header').forEach(header => {
-    const body = header.nextElementSibling;
-    const toggle = header.querySelector('.toggle');
-    if (body && !body.classList.contains('collapsed')) {
-        body.classList.add('collapsed');
-        if (toggle) toggle.classList.add('collapsed');
+// Collapse all sections on page load — no longer needed with sidebar nav
+// Panels are shown/hidden via switchPanel()
+
+// Panel switching
+function switchPanel(panelId) {
+    // Hide all panels
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    // Show target panel
+    const target = document.getElementById('panel-' + panelId);
+    if (target) target.classList.add('active');
+    // Update active nav link
+    document.querySelectorAll('.sidebar-nav a').forEach(a => a.classList.remove('active'));
+    const link = document.querySelector('.sidebar-nav a[data-panel="' + panelId + '"]');
+    if (link) link.classList.add('active');
+}
+
+// ============ EXPORT FUNCTIONALITY ============
+let currentExportFormat = null;
+
+function openExportScope(format) {
+    currentExportFormat = format;
+    const menu = document.getElementById('exportMenu');
+    const title = document.getElementById('exportOptionsTitle');
+    const labels = { pdf: 'PDF — Select Scope', excel: 'Excel — Select Scope', email: 'Email — Select Scope' };
+    title.textContent = labels[format] || 'Select Scope';
+    // Toggle menu
+    if (menu.classList.contains('open') && menu.dataset.format === format) {
+        menu.classList.remove('open');
+        return;
+    }
+    menu.dataset.format = format;
+    menu.classList.add('open');
+}
+
+function resetExportMenu() {
+    currentExportFormat = null;
+}
+
+function doExport(scope) {
+    const format = currentExportFormat;
+    if (!format) return;
+
+    let panels = [];
+    if (scope === 'current') {
+        const active = document.querySelector('.panel.active');
+        if (active) panels = [active];
+    } else if (scope === 'all') {
+        panels = Array.from(document.querySelectorAll('.panel'));
+    } else if (scope === 'selected') {
+        const checked = document.querySelectorAll('.sheet-check:checked');
+        if (checked.length === 0) {
+            // Enable selection mode and prompt user
+            enableSelectMode();
+            toggleExportMenu();
+            return;
+        }
+        checked.forEach(cb => {
+            const panel = document.getElementById('panel-' + cb.dataset.sheet);
+            if (panel) panels.push(panel);
+        });
+    }
+
+    if (panels.length === 0) {
+        alert('No sheets selected.');
+        return;
+    }
+
+    if (format === 'pdf') {
+        exportToPDF(panels);
+    } else if (format === 'excel') {
+        exportToExcel(panels);
+    } else if (format === 'email') {
+        exportToEmail(panels);
+    }
+
+    toggleExportMenu();
+    disableSelectMode();
+}
+
+function enableSelectMode() {
+    document.querySelector('.sidebar').classList.add('select-mode');
+}
+
+function disableSelectMode() {
+    document.querySelector('.sidebar').classList.remove('select-mode');
+}
+
+function exportToPDF(panels) {
+    // Clone panels into a print window
+    const printWin = window.open('', '_blank');
+    const styles = document.querySelector('style').outerHTML;
+    let content = '<html><head><title>Headcount Dashboard Export</title>' + styles + '</head><body style="padding:24px;background:#fff;color:#2c3e50;">';
+    content += '<h1 style="font-size:18px;margin-bottom:16px;">L1 — NEW GAMES — Total Headcount Dashboard</h1>';
+    content += '<p style="font-size:12px;color:#7f8c8d;margin-bottom:24px;">Exported: ' + new Date().toLocaleDateString() + '</p>';
+
+    // Always include KPI overview
+    const kpiHtml = document.querySelector('.kpi-overview');
+    if (kpiHtml) content += kpiHtml.outerHTML;
+
+    panels.forEach(panel => {
+        content += '<div style="margin-bottom:24px;">' + panel.innerHTML + '</div>';
+    });
+    content += '</body></html>';
+    printWin.document.write(content);
+    printWin.document.close();
+    setTimeout(() => { printWin.print(); }, 500);
+}
+
+function exportToExcel(panels) {
+    let csv = 'L1 - NEW GAMES - Total Headcount Dashboard\nExported: ' + new Date().toLocaleDateString() + '\n\n';
+
+    panels.forEach(panel => {
+        const heading = panel.querySelector('h2');
+        if (heading) csv += heading.textContent.trim() + '\n';
+        const tables = panel.querySelectorAll('table');
+        tables.forEach(table => {
+            const rows = table.querySelectorAll('tr');
+            rows.forEach(row => {
+                const cells = row.querySelectorAll('th, td');
+                const rowData = Array.from(cells).map(c => '"' + c.textContent.trim().replace(/"/g, '""') + '"');
+                csv += rowData.join(',') + '\n';
+            });
+            csv += '\n';
+        });
+        csv += '\n';
+    });
+
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'Headcount_Dashboard_' + new Date().toISOString().slice(0, 10) + '.csv';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+}
+
+function exportToEmail(panels) {
+    let body = 'L1 - NEW GAMES - Total Headcount Dashboard\n';
+    body += 'Exported: ' + new Date().toLocaleDateString() + '\n\n';
+
+    panels.forEach(panel => {
+        const heading = panel.querySelector('h2');
+        if (heading) body += '=== ' + heading.textContent.trim() + ' ===\n\n';
+        const tables = panel.querySelectorAll('table');
+        tables.forEach(table => {
+            const rows = table.querySelectorAll('tr');
+            rows.forEach(row => {
+                const cells = row.querySelectorAll('th, td');
+                const rowData = Array.from(cells).map(c => c.textContent.trim());
+                body += rowData.join(' | ') + '\n';
+            });
+            body += '\n';
+        });
+    });
+
+    const subject = encodeURIComponent('Headcount Dashboard Export - ' + new Date().toLocaleDateString());
+    let mailBody = encodeURIComponent(body);
+    let mailto = 'mailto:?subject=' + subject + '&body=' + mailBody;
+    if (mailto.length > 2000) {
+        const short = body.substring(0, 800) + '\n\n... (truncated - full data available via PDF/Excel export)';
+        mailto = 'mailto:?subject=' + subject + '&body=' + encodeURIComponent(short);
+    }
+    const a = document.createElement('a');
+    a.href = mailto;
+    a.style.display = 'none';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+}
+
+// Close export menu when clicking outside
+document.addEventListener('click', function(e) {
+    const wrapper = document.querySelector('.export-wrapper');
+    if (wrapper && !wrapper.contains(e.target)) {
+        const menu = document.getElementById('exportMenu');
+        if (menu.classList.contains('open')) {
+            menu.classList.remove('open');
+            resetExportMenu();
+        }
     }
 });
 </script>
