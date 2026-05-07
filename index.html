@@ -2531,30 +2531,6 @@ async function checkPassword() {
                 </div>
             </div>
         </div>
-
-    <!-- Visual Org Chart -->
-        <div class="section">
-            <div class="section-header" onclick="toggleSection(this)">
-                <div><h2>Organisation Chart <span class="section-desc">Visual hierarchy of the team reporting structure</span></h2></div>
-                <span class="toggle">&#9660;</span>
-            </div>
-            <div class="section-body">
-                <div class="org-chart-controls">
-                    <button onclick="orgChartZoom(-0.1)" title="Zoom out">&#8722;</button>
-                    <span id="orgZoomLevel">100%</span>
-                    <button onclick="orgChartZoom(0.1)" title="Zoom in">&#43;</button>
-                    <button onclick="orgChartZoom(0, true)" title="Reset zoom">&#8634;</button>
-                    <button onclick="orgExpandAll()" title="Expand all">&#9654; All</button>
-                    <button onclick="orgCollapseAll()" title="Collapse all" style="width:auto;padding:0 10px;">&#9664; All</button>
-                    <div class="org-chart-search">
-                        <input type="text" id="orgChartSearch" placeholder="Search employee..." oninput="highlightOrgNode(this.value)">
-                    </div>
-                </div>
-                <div class="org-chart-container" id="orgChartContainer">
-                    <div class="org-tree" id="orgTree"></div>
-                </div>
-            </div>
-        </div>
     </div><!-- /panel-changelog -->
 
     <!-- Panel: Organisation Chart -->
