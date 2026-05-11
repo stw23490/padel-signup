@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>L1 - New Games Headcount Dashboard</title>
+    <title>Headcount Dashboard</title>
     <style>
         :root {
             --primary: #1a1a2e;
@@ -227,6 +227,7 @@
             display: flex;
             flex-direction: column;
             justify-content: center;
+            cursor: pointer;
         }
 
         .kpi-card:hover {
@@ -452,6 +453,36 @@
         .status-noapplicants { background: #f8d7da; color: #721c24; }
         .status-newapplicant { background: #e2e3f1; color: #383d6e; }
         .status-notrecruiting { background: #e9ecef; color: #495057; }
+        .status-readyforhire { background: #d1ecf1; color: #0c5460; }
+        .status-offer { background: #d4edda; color: #155724; }
+
+        .bu-select {
+            font-size: 14px;
+            font-weight: 600;
+            color: #fff;
+            background: rgba(255,255,255,0.15);
+            border: 1px solid rgba(255,255,255,0.3);
+            border-radius: 8px;
+            padding: 6px 12px;
+            cursor: pointer;
+            outline: none;
+            font-family: inherit;
+        }
+        .bu-select:hover { border-color: rgba(255,255,255,0.6); }
+        .bu-select option { color: #333; }
+
+        .date-select {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text);
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 6px 12px;
+            cursor: pointer;
+            outline: none;
+        }
+        .date-select:hover { border-color: var(--accent); }
 
         /* Search & Filter */
         .controls {
@@ -1212,28 +1243,58 @@
 <body>
 
 <!-- Password Gate -->
-<div id="loginGate" style="position:fixed;top:0;left:0;right:0;bottom:0;background:linear-gradient(135deg,#1a1a2e,#0f3460);z-index:9999;display:flex;align-items:center;justify-content:center;">
-    <div style="background:#fff;border-radius:16px;padding:40px 36px;max-width:380px;width:90%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,0.3);">
-        <div style="font-size:40px;margin-bottom:12px;">🔒</div>
-        <h2 style="font-size:18px;color:#1a1a2e;margin-bottom:6px;">Headcount Dashboard</h2>
-        <p style="font-size:13px;color:#7f8c8d;margin-bottom:24px;">Enter the access password to continue</p>
-        <input type="password" id="loginPassword" placeholder="Password" autofocus
-            style="width:100%;padding:12px 16px;border:2px solid #e1e5eb;border-radius:10px;font-size:14px;font-family:inherit;outline:none;box-sizing:border-box;transition:border-color .2s;"
-            onfocus="this.style.borderColor='#0f3460'" onblur="this.style.borderColor='#e1e5eb'"
-            onkeydown="if(event.key==='Enter')checkPassword()">
-        <button onclick="checkPassword()"
-            style="width:100%;margin-top:12px;padding:12px;background:#0f3460;color:white;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;transition:background .2s;"
-            onmouseover="this.style.background='#1a1a2e'" onmouseout="this.style.background='#0f3460'">
-            Sign In
+<div id="loginGate" style="position:fixed;top:0;left:0;right:0;bottom:0;background:linear-gradient(135deg,#0f172a 0%,#1e293b 40%,#0f3460 100%);z-index:9999;display:flex;align-items:center;justify-content:center;flex-direction:column;">
+    <!-- Landing View -->
+    <div id="landingView" style="text-align:center;animation:fadeInUp 0.6s ease;">
+        <div style="margin-bottom:32px;">
+            <div style="font-size:64px;margin-bottom:16px;">🎮</div>
+            <h1 style="font-size:48px;font-weight:800;color:#ffffff;letter-spacing:-1px;margin:0;">PlayGround</h1>
+            <p style="font-size:16px;color:rgba(255,255,255,0.6);margin-top:10px;font-weight:300;">Headcount Planning & Workforce Intelligence</p>
+        </div>
+        <button onclick="showLoginForm()"
+            style="padding:14px 48px;background:linear-gradient(135deg,#e94560,#c23152);color:white;border:none;border-radius:12px;font-size:16px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .3s;box-shadow:0 4px 20px rgba(233,69,96,0.4);"
+            onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 6px 28px rgba(233,69,96,0.5)'"
+            onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='0 4px 20px rgba(233,69,96,0.4)'">
+            Login
         </button>
-        <p id="loginError" style="color:#e74c3c;font-size:12px;margin-top:12px;display:none;">Incorrect password. Please try again.</p>
+    </div>
+    <!-- Login Modal Overlay -->
+    <div id="loginFormView" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);z-index:10000;display:none;align-items:center;justify-content:center;" onclick="if(event.target===this)hideLoginForm()">
+        <div style="background:#fff;border-radius:16px;padding:40px 36px;max-width:380px;width:90vw;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,0.3);animation:fadeInUp 0.4s ease;">
+            <div style="font-size:36px;margin-bottom:8px;">🎮</div>
+            <h2 style="font-size:20px;color:#1a1a2e;margin-bottom:4px;font-weight:700;">PlayGround</h2>
+            <p style="font-size:13px;color:#7f8c8d;margin-bottom:24px;">Sign in to continue</p>
+            <input type="text" id="loginUsername" placeholder="Username" autocomplete="username"
+                style="width:100%;padding:12px 16px;border:2px solid #e1e5eb;border-radius:10px;font-size:14px;font-family:inherit;outline:none;box-sizing:border-box;transition:border-color .2s;margin-bottom:12px;"
+                onfocus="this.style.borderColor='#0f3460'" onblur="this.style.borderColor='#e1e5eb'">
+            <input type="password" id="loginPassword" placeholder="Password" autocomplete="current-password"
+                style="width:100%;padding:12px 16px;border:2px solid #e1e5eb;border-radius:10px;font-size:14px;font-family:inherit;outline:none;box-sizing:border-box;transition:border-color .2s;"
+                onfocus="this.style.borderColor='#0f3460'" onblur="this.style.borderColor='#e1e5eb'"
+                onkeydown="if(event.key==='Enter')checkLogin()">
+            <button onclick="checkLogin()"
+                style="width:100%;margin-top:12px;padding:12px;background:linear-gradient(135deg,#e94560,#c23152);color:white;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;transition:background .2s;box-shadow:0 4px 16px rgba(233,69,96,0.3);"
+                onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">
+                Sign In
+            </button>
+            <p id="loginError" style="color:#e74c3c;font-size:12px;margin-top:12px;display:none;">Invalid username or password.</p>
+            <button onclick="hideLoginForm()" style="margin-top:16px;background:none;border:none;color:#7f8c8d;font-size:12px;cursor:pointer;font-family:inherit;">← Back</button>
+        </div>
     </div>
 </div>
+<style>
+    @keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+</style>
 <script>
-// SHA-256 hash of the password — change the hash below to set a new password.
-// Current password: "NewGames2026"
-// To change: run in browser console: crypto.subtle.digest('SHA-256', new TextEncoder().encode('YOUR_PASSWORD')).then(b => console.log([...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('')))
-const PASSWORD_HASH = '8b94e86b4b3efb971fdd88ba447e0be104ec50601e0283c503b1064875208d50';
+// User credentials - add users here as {username, passwordHash, role}
+// To generate a hash: crypto.subtle.digest('SHA-256', new TextEncoder().encode('PASSWORD')).then(b => console.log([...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('')))
+const USERS = [
+    {username: 'stephen.wood', passwordHash: '03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4', role: 'admin'}
+];
+
+let currentUser = null;
 
 async function hashPassword(pw) {
     const data = new TextEncoder().encode(pw);
@@ -1241,12 +1302,29 @@ async function hashPassword(pw) {
     return [...new Uint8Array(buf)].map(x => x.toString(16).padStart(2, '0')).join('');
 }
 
-async function checkPassword() {
-    const input = document.getElementById('loginPassword').value;
-    const hash = await hashPassword(input);
-    if (hash === PASSWORD_HASH) {
+function showLoginForm() {
+    const modal = document.getElementById('loginFormView');
+    modal.style.display = 'flex';
+    document.getElementById('loginUsername').focus();
+}
+
+function hideLoginForm() {
+    document.getElementById('loginFormView').style.display = 'none';
+    document.getElementById('loginError').style.display = 'none';
+    document.getElementById('loginUsername').value = '';
+    document.getElementById('loginPassword').value = '';
+}
+
+async function checkLogin() {
+    const username = document.getElementById('loginUsername').value.trim().toLowerCase();
+    const password = document.getElementById('loginPassword').value;
+    const hash = await hashPassword(password);
+
+    const user = USERS.find(u => u.username === username && u.passwordHash === hash);
+    if (user) {
+        currentUser = user;
         document.getElementById('loginGate').style.display = 'none';
-        sessionStorage.setItem('dashAuth', hash);
+        sessionStorage.setItem('dashAuth', JSON.stringify({username: user.username, role: user.role}));
     } else {
         document.getElementById('loginError').style.display = 'block';
         document.getElementById('loginPassword').style.borderColor = '#e74c3c';
@@ -1257,15 +1335,23 @@ async function checkPassword() {
 
 // Auto-login if already authenticated this session
 (function() {
-    if (sessionStorage.getItem('dashAuth') === PASSWORD_HASH) {
-        document.getElementById('loginGate').style.display = 'none';
+    const stored = sessionStorage.getItem('dashAuth');
+    if (stored) {
+        try {
+            currentUser = JSON.parse(stored);
+            document.getElementById('loginGate').style.display = 'none';
+        } catch(e) { sessionStorage.removeItem('dashAuth'); }
     }
 })();
 </script>
 
 <div class="header">
-    <h1>L1 &mdash; NEW GAMES &nbsp; Total Headcount Dashboard</h1>
+    <h1 id="headerTitle">L1 &mdash; NEW GAMES &nbsp; Total Headcount Dashboard</h1>
     <div style="display:flex;align-items:center;gap:16px;">
+        <select class="bu-select" id="buSelect" onchange="switchBU(this.value)">
+            <option value="newgames">L1 &mdash; NEW GAMES</option>
+            <option value="farm">L1 &mdash; FARM</option>
+        </select>
         <select id="themeSelect" onchange="setTheme(this.value)" style="padding:6px 12px;border-radius:8px;border:1px solid rgba(255,255,255,0.3);background:rgba(255,255,255,0.15);color:white;font-size:13px;cursor:pointer;font-family:inherit;">
             <option value="light" style="color:#333;">&#9788; Light</option>
             <option value="dark" style="color:#333;">&#9790; Dark</option>
@@ -1301,7 +1387,10 @@ async function checkPassword() {
                 </div>
             </div>
         </div>
-        <div class="date">24 / 04 / 2026</div>
+        <select class="date-select" id="reportDateSelect" onchange="loadReport(this.value)">
+            <option value="04/05/2026">04 / 05 / 2026</option>
+            <option value="27/04/2026">27 / 04 / 2026</option>
+        </select>
     </div>
 </div>
 
@@ -1312,14 +1401,15 @@ async function checkPassword() {
         <ul class="sidebar-nav">
             <li><a onclick="switchPanel('emplist')" data-panel="emplist"><input type="checkbox" class="sheet-check" data-sheet="emplist" onclick="event.stopPropagation()"> Employee List <span class="nav-badge">104</span></a></li>
             <li style="border-bottom:1px solid var(--border);margin:6px 0;padding:0;list-style:none;"></li>
-            <li><a class="active" onclick="switchPanel('filled')" data-panel="filled"><input type="checkbox" class="sheet-check" data-sheet="filled" onclick="event.stopPropagation()"> Filled <span class="nav-badge" style="background:#d4edda;color:#155724;">90</span></a></li>
+            <li><a class="active" onclick="switchPanel('filled')" data-panel="filled"><input type="checkbox" class="sheet-check" data-sheet="filled" onclick="event.stopPropagation()"> Filled <span class="nav-badge" style="background:#d4edda;color:#155724;">91</span></a></li>
             <li><a onclick="switchPanel('joiners')" data-panel="joiners"><input type="checkbox" class="sheet-check" data-sheet="joiners" onclick="event.stopPropagation()"> Upcoming Joiners <span class="nav-badge" style="background:#d4edda;color:#155724;">2</span></a></li>
-            <li><a onclick="switchPanel('leavers-cwr')" data-panel="leavers-cwr"><input type="checkbox" class="sheet-check" data-sheet="leavers-cwr" onclick="event.stopPropagation()"> Leavers (CWR) <span class="nav-badge" style="background:#f8d7da;color:#721c24;">2</span></a></li>
+            <li><a onclick="switchPanel('leavers-cwr')" data-panel="leavers-cwr"><input type="checkbox" class="sheet-check" data-sheet="leavers-cwr" onclick="event.stopPropagation()"> Leavers (CWR) <span class="nav-badge" style="background:#f8d7da;color:#721c24;">1</span></a></li>
             <li><a onclick="switchPanel('leavers-notice')" data-panel="leavers-notice"><input type="checkbox" class="sheet-check" data-sheet="leavers-notice" onclick="event.stopPropagation()"> Leavers <span class="nav-badge" style="background:#f8d7da;color:#721c24;">1</span></a></li>
-            <li><a onclick="switchPanel('openreq')" data-panel="openreq"><input type="checkbox" class="sheet-check" data-sheet="openreq" onclick="event.stopPropagation()"> Active Hires <span class="nav-badge">10</span></a></li>
-            <li><a onclick="switchPanel('opennoreq')" data-panel="opennoreq"><input type="checkbox" class="sheet-check" data-sheet="opennoreq" onclick="event.stopPropagation()"> Inactive Hires <span class="nav-badge">2</span></a></li>
+            <li><a onclick="switchPanel('openreq')" data-panel="openreq"><input type="checkbox" class="sheet-check" data-sheet="openreq" onclick="event.stopPropagation()"> Active Hires <span class="nav-badge">8</span></a></li>
+            <li><a onclick="switchPanel('opennoreq')" data-panel="opennoreq"><input type="checkbox" class="sheet-check" data-sheet="opennoreq" onclick="event.stopPropagation()"> Inactive Hires <span class="nav-badge">3</span></a></li>
             <li style="border-bottom:1px solid var(--border);margin:6px 0;padding:0;list-style:none;"></li>
             <li><a onclick="switchPanel('starters')" data-panel="starters"><input type="checkbox" class="sheet-check" data-sheet="starters" onclick="event.stopPropagation()"> New Starters <span class="nav-badge" style="background:#d4edda;color:#155724;">3</span></a></li>
+            <li><a onclick="switchPanel('transfers')" data-panel="transfers"><input type="checkbox" class="sheet-check" data-sheet="transfers" onclick="event.stopPropagation()"> Transfers In <span class="nav-badge" style="background:#cce5ff;color:#004085;">3</span></a></li>
             <li><a onclick="switchPanel('onleave')" data-panel="onleave"><input type="checkbox" class="sheet-check" data-sheet="onleave" onclick="event.stopPropagation()"> Absent or Part-time <span class="nav-badge" style="background:#fff3cd;color:#856404;">5</span></a></li>
             <li><a onclick="switchPanel('anniversaries')" data-panel="anniversaries"><input type="checkbox" class="sheet-check" data-sheet="anniversaries" onclick="event.stopPropagation()"> Work Anniversaries <span class="nav-badge" style="background:#cce5ff;color:#004085;">6</span></a></li>
             <li><a onclick="switchPanel('changelog')" data-panel="changelog"><input type="checkbox" class="sheet-check" data-sheet="changelog" onclick="event.stopPropagation()"> Revision History</a></li>
@@ -1379,41 +1469,41 @@ async function checkPassword() {
     <!-- Dashboard Overview (KPIs) - Always visible -->
     <div class="kpi-overview">
     <div class="kpi-row">
-        <div class="kpi-card target kpi-total" title="Headcount target. All headcount exc. signed future starters.">
+        <div class="kpi-card target kpi-total" title="Headcount target. All headcount exc. signed future starters." onclick="switchPanel('emplist')">
             <div class="kpi-label">Target</div>
             <div class="kpi-value" id="kpiTarget">104</div>
         </div>
-        <div class="kpi-card filled" title="All headcount inc. long-term leave, exc. signed future starters.">
+        <div class="kpi-card filled" title="All headcount inc. long-term leave, exc. signed future starters." onclick="switchPanel('filled')">
             <div class="kpi-label">Filled</div>
-            <div class="kpi-value">90</div>
+            <div class="kpi-value">91</div>
         </div>
-        <div class="kpi-card joiners" title="Open roles, signed with start date, not yet receiving a salary.">
+        <div class="kpi-card joiners" title="Open roles, signed with start date, not yet receiving a salary." onclick="switchPanel('joiners')">
             <div class="kpi-label">Upcoming Joiners</div>
             <div class="kpi-value">2</div>
         </div>
-        <div class="kpi-card leavers-cwr" title="Contract/temp workers leaving.">
+        <div class="kpi-card leavers-cwr" title="Contract/temp workers leaving." onclick="switchPanel('leavers-cwr')">
             <div class="kpi-label">Leavers (CWR)</div>
-            <div class="kpi-value">-2</div>
+            <div class="kpi-value">-1</div>
         </div>
-        <div class="kpi-card leavers-notice" title="Permanent employees who have given notice.">
+        <div class="kpi-card leavers-notice" title="Permanent employees who have given notice." onclick="switchPanel('leavers-notice')">
             <div class="kpi-label">Leavers</div>
             <div class="kpi-value">-1</div>
         </div>
-        <div class="kpi-card hiring-active" title="Open roles with an active job requisition.">
+        <div class="kpi-card hiring-active" title="Open roles with an active job requisition." onclick="switchPanel('openreq')">
             <div class="kpi-label">Active Hires</div>
-            <div class="kpi-value">10</div>
+            <div class="kpi-value">8</div>
         </div>
-        <div class="kpi-card hiring-inactive" title="Open roles with no active job requisition.">
+        <div class="kpi-card hiring-inactive" title="Open roles with no active job requisition." onclick="switchPanel('opennoreq')">
             <div class="kpi-label">Inactive Hires</div>
-            <div class="kpi-value" id="kpiHiringInactive">2</div>
+            <div class="kpi-value" id="kpiHiringInactive">3</div>
         </div>
-        <div class="kpi-card outlook kpi-total" title="Filled + Joiners + Leavers + Hiring. Projected headcount.">
+        <div class="kpi-card outlook kpi-total" title="Filled + Joiners + Leavers + Hiring. Projected headcount." onclick="switchPanel('emplist')">
             <div class="kpi-label">Outlook</div>
-            <div class="kpi-value" id="kpiOutlook">101</div>
+            <div class="kpi-value" id="kpiOutlook">102</div>
         </div>
-        <div class="kpi-card gap" title="Available for recruitment. Includes open with no active job requisition.">
+        <div class="kpi-card gap" title="Available for recruitment. Includes open with no active job requisition." onclick="switchPanel('opennoreq')">
             <div class="kpi-label">Gap</div>
-            <div class="kpi-value" id="kpiGap">-3</div>
+            <div class="kpi-value" id="kpiGap">-2</div>
         </div>
     </div><!-- /kpi-row -->
     </div><!-- /kpi-overview -->
@@ -1430,9 +1520,11 @@ async function checkPassword() {
 
     <!-- Panel: Active Hires -->
     <div class="panel" id="panel-openreq">
-    <h2 style="font-size:18px;font-weight:600;margin-bottom:16px;color:var(--text);">Active Hires <span class="badge badge-count">10</span> <span style="font-size:13px;font-weight:400;color:var(--text-light);margin-left:8px;">Open roles actively being recruited for with an active requisition number.</span></h2>
+    <h2 style="font-size:18px;font-weight:600;margin-bottom:16px;color:var(--text);">Active Hires <span class="badge badge-count">8</span> <span style="font-size:13px;font-weight:400;color:var(--text-light);margin-left:8px;">Open roles actively being recruited for with an active requisition number.</span></h2>
     <div class="section">
             <div class="section-body">
+                <div class="controls"><input type="text" class="search-box" placeholder="Search active hires..." oninput="filterTableRows(this)"></div>
+                <div class="scrollable-table">
                 <table>
                     <thead>
                         <tr>
@@ -1450,61 +1542,39 @@ async function checkPassword() {
                     <tbody>
                         <tr>
                             <td>1</td>
-                            <td>6249 KING - NEW GAMES - CANDY SOLITAIRE</td>
-                            <td>P_10013</td>
-                            <td>Principal Software Engineer</td>
-                            <td>Stockholm - King - Malmskillnadsgatan</td>
-                            <td>R026768</td>
-                            <td><span class="status-pill status-screen">Screen</span></td>
-                            <td>11</td>
+                            <td>6958 KING - NEW GAMES - DIAMONDS</td>
+                            <td>P_130440</td>
+                            <td>Technical Artist I Minecraft Blast</td>
+                            <td>Barcelona - King - PG</td>
+                            <td>R027344</td>
+                            <td><span class="status-pill status-newapplicant">New Applicant</span></td>
+                            <td>-</td>
                             <td>Regular</td>
                         </tr>
                         <tr>
                             <td>2</td>
                             <td>6958 KING - NEW GAMES - DIAMONDS</td>
-                            <td>P_126581</td>
-                            <td>Senior System and Economy Designer</td>
-                            <td>Stockholm - King - Malmskillnadsgatan</td>
-                            <td>R026538</td>
-                            <td><span class="status-pill status-bgcheck">Background Check</span></td>
+                            <td>P_130617</td>
+                            <td>Senior Game Designer (Core) | Minecraft Blast, New Games</td>
+                            <td>Barcelona - King - PG</td>
+                            <td>R026962</td>
+                            <td><span class="status-pill status-interview">Interview</span></td>
                             <td>-</td>
                             <td>Regular</td>
                         </tr>
                         <tr>
                             <td>3</td>
                             <td>6958 KING - NEW GAMES - DIAMONDS</td>
-                            <td>P_130440</td>
-                            <td>Technical Artist I Minecraft Blast</td>
+                            <td>P_130618</td>
+                            <td>VFX Artist | Minecraft Blast, New Games</td>
                             <td>Barcelona - King - PG</td>
-                            <td>R027344</td>
-                            <td><span class="status-pill status-noapplicants">No Applicants</span></td>
+                            <td>R026960</td>
+                            <td><span class="status-pill status-offer">Offer</span></td>
                             <td>-</td>
                             <td>Regular</td>
                         </tr>
                         <tr>
                             <td>4</td>
-                            <td>6958 KING - NEW GAMES - DIAMONDS</td>
-                            <td>P_130617</td>
-                            <td>Senior Game Designer (Core) | Minecraft Blast, New Games</td>
-                            <td>Barcelona - King - PG</td>
-                            <td>R026962</td>
-                            <td><span class="status-pill status-screen">Screen</span></td>
-                            <td>-</td>
-                            <td>Regular</td>
-                        </tr>
-                        <tr>
-                            <td>5</td>
-                            <td>6958 KING - NEW GAMES - DIAMONDS</td>
-                            <td>P_130618</td>
-                            <td>VFX Artist | Minecraft Blast, New Games</td>
-                            <td>Barcelona - King - PG</td>
-                            <td>R026960</td>
-                            <td><span class="status-pill status-interview">Interview</span></td>
-                            <td>-</td>
-                            <td>Regular</td>
-                        </tr>
-                        <tr>
-                            <td>6</td>
                             <td>6958 KING - NEW GAMES - DIAMONDS</td>
                             <td>P_130620</td>
                             <td>Senior Lead Artist (Outsourcing) | Minecraft Blast, New Games</td>
@@ -1515,29 +1585,29 @@ async function checkPassword() {
                             <td>Regular</td>
                         </tr>
                         <tr>
-                            <td>7</td>
+                            <td>5</td>
                             <td>6958 KING - NEW GAMES - DIAMONDS</td>
                             <td>P_130616</td>
                             <td>Senior Game Designer (Meta) | Minecraft Blast, New Games</td>
                             <td>Barcelona - King - PG</td>
                             <td>R026963</td>
-                            <td><span class="status-pill status-screen">Screen</span></td>
+                            <td><span class="status-pill status-interview">Interview</span></td>
                             <td>-</td>
                             <td>Regular</td>
                         </tr>
                         <tr>
-                            <td>8</td>
+                            <td>6</td>
                             <td>6958 KING - NEW GAMES - DIAMONDS</td>
                             <td>P_130619</td>
                             <td>Animator | Minecraft Blast, New Games</td>
                             <td>Barcelona - King - PG</td>
                             <td>R026959</td>
-                            <td><span class="status-pill status-screen">Screen</span></td>
+                            <td><span class="status-pill status-interview">Interview</span></td>
                             <td>-</td>
                             <td>Regular</td>
                         </tr>
                         <tr>
-                            <td>9</td>
+                            <td>7</td>
                             <td>6958 KING - NEW GAMES - DIAMONDS</td>
                             <td>P_130621</td>
                             <td>Senior Automation Engineer | Minecraft Blast, New Games</td>
@@ -1548,27 +1618,30 @@ async function checkPassword() {
                             <td>Regular</td>
                         </tr>
                         <tr>
-                            <td>10</td>
+                            <td>8</td>
                             <td>6958 KING - NEW GAMES - DIAMONDS</td>
                             <td>P_130858</td>
                             <td>Senior Unity Developer | Minecraft Blast, New Games</td>
                             <td>Stockholm - King - Malmskillnadsgatan</td>
                             <td>R027088</td>
-                            <td><span class="status-pill status-newapplicant">New Applicant</span></td>
+                            <td><span class="status-pill status-screen">Screen</span></td>
                             <td>-</td>
                             <td>Regular</td>
                         </tr>
                     </tbody>
                 </table>
+                </div>
             </div>
         </div>
     </div><!-- /panel-openreq -->
 
     <!-- Panel: Inactive Hires -->
     <div class="panel" id="panel-opennoreq">
-    <h2 style="font-size:18px;font-weight:600;margin-bottom:16px;color:var(--text);">Inactive Hires <span class="badge badge-count" id="badgeOpenNoReq">2</span> <span style="font-size:13px;font-weight:400;color:var(--text-light);margin-left:8px;">Open roles not actively being recruited for (no active requisition number).</span></h2>
+    <h2 style="font-size:18px;font-weight:600;margin-bottom:16px;color:var(--text);">Inactive Hires <span class="badge badge-count" id="badgeOpenNoReq">3</span> <span style="font-size:13px;font-weight:400;color:var(--text-light);margin-left:8px;">Open roles not actively being recruited for (no active requisition number).</span></h2>
     <div class="section" id="sectionOpenNoReq">
             <div class="section-body">
+                <div class="controls"><input type="text" class="search-box" placeholder="Search inactive hires..." oninput="filterTableRows(this)"></div>
+                <div class="scrollable-table">
                 <table id="tableOpenNoReq">
                     <thead>
                         <tr>
@@ -1585,6 +1658,16 @@ async function checkPassword() {
                     <tbody>
                         <tr>
                             <td>1</td>
+                            <td>6958 KING - NEW GAMES - DIAMONDS</td>
+                            <td>P_86211</td>
+                            <td>Backend Developer</td>
+                            <td>Barcelona - King - PG</td>
+                            <td><span class="status-pill status-notrecruiting">Not Recruiting</span></td>
+                            <td>10</td>
+                            <td>Regular</td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
                             <td>6153 KING - NEW GAMES - SHARED</td>
                             <td>P_86238</td>
                             <td>Portfolio Games Product Marketing Senior Director</td>
@@ -1594,17 +1677,18 @@ async function checkPassword() {
                             <td>Regular</td>
                         </tr>
                         <tr>
-                            <td>2</td>
-                            <td>6958 KING - NEW GAMES - DIAMONDS</td>
-                            <td>P_86211</td>
-                            <td>Backend Developer</td>
-                            <td>Barcelona - King - PG</td>
+                            <td>3</td>
+                            <td>6249 KING - NEW GAMES - CANDY SOLITAIRE</td>
+                            <td>P_124831</td>
+                            <td>Principal Backend Engineer</td>
+                            <td>Stockholm - King - Malmskillnadsgatan</td>
                             <td><span class="status-pill status-notrecruiting">Not Recruiting</span></td>
-                            <td>10</td>
-                            <td>Regular</td>
+                            <td>-</td>
+                            <td>Contract Worker</td>
                         </tr>
                     </tbody>
                 </table>
+                </div>
                 <button class="btn btn-primary" style="margin-top:12px;" onclick="showAddRoleModal()">+ Add New Open Role</button>
             </div>
         </div>
@@ -1612,9 +1696,11 @@ async function checkPassword() {
 
     <!-- Panel: Leavers (CWR) -->
     <div class="panel" id="panel-leavers-cwr">
-    <h2 style="font-size:18px;font-weight:600;margin-bottom:16px;color:var(--text);">Leavers (CWR) <span class="badge badge-red">2</span> <span style="font-size:13px;font-weight:400;color:var(--text-light);margin-left:8px;">Contract/temp workers with a future leave date</span></h2>
+    <h2 style="font-size:18px;font-weight:600;margin-bottom:16px;color:var(--text);">Leavers (CWR) <span class="badge badge-red">1</span> <span style="font-size:13px;font-weight:400;color:var(--text-light);margin-left:8px;">Contract/temp workers with a future leave date</span></h2>
     <div class="section">
             <div class="section-body">
+                <div class="controls"><input type="text" class="search-box" placeholder="Search leavers (CWR)..." oninput="filterTableRows(this)"></div>
+                <div class="scrollable-table">
                 <table>
                     <thead>
                         <tr>
@@ -1631,16 +1717,6 @@ async function checkPassword() {
                     <tbody>
                         <tr>
                             <td>1</td>
-                            <td>Magnus Melander (647021)[C]</td>
-                            <td>P_124831</td>
-                            <td>Principal Backend Engineer</td>
-                            <td>Stockholm - King - Malmskillnadsgatan</td>
-                            <td>6249 KING - NEW GAMES - CANDY SOLITAIRE</td>
-                            <td>01/05/2026</td>
-                            <td>Agency Temporary Worker</td>
-                        </tr>
-                        <tr>
-                            <td>2</td>
                             <td>Sandra Traven (651795)[C]</td>
                             <td>P_126360</td>
                             <td>Senior Unity Core Developer</td>
@@ -1651,6 +1727,7 @@ async function checkPassword() {
                         </tr>
                     </tbody>
                 </table>
+                </div>
             </div>
         </div>
     </div><!-- /panel-leavers-cwr -->
@@ -1660,6 +1737,8 @@ async function checkPassword() {
     <h2 style="font-size:18px;font-weight:600;margin-bottom:16px;color:var(--text);">Leavers <span class="badge badge-red">1</span> <span style="font-size:13px;font-weight:400;color:var(--text-light);margin-left:8px;">Permanent employees who have given notice</span></h2>
     <div class="section">
             <div class="section-body">
+                <div class="controls"><input type="text" class="search-box" placeholder="Search leavers..." oninput="filterTableRows(this)"></div>
+                <div class="scrollable-table">
                 <table>
                     <thead>
                         <tr>
@@ -1686,6 +1765,7 @@ async function checkPassword() {
                         </tr>
                     </tbody>
                 </table>
+                </div>
             </div>
         </div>
     </div><!-- /panel-leavers-notice -->
@@ -1695,6 +1775,7 @@ async function checkPassword() {
     <h2 style="font-size:18px;font-weight:600;margin-bottom:16px;color:var(--text);">Filled <span class="badge badge-green" id="badgeFilled">90</span> <span style="font-size:13px;font-weight:400;color:var(--text-light);margin-left:8px;">All headcount inc. long-term leave, exc. signed future starters</span></h2>
     <div class="section">
             <div class="section-body">
+                <div class="controls"><input type="text" class="search-box" placeholder="Search filled positions..." oninput="filterTableRows(this)"></div>
                 <div class="scrollable-table">
                     <table id="filledTable">
                         <thead>
@@ -1722,6 +1803,8 @@ async function checkPassword() {
     <h2 style="font-size:18px;font-weight:600;margin-bottom:16px;color:var(--text);">Upcoming Joiner(s) <span class="badge badge-green">2</span> <span style="font-size:13px;font-weight:400;color:var(--text-light);margin-left:8px;">Open roles filled with a future start date. Not yet started/earning a salary.</span></h2>
     <div class="section">
             <div class="section-body">
+                <div class="controls"><input type="text" class="search-box" placeholder="Search joiners..." oninput="filterTableRows(this)"></div>
+                <div class="scrollable-table">
                 <table>
                     <thead>
                         <tr>
@@ -1748,16 +1831,17 @@ async function checkPassword() {
                         </tr>
                         <tr>
                             <td>2</td>
-                            <td>Rakesh Sharanappa (655775)</td>
-                            <td>P_126580</td>
-                            <td>Senior Graphics Engineer/Tooling</td>
-                            <td>London - King - Ampersand</td>
+                            <td>Enrico Schmidt (655966)</td>
+                            <td>P_126581</td>
+                            <td>Senior System and Economy Designer</td>
+                            <td>Stockholm - King - Malmskillnadsgatan</td>
                             <td>6958 KING - NEW GAMES - DIAMONDS</td>
-                            <td>27/04/2026</td>
+                            <td>15/06/2026</td>
                             <td>Regular</td>
                         </tr>
                     </tbody>
                 </table>
+                </div>
             </div>
         </div>
     </div><!-- /panel-joiners -->
@@ -1767,6 +1851,8 @@ async function checkPassword() {
     <h2 style="font-size:18px;font-weight:600;margin-bottom:16px;color:var(--text);">New Starter(s) <span class="badge badge-green">3</span> <span style="font-size:13px;font-weight:400;color:var(--text-light);margin-left:8px;">New joiners starting in the last five weeks from the report date</span></h2>
     <div class="section">
             <div class="section-body">
+                <div class="controls"><input type="text" class="search-box" placeholder="Search new starters..." oninput="filterTableRows(this)"></div>
+                <div class="scrollable-table">
                 <table>
                     <thead>
                         <tr>
@@ -1783,16 +1869,6 @@ async function checkPassword() {
                     <tbody>
                         <tr>
                             <td>1</td>
-                            <td>Carmille Gidfors Netzler (655357)</td>
-                            <td>P_126564</td>
-                            <td>Producer</td>
-                            <td>Stockholm - King - Malmskillnadsgatan</td>
-                            <td>6958 KING - NEW GAMES - DIAMONDS</td>
-                            <td>23/03/2026</td>
-                            <td>Gavin Lammin (627008)</td>
-                        </tr>
-                        <tr>
-                            <td>2</td>
                             <td>Angelina Diez Gonzalez (655715)</td>
                             <td>P_130464</td>
                             <td>Senior Game Artist</td>
@@ -1802,7 +1878,7 @@ async function checkPassword() {
                             <td>John Simon Loche (631074)</td>
                         </tr>
                         <tr>
-                            <td>3</td>
+                            <td>2</td>
                             <td>Bj&ouml;rn Svanstr&ouml;m (W_10220)</td>
                             <td>P_14016</td>
                             <td>Lead Game Artist</td>
@@ -1811,8 +1887,19 @@ async function checkPassword() {
                             <td>13/04/2026</td>
                             <td>Olle B&auml;ck (W_10143)</td>
                         </tr>
+                        <tr>
+                            <td>3</td>
+                            <td>Rakesh Sharanappa (655775)</td>
+                            <td>P_126580</td>
+                            <td>Principal Engineer</td>
+                            <td>London - King - Ampersand</td>
+                            <td>6958 KING - NEW GAMES - DIAMONDS</td>
+                            <td>27/04/2026</td>
+                            <td>Daniel Ekstr&ouml;m (W_11250)</td>
+                        </tr>
                     </tbody>
                 </table>
+                </div>
             </div>
         </div>
     </div><!-- /panel-starters -->
@@ -1822,6 +1909,8 @@ async function checkPassword() {
     <h2 style="font-size:18px;font-weight:600;margin-bottom:16px;color:var(--text);">Absent or Part-time <span class="badge badge-orange">5</span> <span style="font-size:13px;font-weight:400;color:var(--text-light);margin-left:8px;">Employees on long-term leave. If &gt;6 months, a temporary backfill should be considered.</span></h2>
     <div class="section">
             <div class="section-body">
+                <div class="controls"><input type="text" class="search-box" placeholder="Search on leave..." oninput="filterTableRows(this)"></div>
+                <div class="scrollable-table">
                 <table>
                     <thead>
                         <tr>
@@ -1853,17 +1942,17 @@ async function checkPassword() {
                             <td>Associate Director Product</td>
                             <td>London - King - Ampersand</td>
                             <td>6958 KING - NEW GAMES - DIAMONDS</td>
-                            <td>03/05/2026</td>
+                            <td>30/06/2026</td>
                             <td>No</td>
                         </tr>
                         <tr>
                             <td>3</td>
-                            <td>Gleb Kornienko (On Leave) (633954)</td>
-                            <td>P_81285</td>
-                            <td>Software Engineer</td>
+                            <td>Anders Olofsson (W_10039)</td>
+                            <td>P_10039</td>
+                            <td>Principle UX Designer</td>
                             <td>Stockholm - King - Malmskillnadsgatan</td>
                             <td>6958 KING - NEW GAMES - DIAMONDS</td>
-                            <td>29/04/2026</td>
+                            <td>10/05/2026</td>
                             <td>No</td>
                         </tr>
                         <tr>
@@ -1883,20 +1972,81 @@ async function checkPassword() {
                             <td>Senior Unity Core Developer</td>
                             <td>Barcelona - King - PG</td>
                             <td>6958 KING - NEW GAMES - DIAMONDS</td>
-                            <td>27/04/2026</td>
+                            <td>21/06/2026</td>
                             <td>No</td>
                         </tr>
                     </tbody>
                 </table>
+                </div>
             </div>
         </div>
     </div><!-- /panel-onleave -->
+
+    <!-- Panel: Transfer(s) In -->
+    <div class="panel" id="panel-transfers">
+    <h2 style="font-size:18px;font-weight:600;margin-bottom:16px;color:var(--text);">Transfer(s) In <span class="badge badge-blue">3</span> <span style="font-size:13px;font-weight:400;color:var(--text-light);margin-left:8px;">New joiners to the department since the last report that are already King employees from a different business unit.</span></h2>
+    <div class="section">
+            <div class="section-body">
+                <div class="controls"><input type="text" class="search-box" placeholder="Search transfers..." oninput="filterTableRows(this)"></div>
+                <div class="scrollable-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Employee Name</th>
+                            <th>Position</th>
+                            <th>Position Description</th>
+                            <th>Location</th>
+                            <th>Cost Center</th>
+                            <th>Start (King)</th>
+                            <th>Manager</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1</td>
+                            <td>Paul Stephanouk (622273)</td>
+                            <td>P_126312</td>
+                            <td>Senior Creative Director</td>
+                            <td>Stockholm - King - Malmskillnadsgatan</td>
+                            <td>6153 KING - NEW GAMES - SHARED</td>
+                            <td>07/01/2020</td>
+                            <td>Oriol Canudas Martinez (W_10375)</td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td>Carlos Valenzuela (626445)</td>
+                            <td>P_126561</td>
+                            <td>Principal Game and Content Designer</td>
+                            <td>Work From Home - ESP</td>
+                            <td>6958 KING - NEW GAMES - DIAMONDS</td>
+                            <td>09/11/2020</td>
+                            <td>James Lane (W_12486)</td>
+                        </tr>
+                        <tr>
+                            <td>3</td>
+                            <td>Wilhelm Novitsky (635994)</td>
+                            <td>P_126562</td>
+                            <td>Backend Developer</td>
+                            <td>Berlin - King - Stralauer Allee</td>
+                            <td>6958 KING - NEW GAMES - DIAMONDS</td>
+                            <td>05/09/2022</td>
+                            <td>Ludwig Jonsson (W_12323)</td>
+                        </tr>
+                    </tbody>
+                </table>
+                </div>
+            </div>
+        </div>
+    </div><!-- /panel-transfers -->
 
     <!-- Panel: Work Anniversaries -->
     <div class="panel" id="panel-anniversaries">
     <h2 style="font-size:18px;font-weight:600;margin-bottom:16px;color:var(--text);">Work Anniversaries <span class="badge badge-blue">6</span> <span style="font-size:13px;font-weight:400;color:var(--text-light);margin-left:8px;">Employees celebrating a yearly work anniversary this month</span></h2>
     <div class="section">
             <div class="section-body">
+                <div class="controls"><input type="text" class="search-box" placeholder="Search anniversaries..." oninput="filterTableRows(this)"></div>
+                <div class="scrollable-table">
                 <table>
                     <thead>
                         <tr>
@@ -1973,6 +2123,7 @@ async function checkPassword() {
                         </tr>
                     </tbody>
                 </table>
+                </div>
             </div>
         </div>
     </div><!-- /panel-anniversaries -->
@@ -2056,7 +2207,7 @@ async function checkPassword() {
 
     <!-- Panel: Employee List -->
     <div class="panel" id="panel-emplist">
-    <h2 style="font-size:18px;font-weight:600;margin-bottom:16px;color:var(--text);">Employee List <span class="badge badge-count" id="badgeEmpList">104</span> <span style="font-size:13px;font-weight:400;color:var(--text-light);margin-left:8px;" id="empViewDesc">Full list of employees (Alphabetical)</span></h2>
+    <h2 style="font-size:18px;font-weight:600;margin-bottom:16px;color:var(--text);">Employee List <span class="badge badge-count" id="badgeEmpList">103</span> <span style="font-size:13px;font-weight:400;color:var(--text-light);margin-left:8px;" id="empViewDesc">Full list of employees (Alphabetical)</span></h2>
     <div class="section">
             <div class="section-body">
             <div class="controls">
@@ -2118,9 +2269,10 @@ async function checkPassword() {
 
     <!-- Panel: Revision History -->
     <div class="panel" id="panel-changelog">
-    <h2 style="font-size:18px;font-weight:600;margin-bottom:16px;color:var(--text);">Revision History <span style="font-size:13px;font-weight:400;color:var(--text-light);margin-left:8px;">All changes in Workday between previous report date (16/03/2026 &ndash; 24/04/2026). Excludes changes to open roles.</span></h2>
+    <h2 style="font-size:18px;font-weight:600;margin-bottom:16px;color:var(--text);">Revision History <span style="font-size:13px;font-weight:400;color:var(--text-light);margin-left:8px;">All changes in Workday between report dates (16/02/2026 &ndash; 04/05/2026). Excludes changes to open roles.</span></h2>
     <div class="section">
             <div class="section-body">
+                <div class="controls"><input type="text" class="search-box" placeholder="Search revision history..." oninput="filterTableRows(this)"></div>
                 <div class="scrollable-table">
                 <table>
                     <thead>
@@ -2140,11 +2292,11 @@ async function checkPassword() {
                             <td>1</td>
                             <td>Felipe Wang (W_12765)</td>
                             <td></td>
-                            <td>CF LRV - Merit Lock down - Business Title</td>
+                            <td>Job Title Change</td>
                             <td>Senior Developer</td>
                             <td>Principal Engineer</td>
                             <td>16/03/2026</td>
-                            <td>24/04/2026</td>
+                            <td>27/04/2026</td>
                         </tr>
                         <tr>
                             <td>2</td>
@@ -2154,297 +2306,297 @@ async function checkPassword() {
                             <td>Barcelona - King - PG</td>
                             <td>Work From Home - ESP</td>
                             <td>16/03/2026</td>
-                            <td>24/04/2026</td>
+                            <td>27/04/2026</td>
                         </tr>
                         <tr>
                             <td>3</td>
                             <td>Magnus Melander (647021)[C]</td>
                             <td>P_124831</td>
-                            <td>Worker Comp Grade</td>
+                            <td>Employee Promotion</td>
                             <td></td>
                             <td></td>
                             <td>16/03/2026</td>
-                            <td>24/04/2026</td>
+                            <td>27/04/2026</td>
                         </tr>
                         <tr>
                             <td>4</td>
                             <td>Felipe Wang (W_12765)</td>
                             <td>P_12618</td>
-                            <td>Worker Comp Grade</td>
+                            <td>Employee Promotion</td>
                             <td>11</td>
                             <td>12</td>
                             <td>16/03/2026</td>
-                            <td>24/04/2026</td>
+                            <td>27/04/2026</td>
                         </tr>
                         <tr>
                             <td>5</td>
                             <td>Joe Deuchar (W_12135)</td>
                             <td>P_114974</td>
-                            <td>Worker Comp Grade</td>
+                            <td>Employee Promotion</td>
                             <td>14</td>
                             <td>15</td>
                             <td>16/03/2026</td>
-                            <td>24/04/2026</td>
+                            <td>27/04/2026</td>
                         </tr>
                         <tr>
                             <td>6</td>
                             <td>Sandra Traven (651795)[C]</td>
                             <td>P_126360</td>
-                            <td>Worker Comp Grade</td>
+                            <td>Employee Promotion</td>
                             <td></td>
                             <td></td>
                             <td>16/03/2026</td>
-                            <td>24/04/2026</td>
+                            <td>27/04/2026</td>
                         </tr>
                         <tr>
                             <td>7</td>
                             <td>Xavier Garcia Court-Payen (638780)</td>
                             <td></td>
-                            <td>Worker Comp Grade</td>
+                            <td>Employee Promotion</td>
                             <td>12</td>
                             <td>13</td>
                             <td>16/03/2026</td>
-                            <td>24/04/2026</td>
+                            <td>27/04/2026</td>
                         </tr>
                         <tr>
                             <td>8</td>
                             <td>Rodrigo Simas (642516)</td>
                             <td></td>
-                            <td>Leaving Date</td>
+                            <td>Employee Future Leaver</td>
                             <td></td>
                             <td>07/08/2026</td>
                             <td>16/03/2026</td>
-                            <td>24/04/2026</td>
+                            <td>27/04/2026</td>
                         </tr>
                         <tr>
                             <td>9</td>
                             <td>Paul Stephanouk (622273)</td>
                             <td></td>
-                            <td>Hire Date</td>
+                            <td>New Joiner or Transfer In</td>
                             <td></td>
                             <td>07/01/2020</td>
                             <td>16/03/2026</td>
-                            <td>24/04/2026</td>
+                            <td>27/04/2026</td>
                         </tr>
                         <tr>
                             <td>10</td>
                             <td>Bj&ouml;rn Svanstr&ouml;m (W_10220)</td>
                             <td></td>
-                            <td>Hire Date</td>
+                            <td>New Joiner or Transfer In</td>
                             <td></td>
                             <td>13/04/2026</td>
                             <td>16/03/2026</td>
-                            <td>24/04/2026</td>
+                            <td>27/04/2026</td>
                         </tr>
                         <tr>
                             <td>11</td>
                             <td>Angelina Diez Gonzalez (655715)</td>
                             <td></td>
-                            <td>Hire Date</td>
+                            <td>New Joiner or Transfer In</td>
                             <td></td>
                             <td>20/04/2026</td>
                             <td>16/03/2026</td>
-                            <td>24/04/2026</td>
+                            <td>27/04/2026</td>
                         </tr>
                         <tr>
                             <td>12</td>
                             <td>Carlos Valenzuela (626445)</td>
                             <td></td>
-                            <td>Hire Date</td>
+                            <td>New Joiner or Transfer In</td>
                             <td></td>
                             <td>09/11/2020</td>
                             <td>16/03/2026</td>
-                            <td>24/04/2026</td>
+                            <td>27/04/2026</td>
                         </tr>
                         <tr>
                             <td>13</td>
                             <td>Carmille Gidfors Netzler (655357)</td>
                             <td></td>
-                            <td>Hire Date</td>
+                            <td>New Joiner or Transfer In</td>
                             <td></td>
                             <td>23/03/2026</td>
                             <td>16/03/2026</td>
-                            <td>24/04/2026</td>
+                            <td>27/04/2026</td>
                         </tr>
                         <tr>
                             <td>14</td>
                             <td>Wilhelm Novitsky (635994)</td>
                             <td></td>
-                            <td>Hire Date</td>
+                            <td>New Joiner or Transfer In</td>
                             <td></td>
-                            <td>18/09/2022</td>
+                            <td>05/09/2022</td>
                             <td>16/03/2026</td>
-                            <td>24/04/2026</td>
+                            <td>27/04/2026</td>
                         </tr>
                         <tr>
                             <td>15</td>
-                            <td>P_86238</td>
-                            <td></td>
-                            <td>Earliest Hire Date</td>
-                            <td>01/04/2026</td>
-                            <td>04/01/2026</td>
-                            <td>16/03/2026</td>
-                            <td>24/04/2026</td>
-                        </tr>
-                        <tr>
-                            <td>16</td>
-                            <td>P_86238</td>
-                            <td></td>
-                            <td>Open Position Title</td>
-                            <td>Senior Marketing Director, New Games</td>
-                            <td>Portfolio Games Product Marketing Senior Director</td>
-                            <td>16/03/2026</td>
-                            <td>24/04/2026</td>
-                        </tr>
-                        <tr>
-                            <td>17</td>
                             <td>P_126579</td>
                             <td></td>
                             <td>Open Position Title</td>
                             <td>2D Puzzle Level Designer | Minecraft Blast, New Games</td>
                             <td>2D Puzzle Level Designer</td>
                             <td>16/03/2026</td>
-                            <td>24/04/2026</td>
+                            <td>27/04/2026</td>
+                        </tr>
+                        <tr>
+                            <td>16</td>
+                            <td>P_126581</td>
+                            <td></td>
+                            <td>Open Position Title</td>
+                            <td>Senior System &amp; Economy Designer - Minecraft Blast, New Games</td>
+                            <td>Senior System and Economy Designer</td>
+                            <td>16/03/2026</td>
+                            <td>27/04/2026</td>
+                        </tr>
+                        <tr>
+                            <td>17</td>
+                            <td>P_126581</td>
+                            <td></td>
+                            <td>Open Position Title</td>
+                            <td>Senior System &amp; Economy Designer - Minecraft Blast, New Games</td>
+                            <td>Senior System and Economy Designer</td>
+                            <td>16/03/2026</td>
+                            <td>27/04/2026</td>
                         </tr>
                         <tr>
                             <td>18</td>
-                            <td>P_126581</td>
+                            <td>P_10013</td>
                             <td></td>
                             <td>Open Position Title</td>
-                            <td>Senior System &amp; Economy Designer - Minecraft Blast, New Games</td>
-                            <td>Senior System and Economy Designer</td>
+                            <td>Principal Software Engineer</td>
+                            <td>Senior Software Engineer</td>
                             <td>16/03/2026</td>
-                            <td>24/04/2026</td>
+                            <td>27/04/2026</td>
                         </tr>
                         <tr>
                             <td>19</td>
-                            <td>P_126581</td>
-                            <td></td>
-                            <td>Open Position Title</td>
-                            <td>Senior System &amp; Economy Designer - Minecraft Blast, New Games</td>
-                            <td>Senior System and Economy Designer</td>
-                            <td>16/03/2026</td>
-                            <td>24/04/2026</td>
-                        </tr>
-                        <tr>
-                            <td>20</td>
-                            <td>P_86238</td>
-                            <td></td>
-                            <td>Manager</td>
-                            <td>Oriol Canudas Martinez (W_10375)</td>
-                            <td>Luken Aragon (W_11108)</td>
-                            <td>16/03/2026</td>
-                            <td>24/04/2026</td>
-                        </tr>
-                        <tr>
-                            <td>21</td>
-                            <td>P_86238</td>
-                            <td></td>
-                            <td>Open Job Requisition</td>
-                            <td></td>
-                            <td>R026639 Senior Marketing Director, New Games (Open)</td>
-                            <td>16/03/2026</td>
-                            <td>24/04/2026</td>
-                        </tr>
-                        <tr>
-                            <td>22</td>
                             <td>P_126579</td>
                             <td></td>
                             <td>Open Job Requisition</td>
-                            <td>R026515 2D Puzzle Level Designer</td>
-                            <td>Fill Date: 05/11/2026</td>
+                            <td>R026515 2D Puzzle Level Designer | Minecraft Blast, New Games (Open)</td>
+                            <td>R026515 2D Puzzle Level Designer (Fill Date: 05/11/2026)</td>
                             <td>16/03/2026</td>
-                            <td>24/04/2026</td>
+                            <td>27/04/2026</td>
                         </tr>
                         <tr>
-                            <td>23</td>
+                            <td>20</td>
                             <td>P_126580</td>
                             <td></td>
                             <td>Open Job Requisition</td>
-                            <td>R026537 Senior Graphics Engineer/Tooling</td>
-                            <td>Fill Date: 04/27/2026</td>
+                            <td>R026537 Senior Graphics Engineer/Tooling (Open)</td>
+                            <td>R026537 Senior Graphics Engineer/Tooling (Fill Date: 04/27/2026)</td>
                             <td>16/03/2026</td>
-                            <td>24/04/2026</td>
+                            <td>27/04/2026</td>
                         </tr>
                         <tr>
-                            <td>24</td>
+                            <td>21</td>
                             <td>P_126581</td>
                             <td></td>
                             <td>Open Job Requisition</td>
-                            <td>R026538 Senior System &amp; Economy Designer</td>
-                            <td></td>
+                            <td>R026538 Senior System &amp; Economy Designer - Minecraft Blast, New Games (Open)</td>
+                            <td>R026538 Senior System and Economy Designer (Open)</td>
                             <td>16/03/2026</td>
-                            <td>24/04/2026</td>
+                            <td>27/04/2026</td>
                         </tr>
                         <tr>
-                            <td>25</td>
+                            <td>22</td>
                             <td>P_126581</td>
                             <td></td>
                             <td>Open Job Requisition</td>
-                            <td>R026538 Senior System &amp; Economy Designer</td>
-                            <td></td>
+                            <td>R026538 Senior System &amp; Economy Designer - Minecraft Blast, New Games (Open)</td>
+                            <td>R026538 Senior System and Economy Designer (Open)</td>
                             <td>16/03/2026</td>
-                            <td>24/04/2026</td>
+                            <td>27/04/2026</td>
                         </tr>
                         <tr>
-                            <td>26</td>
-                            <td>P_86238</td>
-                            <td></td>
-                            <td>Most Advanced Recruiting Stage</td>
-                            <td></td>
-                            <td>No Applicants</td>
-                            <td>16/03/2026</td>
-                            <td>24/04/2026</td>
-                        </tr>
-                        <tr>
-                            <td>27</td>
+                            <td>23</td>
                             <td>P_126579</td>
                             <td></td>
                             <td>Most Advanced Recruiting Stage</td>
                             <td>Interview</td>
                             <td>Ready For Hire</td>
                             <td>16/03/2026</td>
-                            <td>24/04/2026</td>
+                            <td>27/04/2026</td>
                         </tr>
                         <tr>
-                            <td>28</td>
+                            <td>24</td>
                             <td>P_126580</td>
                             <td></td>
                             <td>Most Advanced Recruiting Stage</td>
                             <td>Pre-Onboarding</td>
                             <td>Ready For Hire</td>
                             <td>16/03/2026</td>
-                            <td>24/04/2026</td>
+                            <td>27/04/2026</td>
                         </tr>
                         <tr>
-                            <td>29</td>
+                            <td>25</td>
                             <td>P_126581</td>
                             <td></td>
                             <td>Most Advanced Recruiting Stage</td>
                             <td>New Applicant</td>
                             <td>Background Check</td>
                             <td>16/03/2026</td>
-                            <td>24/04/2026</td>
+                            <td>27/04/2026</td>
                         </tr>
                         <tr>
-                            <td>30</td>
+                            <td>26</td>
                             <td>P_126581</td>
-                            <td>P_126581</td>
+                            <td></td>
                             <td>Most Advanced Recruiting Stage</td>
                             <td>New Applicant</td>
                             <td>Background Check</td>
-                            <td>16/02/2026</td>
-                            <td>24/04/2026</td>
+                            <td>16/03/2026</td>
+                            <td>27/04/2026</td>
+                        </tr>
+                        <tr>
+                            <td>27</td>
+                            <td>P_130440</td>
+                            <td></td>
+                            <td>Most Advanced Recruiting Stage</td>
+                            <td>No Applicants</td>
+                            <td>New Applicant</td>
+                            <td>16/03/2026</td>
+                            <td>27/04/2026</td>
+                        </tr>
+                        <tr>
+                            <td>28</td>
+                            <td>P_130616</td>
+                            <td></td>
+                            <td>Most Advanced Recruiting Stage</td>
+                            <td>Screen</td>
+                            <td>Interview</td>
+                            <td>16/03/2026</td>
+                            <td>27/04/2026</td>
+                        </tr>
+                        <tr>
+                            <td>29</td>
+                            <td>P_130619</td>
+                            <td></td>
+                            <td>Most Advanced Recruiting Stage</td>
+                            <td>Screen</td>
+                            <td>Interview</td>
+                            <td>16/03/2026</td>
+                            <td>27/04/2026</td>
+                        </tr>
+                        <tr>
+                            <td>30</td>
+                            <td>P_10013</td>
+                            <td></td>
+                            <td>Most Advanced Recruiting Stage</td>
+                            <td>Screen</td>
+                            <td>Offer</td>
+                            <td>16/03/2026</td>
+                            <td>27/04/2026</td>
                         </tr>
                         <tr>
                             <td>31</td>
                             <td>P_126579</td>
-                            <td>P_126579</td>
+                            <td></td>
                             <td>Future Worker For Position</td>
                             <td></td>
                             <td>Brian Shurtleff (640346)</td>
-                            <td>16/02/2026</td>
-                            <td>24/04/2026</td>
+                            <td>16/03/2026</td>
+                            <td>27/04/2026</td>
                         </tr>
                         <tr>
                             <td>32</td>
@@ -2454,77 +2606,207 @@ async function checkPassword() {
                             <td></td>
                             <td>Rakesh Sharanappa (655775)</td>
                             <td>16/02/2026</td>
-                            <td>24/04/2026</td>
+                            <td>27/04/2026</td>
                         </tr>
                         <tr>
                             <td>33</td>
+                            <td>P_86238</td>
+                            <td>P_86238</td>
+                            <td>Open Role Closed</td>
+                            <td>Senior Marketing Director, New Games</td>
+                            <td></td>
+                            <td>16/02/2026</td>
+                            <td>27/04/2026</td>
+                        </tr>
+                        <tr>
+                            <td>34</td>
                             <td>P_14016</td>
                             <td>P_14016</td>
                             <td>Open Role Closed - Filled</td>
                             <td></td>
                             <td>Bj&ouml;rn Svanstr&ouml;m (W_10220)</td>
                             <td>16/02/2026</td>
-                            <td>24/04/2026</td>
+                            <td>27/04/2026</td>
                         </tr>
                         <tr>
-                            <td>34</td>
+                            <td>35</td>
                             <td>P_126312</td>
                             <td>P_126312</td>
                             <td>Open Role Closed - Filled</td>
                             <td></td>
                             <td>Paul Stephanouk (622273)</td>
                             <td>16/02/2026</td>
-                            <td>24/04/2026</td>
+                            <td>27/04/2026</td>
                         </tr>
                         <tr>
-                            <td>35</td>
+                            <td>36</td>
                             <td>P_126561</td>
                             <td>P_126561</td>
                             <td>Open Role Closed - Filled</td>
                             <td></td>
                             <td>Carlos Valenzuela (626445)</td>
                             <td>16/02/2026</td>
-                            <td>24/04/2026</td>
+                            <td>27/04/2026</td>
                         </tr>
                         <tr>
-                            <td>36</td>
+                            <td>37</td>
                             <td>P_126562</td>
                             <td>P_126562</td>
                             <td>Open Role Closed - Filled</td>
                             <td></td>
                             <td>Wilhelm Novitsky (635994)</td>
                             <td>16/02/2026</td>
-                            <td>24/04/2026</td>
+                            <td>27/04/2026</td>
                         </tr>
                         <tr>
-                            <td>37</td>
+                            <td>38</td>
                             <td>P_126564</td>
                             <td>P_126564</td>
                             <td>Open Role Closed - Filled</td>
                             <td></td>
                             <td>Carmille Gidfors Netzler (655357)</td>
                             <td>16/02/2026</td>
-                            <td>24/04/2026</td>
+                            <td>27/04/2026</td>
                         </tr>
                         <tr>
-                            <td>38</td>
+                            <td>39</td>
                             <td>P_10013</td>
                             <td>P_10013</td>
                             <td>New Open Role - Backfill</td>
                             <td>Farshid Hassani Bijarbooneh (On Leave) (621266)</td>
                             <td></td>
                             <td>16/02/2026</td>
-                            <td>24/04/2026</td>
+                            <td>27/04/2026</td>
                         </tr>
                         <tr>
-                            <td>39</td>
+                            <td>40</td>
                             <td>P_86211</td>
                             <td>P_86211</td>
                             <td>New Open Role - Backfill</td>
                             <td>Antonio Navarro Gonz&aacute;lez (W_10745)</td>
                             <td></td>
                             <td>16/02/2026</td>
-                            <td>24/04/2026</td>
+                            <td>27/04/2026</td>
+                        </tr>
+                        <tr>
+                            <td>41</td>
+                            <td>P_10013</td>
+                            <td>P_10013</td>
+                            <td>Open Role Closed - Filled</td>
+                            <td>Open Role (Offer)</td>
+                            <td>Oussema Masmoudi (638805)</td>
+                            <td>27/04/2026</td>
+                            <td>04/05/2026</td>
+                        </tr>
+                        <tr>
+                            <td>42</td>
+                            <td>Magnus Melander (647021)[C]</td>
+                            <td>P_124831</td>
+                            <td>CWR Leaver Departed</td>
+                            <td>Filled (Magnus Melander)</td>
+                            <td>Open Role</td>
+                            <td>27/04/2026</td>
+                            <td>04/05/2026</td>
+                        </tr>
+                        <tr>
+                            <td>43</td>
+                            <td>P_86238</td>
+                            <td>P_86238</td>
+                            <td>Position Re-added</td>
+                            <td>Removed from report</td>
+                            <td>Open Role</td>
+                            <td>27/04/2026</td>
+                            <td>04/05/2026</td>
+                        </tr>
+                        <tr>
+                            <td>44</td>
+                            <td>Rakesh Sharanappa (655775)</td>
+                            <td>P_126580</td>
+                            <td>Joiner Started</td>
+                            <td>Open Role (Joiner)</td>
+                            <td>Filled (Rakesh Sharanappa)</td>
+                            <td>27/04/2026</td>
+                            <td>04/05/2026</td>
+                        </tr>
+                        <tr>
+                            <td>45</td>
+                            <td>P_126581</td>
+                            <td>P_126581</td>
+                            <td>Recruiting Stage Change</td>
+                            <td>Background Check</td>
+                            <td>Ready For Hire (Enrico Schmidt assigned)</td>
+                            <td>27/04/2026</td>
+                            <td>04/05/2026</td>
+                        </tr>
+                        <tr>
+                            <td>46</td>
+                            <td>P_130617</td>
+                            <td>P_130617</td>
+                            <td>Recruiting Stage Change</td>
+                            <td>Screen</td>
+                            <td>Interview</td>
+                            <td>27/04/2026</td>
+                            <td>04/05/2026</td>
+                        </tr>
+                        <tr>
+                            <td>47</td>
+                            <td>P_130618</td>
+                            <td>P_130618</td>
+                            <td>Recruiting Stage Change</td>
+                            <td>Interview</td>
+                            <td>Offer</td>
+                            <td>27/04/2026</td>
+                            <td>04/05/2026</td>
+                        </tr>
+                        <tr>
+                            <td>48</td>
+                            <td>P_130858</td>
+                            <td>P_130858</td>
+                            <td>Recruiting Stage Change</td>
+                            <td>New Applicant</td>
+                            <td>Screen</td>
+                            <td>27/04/2026</td>
+                            <td>04/05/2026</td>
+                        </tr>
+                        <tr>
+                            <td>49</td>
+                            <td>Gleb Kornienko (633954)</td>
+                            <td>P_81285</td>
+                            <td>Returned From Leave</td>
+                            <td>On Leave (end 29/04/2026)</td>
+                            <td>Active</td>
+                            <td>27/04/2026</td>
+                            <td>04/05/2026</td>
+                        </tr>
+                        <tr>
+                            <td>50</td>
+                            <td>Anders Olofsson (W_10039)</td>
+                            <td>P_10039</td>
+                            <td>Started Leave</td>
+                            <td>Active</td>
+                            <td>On Leave (23/04 &ndash; 10/05/2026)</td>
+                            <td>27/04/2026</td>
+                            <td>04/05/2026</td>
+                        </tr>
+                        <tr>
+                            <td>51</td>
+                            <td>Ilian Mitev (622416)</td>
+                            <td>P_14665</td>
+                            <td>Leave Extended</td>
+                            <td>End: 03/05/2026</td>
+                            <td>End: 30/06/2026</td>
+                            <td>27/04/2026</td>
+                            <td>04/05/2026</td>
+                        </tr>
+                        <tr>
+                            <td>52</td>
+                            <td>Silvia Ramos Rodriguez (646069)</td>
+                            <td>P_117697</td>
+                            <td>Leave Dates Updated</td>
+                            <td>End: 27/04/2026</td>
+                            <td>04/05 &ndash; 21/06/2026</td>
+                            <td>27/04/2026</td>
+                            <td>04/05/2026</td>
                         </tr>
                     </tbody>
                 </table>
@@ -2666,6 +2948,313 @@ const orgData = [
 {w:"Wilhelm Novitsky (635994)",m:"Ludwig Jonsson (W_12323)"},
 {w:"Xavier Garcia Court-Payen (638780)",m:"John Simon Loche (631074)"}
 ];
+
+// ============ BUSINESS UNIT DATA ============
+const buDataStore = {};
+
+// NEW GAMES BU data (employees/orgData populated after arrays are defined)
+buDataStore.newgames = {
+    title: 'L1 &mdash; NEW GAMES &nbsp; Total Headcount Dashboard',
+    employees: null,
+    orgData: null,
+    ccFilters: [
+        {code: 'all', label: 'All'},
+        {code: '6153', label: '6153 Shared'},
+        {code: '6249', label: '6249 Candy Solitaire'},
+        {code: '6958', label: '6958 Diamonds'},
+        {code: '6294', label: '6294 Primo'}
+    ],
+    kpis: {target: 104, filled: 91, joiners: 2, leaversCwr: -1, leaversNotice: -1, activeHires: 8, inactiveHires: 3},
+    dates: ['04/05/2026','27/04/2026']
+};
+
+// FARM BU data
+buDataStore.farm = {
+    title: 'L1 &mdash; FARM &nbsp; Total Headcount Dashboard',
+    employees: [
+        {n: "Maria Dahl (W_10772)", pos: "P_118443", desc: "Senior Operations Specialist", loc: "Malm\u00f6 - King - Storgatan", cc: "6255 KING - FHS - SHARED (LEADERSHIP/STRATEGY/OTHER)", grade: "11", type: "Regular"},
+        {n: "Raul Gonzalez Cebrian (627720)", pos: "P_106358", desc: "Junior Tech Level Designer", loc: "Barcelona - King - PG", cc: "6255 KING - FHS - SHARED (LEADERSHIP/STRATEGY/OTHER)", grade: "9", type: "Regular"},
+        {n: "Sherif Elshazli (W_11242)", pos: "P_700026", desc: "Head of Tech", loc: "London - King - Ampersand", cc: "6255 KING - FHS - SHARED (LEADERSHIP/STRATEGY/OTHER)", grade: "15", type: "Regular"},
+        {n: "Teresa Luo (W_11193)", pos: "P_11921", desc: "Head of Game Systems", loc: "London - King - Ampersand", cc: "6255 KING - FHS - SHARED (LEADERSHIP/STRATEGY/OTHER)", grade: "15", type: "Regular"},
+        {n: "Trevor Burrows (W_13087)", pos: "P_93612", desc: "VP, Farm", loc: "London - King - Ampersand", cc: "6255 KING - FHS - SHARED (LEADERSHIP/STRATEGY/OTHER)", grade: "17", type: "Regular"},
+        {n: "Valeria De Grazia (625112)", pos: "P_104710", desc: "Head of Core Gameplay", loc: "Barcelona - King - PG", cc: "6255 KING - FHS - SHARED (LEADERSHIP/STRATEGY/OTHER)", grade: "15", type: "Regular"},
+        {n: "Christine Ng (645541)", pos: "P_110682", desc: "Associate Product Director, Foundation", loc: "London - King - Ampersand", cc: "6257 KING - FHS - FOUNDATION", grade: "14", type: "Regular"},
+        {n: "Elena Volkova (635278)", pos: "P_95788", desc: "C++ Developer", loc: "London - King - Ampersand", cc: "6257 KING - FHS - FOUNDATION", grade: "10", type: "Regular"},
+        {n: "Eugenia Mazzaferro (644352)", pos: "P_84376", desc: "Data Scientist", loc: "Stockholm - King - Malmskillnadsgatan", cc: "6257 KING - FHS - FOUNDATION", grade: "10", type: "Regular"},
+        {n: "Georgii Kostarev (619853)", pos: "P_86110", desc: "Principal Engineer", loc: "London - King - Ampersand", cc: "6257 KING - FHS - FOUNDATION", grade: "12", type: "Regular"},
+        {n: "Goktug Selcuk (639192)", pos: "P_105367", desc: "Senior Backend Developer", loc: "Work From Home - GB-ENG", cc: "6257 KING - FHS - FOUNDATION", grade: "11", type: "Regular"},
+        {n: "Jens Rosander (W_12124)", pos: "P_12223", desc: "Senior Principal QA Specialist", loc: "Malm\u00f6 - King - Storgatan", cc: "6257 KING - FHS - FOUNDATION", grade: "13", type: "Regular"},
+        {n: "Johan Hoberg (W_11109)", pos: "P_11568", desc: "Associate Technical Director", loc: "Malm\u00f6 - King - Storgatan", cc: "6257 KING - FHS - FOUNDATION", grade: "14", type: "Regular"},
+        {n: "Pedro Ferreira (646222)", pos: "P_106546", desc: "Technical Artist", loc: "Work From Home - SWE", cc: "6257 KING - FHS - FOUNDATION", grade: "10", type: "Regular"},
+        {n: "Sepideh Farjami (636655)", pos: "P_98166", desc: "Data Scientist", loc: "London - King - Ampersand", cc: "6257 KING - FHS - FOUNDATION", grade: "10", type: "Regular"},
+        {n: "Vjera Omrcen (W_11758)", pos: "P_12267", desc: "Principal Engineer", loc: "Malm\u00f6 - King - Storgatan", cc: "6257 KING - FHS - FOUNDATION", grade: "12", type: "Regular"},
+        {n: "Yesubabu Gude (637919)", pos: "P_114280", desc: "Senior Build Engineer", loc: "Work From Home - GB-ENG", cc: "6257 KING - FHS - FOUNDATION", grade: "11", type: "Regular"},
+        {n: "Yu Yang (623505)", pos: "P_110431", desc: "Principal Automation Engineer", loc: "Stockholm - King - Malmskillnadsgatan", cc: "6257 KING - FHS - FOUNDATION", grade: "12", type: "Regular"},
+        {n: "Antubel Moreda (642429)", pos: "P_700018", desc: "Associate Creative Director.", loc: "Work From Home - ESP", cc: "6955 KING - FHS - PRODUCT - GAME SYSTEMS", grade: "14", type: "Regular"},
+        {n: "Aya Ataya (627171)", pos: "P_96122", desc: "Senior UX Designer", loc: "London - King - Ampersand", cc: "6955 KING - FHS - PRODUCT - GAME SYSTEMS", grade: "11", type: "Regular"},
+        {n: "Carina Zanner (W_11006)", pos: "P_10286", desc: "Principal Artist", loc: "London - King - Ampersand", cc: "6955 KING - FHS - PRODUCT - GAME SYSTEMS", grade: "12", type: "Regular"},
+        {n: "Curren Jeandell (627557)", pos: "P_106836", desc: "Developer", loc: "London - King - Ampersand", cc: "6955 KING - FHS - PRODUCT - GAME SYSTEMS", grade: "10", type: "Regular"},
+        {n: "Dolores Bernenko (645227)", pos: "P_100576", desc: "Data Scientist", loc: "Malm\u00f6 - King - Storgatan", cc: "6955 KING - FHS - PRODUCT - GAME SYSTEMS", grade: "10", type: "Regular"},
+        {n: "Hela BenAmara (627461)", pos: "P_91826", desc: "Sr. UI Artist", loc: "London - King - Ampersand", cc: "6955 KING - FHS - PRODUCT - GAME SYSTEMS", grade: "11", type: "Regular"},
+        {n: "Iv\u00e1n Sansol\u00ed \u00c1lvarez (618827)", pos: "P_95791", desc: "Senior QA Specialist", loc: "London - King - Ampersand", cc: "6955 KING - FHS - PRODUCT - GAME SYSTEMS", grade: "11", type: "Regular"},
+        {n: "Jake Whitaker (640294)", pos: "P_700027", desc: "Senior UX Research and CRM Specialist", loc: "Barcelona - King - PG", cc: "6955 KING - FHS - PRODUCT - GAME SYSTEMS", grade: "11", type: "Regular"},
+        {n: "Lena Shchurenkova (W_13247)", pos: "P_105846", desc: "Senior Principal Data Scientist", loc: "Malm\u00f6 - King - Storgatan", cc: "6955 KING - FHS - PRODUCT - GAME SYSTEMS", grade: "13", type: "Regular"},
+        {n: "Marco Rodriguez (628466)", pos: "P_93721", desc: "Senior Developer", loc: "London - King - Ampersand", cc: "6955 KING - FHS - PRODUCT - GAME SYSTEMS", grade: "11", type: "Regular"},
+        {n: "Nayla Novotny (619749)", pos: "P_95785", desc: "Game Artist", loc: "London - King - Ampersand", cc: "6955 KING - FHS - PRODUCT - GAME SYSTEMS", grade: "10", type: "Regular"},
+        {n: "Peter Eliasson (W_10835)", pos: "P_10764", desc: "Principal Developer", loc: "Malm\u00f6 - King - Storgatan", cc: "6955 KING - FHS - PRODUCT - GAME SYSTEMS", grade: "12", type: "Regular"},
+        {n: "Ruairidh Macrae (W_10315)", pos: "P_10303", desc: "Associate Senior Principal UI Artist", loc: "Work From Home - GB-SCT", cc: "6955 KING - FHS - PRODUCT - GAME SYSTEMS", grade: "13", type: "Regular"},
+        {n: "Steve Guest (648405)", pos: "P_95787", desc: "Associate Technical Director", loc: "London - King - Ampersand", cc: "6955 KING - FHS - PRODUCT - GAME SYSTEMS", grade: "14", type: "Regular"},
+        {n: "Taha Aboelmagd (644205)", pos: "P_120802", desc: "Associate Product Director", loc: "London - King - Ampersand", cc: "6955 KING - FHS - PRODUCT - GAME SYSTEMS", grade: "14", type: "Regular"},
+        {n: "Viraj Kelkar (620624)", pos: "P_95786", desc: "Senior Developer", loc: "London - King - Ampersand", cc: "6955 KING - FHS - PRODUCT - GAME SYSTEMS", grade: "11", type: "Regular"},
+        {n: "Adam Lane (W_12979)", pos: "P_85866", desc: "Principal QA Specialist", loc: "Work From Home - GB-ENG", cc: "6956 KING - FHS - PRODUCT - CORE GAMEPLAY", grade: "12", type: "Regular"},
+        {n: "Alex Jakes (631527)", pos: "P_114249", desc: "Senior Developer", loc: "Work From Home - GB-ENG", cc: "6956 KING - FHS - PRODUCT - CORE GAMEPLAY", grade: "11", type: "Regular"},
+        {n: "Andrea Gustafsen (634051)", pos: "P_113510", desc: "Data Scientist", loc: "Stockholm - King - Malmskillnadsgatan", cc: "6956 KING - FHS - PRODUCT - CORE GAMEPLAY", grade: "10", type: "Regular"},
+        {n: "Anton Johnsson (W_13934)", pos: "P_13216", desc: "Senior Game Designer", loc: "Stockholm - King - Malmskillnadsgatan", cc: "6956 KING - FHS - PRODUCT - CORE GAMEPLAY", grade: "11", type: "Regular"},
+        {n: "Eduardo Calder\u00f3n L\u00f3pez (W_11040)", pos: "P_95790", desc: "Associate Technical Director", loc: "Barcelona - King - PG", cc: "6956 KING - FHS - PRODUCT - CORE GAMEPLAY", grade: "14", type: "Regular"},
+        {n: "G Belotti (645142)", pos: "P_11322", desc: "Associate Creative Director", loc: "Stockholm - King - Malmskillnadsgatan", cc: "6956 KING - FHS - PRODUCT - CORE GAMEPLAY", grade: "14", type: "Regular"},
+        {n: "Gareth Christmann-Brown (W_10404)", pos: "P_10404", desc: "Expert Animator", loc: "London - King - Ampersand", cc: "6956 KING - FHS - PRODUCT - CORE GAMEPLAY", grade: "12", type: "Regular"},
+        {n: "Marcus Bullingham (630623)", pos: "P_11714", desc: "Principal Developer", loc: "London - King - Ampersand", cc: "6956 KING - FHS - PRODUCT - CORE GAMEPLAY", grade: "12", type: "Regular"},
+        {n: "Mariia Baranovych (623453)", pos: "P_10501", desc: "Sr. UI Artist", loc: "London - King - Ampersand", cc: "6956 KING - FHS - PRODUCT - CORE GAMEPLAY", grade: "11", type: "Regular"},
+        {n: "Marina Barba Ruiz (636832)", pos: "P_100833", desc: "Level Designer", loc: "London - King - Ampersand", cc: "6956 KING - FHS - PRODUCT - CORE GAMEPLAY", grade: "10", type: "Regular"},
+        {n: "Massimo Mallia (619261)", pos: "P_14574", desc: "Senior Game Designer", loc: "Malm\u00f6 - King - Storgatan", cc: "6956 KING - FHS - PRODUCT - CORE GAMEPLAY", grade: "11", type: "Regular"},
+        {n: "Mazen Aly (W_13322)", pos: "P_14480", desc: "Principal Data Scientist", loc: "Malm\u00f6 - King - Storgatan", cc: "6956 KING - FHS - PRODUCT - CORE GAMEPLAY", grade: "12", type: "Regular"},
+        {n: "Nasos Kapetanakis (645139)", pos: "P_11626", desc: "Associate Product Director", loc: "Stockholm - King - Malmskillnadsgatan", cc: "6956 KING - FHS - PRODUCT - CORE GAMEPLAY", grade: "14", type: "Regular"},
+        {n: "Pablo Morales (627149)", pos: "P_13967", desc: "Senior UX Designer", loc: "London - King - Ampersand", cc: "6956 KING - FHS - PRODUCT - CORE GAMEPLAY", grade: "11", type: "Regular"},
+        {n: "Richard Assheton-smith (627709)", pos: "P_95835", desc: "Level Designer", loc: "Work From Home - GB-ENG", cc: "6956 KING - FHS - PRODUCT - CORE GAMEPLAY", grade: "10", type: "Regular"},
+        {n: "Sara Karlsson (619866)", pos: "P_106357", desc: "Senior Tech Level Designer", loc: "London - King - Ampersand", cc: "6956 KING - FHS - PRODUCT - CORE GAMEPLAY", grade: "11", type: "Regular"},
+        {n: "Sundarapandian Natarajan (W_13622)", pos: "P_11727", desc: "Senior Developer", loc: "London - King - Ampersand", cc: "6956 KING - FHS - PRODUCT - CORE GAMEPLAY", grade: "11", type: "Regular"},
+        {n: "Toby Bailey (627721)", pos: "P_14479", desc: "Developer", loc: "Work From Home - GB-ENG", cc: "6956 KING - FHS - PRODUCT - CORE GAMEPLAY", grade: "10", type: "Regular"},
+        {n: "Victoria Cheung (623519)", pos: "P_105200", desc: "Mid Level C++ Developer", loc: "London - King - Ampersand", cc: "6956 KING - FHS - PRODUCT - CORE GAMEPLAY", grade: "10", type: "Regular"},
+        // Open Roles
+        {n: "Open Role", pos: "P_104082", desc: "Head of Operations | Farm", loc: "London - King - Ampersand", cc: "6255 KING - FHS - SHARED (LEADERSHIP/STRATEGY/OTHER)", grade: "-", type: "Regular"},
+        {n: "Open Role", pos: "P_13404", desc: "Senior Game Designer", loc: "London - King - Ampersand", cc: "6955 KING - FHS - PRODUCT - GAME SYSTEMS", grade: "10", type: "Regular"},
+        {n: "Open Role", pos: "P_14656", desc: "Developer", loc: "Malm\u00f6 - King - Bruksgatan", cc: "6955 KING - FHS - PRODUCT - GAME SYSTEMS", grade: "10", type: "Regular"}
+    ],
+    orgData: [
+        {w:"Maria Dahl (W_10772)",m:"Trevor Burrows (W_13087)"},
+        {w:"Raul Gonzalez Cebrian (627720)",m:"Trevor Burrows (W_13087)"},
+        {w:"Sherif Elshazli (W_11242)",m:"Trevor Burrows (W_13087)"},
+        {w:"Teresa Luo (W_11193)",m:"Trevor Burrows (W_13087)"},
+        {w:"Trevor Burrows (W_13087)",m:"Ulrika H\u00f6jg\u00e5rd (648073)"},
+        {w:"Valeria De Grazia (625112)",m:"Trevor Burrows (W_13087)"},
+        {w:"Christine Ng (645541)",m:"Sherif Elshazli (W_11242)"},
+        {w:"Elena Volkova (635278)",m:"Johan Hoberg (W_11109)"},
+        {w:"Eugenia Mazzaferro (644352)",m:"Christine Ng (645541)"},
+        {w:"Georgii Kostarev (619853)",m:"Johan Hoberg (W_11109)"},
+        {w:"Goktug Selcuk (639192)",m:"Johan Hoberg (W_11109)"},
+        {w:"Jens Rosander (W_12124)",m:"Johan Hoberg (W_11109)"},
+        {w:"Johan Hoberg (W_11109)",m:"Sherif Elshazli (W_11242)"},
+        {w:"Pedro Ferreira (646222)",m:"Johan Hoberg (W_11109)"},
+        {w:"Sepideh Farjami (636655)",m:"Christine Ng (645541)"},
+        {w:"Vjera Omrcen (W_11758)",m:"Johan Hoberg (W_11109)"},
+        {w:"Yesubabu Gude (637919)",m:"Johan Hoberg (W_11109)"},
+        {w:"Yu Yang (623505)",m:"Johan Hoberg (W_11109)"},
+        {w:"Antubel Moreda (642429)",m:"Teresa Luo (W_11193)"},
+        {w:"Aya Ataya (627171)",m:"Antubel Moreda (642429)"},
+        {w:"Carina Zanner (W_11006)",m:"Antubel Moreda (642429)"},
+        {w:"Curren Jeandell (627557)",m:"Steve Guest (648405)"},
+        {w:"Dolores Bernenko (645227)",m:"Taha Aboelmagd (644205)"},
+        {w:"Hela BenAmara (627461)",m:"Antubel Moreda (642429)"},
+        {w:"Iv\u00e1n Sansol\u00ed \u00c1lvarez (618827)",m:"Steve Guest (648405)"},
+        {w:"Jake Whitaker (640294)",m:"Antubel Moreda (642429)"},
+        {w:"Lena Shchurenkova (W_13247)",m:"Taha Aboelmagd (644205)"},
+        {w:"Marco Rodriguez (628466)",m:"Steve Guest (648405)"},
+        {w:"Nayla Novotny (619749)",m:"Antubel Moreda (642429)"},
+        {w:"Peter Eliasson (W_10835)",m:"Steve Guest (648405)"},
+        {w:"Ruairidh Macrae (W_10315)",m:"Antubel Moreda (642429)"},
+        {w:"Steve Guest (648405)",m:"Teresa Luo (W_11193)"},
+        {w:"Taha Aboelmagd (644205)",m:"Teresa Luo (W_11193)"},
+        {w:"Viraj Kelkar (620624)",m:"Steve Guest (648405)"},
+        {w:"Adam Lane (W_12979)",m:"Eduardo Calder\u00f3n L\u00f3pez (W_11040)"},
+        {w:"Alex Jakes (631527)",m:"Eduardo Calder\u00f3n L\u00f3pez (W_11040)"},
+        {w:"Andrea Gustafsen (634051)",m:"Nasos Kapetanakis (645139)"},
+        {w:"Anton Johnsson (W_13934)",m:"G Belotti (645142)"},
+        {w:"Eduardo Calder\u00f3n L\u00f3pez (W_11040)",m:"Valeria De Grazia (625112)"},
+        {w:"G Belotti (645142)",m:"Valeria De Grazia (625112)"},
+        {w:"Gareth Christmann-Brown (W_10404)",m:"G Belotti (645142)"},
+        {w:"Marcus Bullingham (630623)",m:"Eduardo Calder\u00f3n L\u00f3pez (W_11040)"},
+        {w:"Mariia Baranovych (623453)",m:"G Belotti (645142)"},
+        {w:"Marina Barba Ruiz (636832)",m:"G Belotti (645142)"},
+        {w:"Massimo Mallia (619261)",m:"G Belotti (645142)"},
+        {w:"Mazen Aly (W_13322)",m:"Nasos Kapetanakis (645139)"},
+        {w:"Nasos Kapetanakis (645139)",m:"Valeria De Grazia (625112)"},
+        {w:"Pablo Morales (627149)",m:"G Belotti (645142)"},
+        {w:"Richard Assheton-smith (627709)",m:"G Belotti (645142)"},
+        {w:"Sara Karlsson (619866)",m:"Eduardo Calder\u00f3n L\u00f3pez (W_11040)"},
+        {w:"Sundarapandian Natarajan (W_13622)",m:"Eduardo Calder\u00f3n L\u00f3pez (W_11040)"},
+        {w:"Toby Bailey (627721)",m:"Eduardo Calder\u00f3n L\u00f3pez (W_11040)"},
+        {w:"Victoria Cheung (623519)",m:"Eduardo Calder\u00f3n L\u00f3pez (W_11040)"}
+    ],
+    ccFilters: [
+        {code: 'all', label: 'All'},
+        {code: '6255', label: '6255 Shared'},
+        {code: '6257', label: '6257 Foundation'},
+        {code: '6955', label: '6955 Game Systems'},
+        {code: '6956', label: '6956 Core Gameplay'}
+    ],
+    kpis: {target: 56, filled: 53, joiners: 1, leaversCwr: 0, leaversNotice: 0, activeHires: 2, inactiveHires: 1},
+    panels: {
+        openreq: '<tr><td>1</td><td>6255 KING - FHS - SHARED (LEADERSHIP/STRATEGY/OTHER)</td><td>P_104082</td><td>Head of Operations | Farm</td><td>London - King - Ampersand</td><td>R026374</td><td><span class="status-pill status-readyforhire">Ready For Hire</span></td><td>-</td><td>Regular</td></tr><tr><td>2</td><td>6955 KING - FHS - PRODUCT - GAME SYSTEMS</td><td>P_13404</td><td>Senior Game Designer</td><td>London - King - Ampersand</td><td>R026849</td><td><span class="status-pill status-screen">Screen</span></td><td>10</td><td>Regular</td></tr>',
+        opennoreq: '<tr><td>1</td><td>6955 KING - FHS - PRODUCT - GAME SYSTEMS</td><td>P_14656</td><td>Developer</td><td>Malm\u00f6 - King - Bruksgatan</td><td><span class="status-pill status-notrecruiting">Not Recruiting</span></td><td>10</td><td>Regular</td></tr>',
+        'leavers-cwr': '',
+        'leavers-notice': '',
+        joiners: '<tr><td>1</td><td>David Howe (607667)</td><td>P_104082</td><td>Head of Operations | Farm</td><td>London - King - Ampersand</td><td>6255 KING - FHS - SHARED (LEADERSHIP/STRATEGY/OTHER)</td><td>05/11/2026</td><td>Regular</td></tr>',
+        starters: '',
+        onleave: '<tr><td>1</td><td>Raul Gonzalez Cebrian (627720)</td><td>P_106358</td><td>Junior Tech Level Designer</td><td>Barcelona - King - PG</td><td>6255 KING - FHS - SHARED (LEADERSHIP/STRATEGY/OTHER)</td><td>31/05/2026</td><td>No</td></tr><tr><td>2</td><td>Sepideh Farjami (On Leave) (636655)</td><td>P_98166</td><td>Data Scientist</td><td>London - King - Ampersand</td><td>6257 KING - FHS - FOUNDATION</td><td>30/09/2026</td><td>Yes</td></tr>',
+        transfers: '',
+        anniversaries: ''
+    },
+    badges: {emplist: 56, filled: 53, joiners: 1, 'leavers-cwr': 0, 'leavers-notice': 0, openreq: 2, opennoreq: 1, starters: 0, onleave: 2, transfers: 0, anniversaries: 0},
+    changelog: '',
+    dates: ['04/05/2026']
+};
+
+// Store current NEW GAMES panel HTML for switching back
+let currentBU = 'newgames';
+
+function capturePanelHTML(panelKey) {
+    const panel = document.getElementById('panel-' + panelKey);
+    if (!panel) return '';
+    const tbody = panel.querySelector('tbody');
+    return tbody ? tbody.innerHTML : '';
+}
+
+function storePanelSnapshots() {
+    const keys = ['openreq','opennoreq','leavers-cwr','leavers-notice','joiners','starters','onleave','transfers','anniversaries'];
+    if (!buDataStore[currentBU].panels) buDataStore[currentBU].panels = {};
+    keys.forEach(k => {
+        buDataStore[currentBU].panels[k] = capturePanelHTML(k);
+    });
+}
+
+function switchBU(buKey) {
+    if (buKey === currentBU) return;
+
+    // Save current state
+    storePanelSnapshots();
+    buDataStore[currentBU].employees = JSON.parse(JSON.stringify(employees));
+    buDataStore[currentBU].orgData = JSON.parse(JSON.stringify(orgData));
+    buDataStore[currentBU].kpis = {...baseKPIs};
+    buDataStore[currentBU].changelog = capturePanelHTML('changelog');
+    // Save current badges
+    const saveBadges = {};
+    ['emplist','filled','joiners','leavers-cwr','leavers-notice','openreq','opennoreq','starters','onleave','transfers','anniversaries'].forEach(navId => {
+        const navLink = document.querySelector('[data-panel="' + navId + '"]');
+        if (navLink) { const nb = navLink.querySelector('.nav-badge'); if (nb) saveBadges[navId] = parseInt(nb.textContent) || 0; }
+    });
+    buDataStore[currentBU].badges = saveBadges;
+
+    currentBU = buKey;
+    const bu = buDataStore[buKey];
+
+    // 1. Update title
+    document.getElementById('headerTitle').innerHTML = bu.title;
+
+    // 2. Swap employees array
+    employees.length = 0;
+    bu.employees.forEach(e => employees.push({...e}));
+
+    // 3. Swap orgData
+    orgData.length = 0;
+    bu.orgData.forEach(d => orgData.push({...d}));
+
+    // 4. Update cost centre filter buttons
+    const filterBar = document.getElementById('globalFilterBar');
+    const filterLabel = '<span style="font-size:13px;font-weight:600;color:var(--text);margin-right:8px;">Filter by Cost Centre:</span>';
+    filterBar.innerHTML = filterLabel + bu.ccFilters.map((f,i) =>
+        '<button class="filter-btn' + (i === 0 ? ' active' : '') + '" onclick="globalFilterCC(\'' + f.code + '\', this)">' + f.label + '</button>'
+    ).join('');
+
+    // 5. Update panel tbody HTML
+    const panelKeys = ['openreq','opennoreq','leavers-cwr','leavers-notice','joiners','starters','onleave','transfers','anniversaries'];
+    panelKeys.forEach(k => {
+        const panel = document.getElementById('panel-' + k);
+        if (!panel) return;
+        const tbody = panel.querySelector('tbody');
+        if (tbody) tbody.innerHTML = bu.panels[k] || '';
+    });
+
+    // 6. Update changelog if available
+    if (bu.changelog !== undefined) {
+        const clPanel = document.getElementById('panel-changelog');
+        if (clPanel) {
+            const tbody = clPanel.querySelector('tbody');
+            if (tbody) tbody.innerHTML = bu.changelog;
+        }
+    }
+
+    // 7. Update KPI cards
+    const kpis = bu.kpis;
+    Object.assign(baseKPIs, kpis);
+    document.getElementById('kpiTarget').textContent = kpis.target;
+    document.querySelector('.kpi-card.filled .kpi-value').textContent = kpis.filled;
+    document.querySelector('.kpi-card.joiners .kpi-value').textContent = kpis.joiners;
+    document.querySelector('.kpi-card.leavers-cwr .kpi-value').textContent = kpis.leaversCwr;
+    document.querySelector('.kpi-card.leavers-notice .kpi-value').textContent = kpis.leaversNotice;
+    document.querySelector('.kpi-card.hiring-active .kpi-value').textContent = kpis.activeHires;
+    document.getElementById('kpiHiringInactive').textContent = kpis.inactiveHires;
+    const outlook = kpis.filled + kpis.joiners + kpis.leaversCwr + kpis.leaversNotice + kpis.activeHires + kpis.inactiveHires;
+    const gap = outlook - kpis.target;
+    document.getElementById('kpiOutlook').textContent = outlook;
+    document.getElementById('kpiGap').textContent = gap;
+
+    // 8. Update badges
+    const badges = bu.badges;
+    const navIds = ['emplist','filled','joiners','leavers-cwr','leavers-notice','openreq','opennoreq','starters','onleave','transfers','anniversaries'];
+    navIds.forEach(navId => {
+        const navLink = document.querySelector('[data-panel="' + navId + '"]');
+        if (navLink) {
+            const nb = navLink.querySelector('.nav-badge');
+            if (nb) nb.textContent = badges[navId] !== undefined ? badges[navId] : '';
+        }
+    });
+    // Panel heading badges
+    const filledBadge = document.getElementById('badgeFilled');
+    if (filledBadge) filledBadge.textContent = badges.filled;
+    const opennoreqBadge = document.getElementById('badgeOpenNoReq');
+    if (opennoreqBadge) opennoreqBadge.textContent = badges.opennoreq;
+    ['leavers-cwr','joiners','starters','onleave','openreq','leavers-notice','transfers','anniversaries'].forEach(key => {
+        const panel = document.getElementById('panel-' + key);
+        if (panel) {
+            const badge = panel.querySelector('h2 .badge');
+            if (badge) badge.textContent = badges[key] !== undefined ? badges[key] : '0';
+        }
+    });
+
+    // 9. Update date selector
+    const dateSelect = document.getElementById('reportDateSelect');
+    if (dateSelect && bu.dates) {
+        dateSelect.innerHTML = bu.dates.map(d => '<option value="' + d + '">' + d.replace(/\//g,' / ') + '</option>').join('');
+    }
+
+    // 10. Update "Add New Role" cost center dropdown
+    const ccDropdownOptions = {
+        newgames: [
+            {value: '6153 KING - NEW GAMES - SHARED', label: '6153 Shared'},
+            {value: '6249 KING - NEW GAMES - CANDY SOLITAIRE', label: '6249 Candy Solitaire'},
+            {value: '6958 KING - NEW GAMES \u2013 DIAMONDS', label: '6958 Diamonds'},
+            {value: '6294 KING DIGITAL - NEW GAMES - PRIMO', label: '6294 Primo'}
+        ],
+        farm: [
+            {value: '6255 KING - FHS - SHARED (LEADERSHIP/STRATEGY/OTHER)', label: '6255 Shared'},
+            {value: '6257 KING - FHS - FOUNDATION', label: '6257 Foundation'},
+            {value: '6955 KING - FHS - PRODUCT - GAME SYSTEMS', label: '6955 Game Systems'},
+            {value: '6956 KING - FHS - PRODUCT - CORE GAMEPLAY', label: '6956 Core Gameplay'}
+        ]
+    };
+    const ccSelect = document.getElementById('newRoleCostCenter');
+    if (ccSelect && ccDropdownOptions[buKey]) {
+        ccSelect.innerHTML = ccDropdownOptions[buKey].map(o => '<option value="' + o.value + '">' + o.label + '</option>').join('');
+    }
+
+    // 11. Reset filters and re-render dynamic tables
+    globalCCFilter = 'all';
+    currentFilter = 'all';
+    filterEmployees();
+    renderFilledTable();
+    renderHierarchyTable();
+    if (typeof renderVisualOrgChart === 'function') renderVisualOrgChart();
+}
 
 function buildOrgTree() {
     const childMap = {};
@@ -2874,6 +3463,19 @@ function hierDrop(e) {
 function filterOrgChart() {
     // Re-render which will pick up the search filter
     renderHierarchyTable();
+}
+
+// Generic table row filter for search boxes
+function filterTableRows(inputEl) {
+    const query = inputEl.value.toLowerCase().trim();
+    const sectionBody = inputEl.closest('.section-body');
+    const table = sectionBody.querySelector('table');
+    if (!table) return;
+    const rows = table.querySelectorAll('tbody tr');
+    rows.forEach(row => {
+        const text = row.textContent.toLowerCase();
+        row.style.display = query === '' || text.includes(query) ? '' : 'none';
+    });
 }
 
 let currentEmpView = 'alpha';
@@ -3128,13 +3730,14 @@ function generateEmailContent() {
     const now = new Date().toLocaleString();
     let text = 'HEADCOUNT DASHBOARD - CHANGE REQUESTS FOR APPROVAL\n';
     text += '='.repeat(55) + '\n\n';
-    text += 'Report: L1 - New Games Headcount Dashboard\n';
-    text += 'Date: 24/04/2026\n';
+    const buName = currentBU === 'farm' ? 'L1 - FARM' : 'L1 - New Games';
+    text += 'Report: ' + buName + ' Headcount Dashboard\n';
+    text += 'Date: 04/05/2026\n';
     text += 'Generated: ' + now + '\n';
     text += 'Total Changes: ' + activeEdits.length + '\n\n';
     text += '-'.repeat(55) + '\n\n';
     text += 'Hi HR / Finance,\n\n';
-    text += 'Please find below the list of changes made to the New Games Headcount Dashboard for your review and approval.\n\n';
+    text += 'Please find below the list of changes made to the ' + buName + ' Headcount Dashboard for your review and approval.\n\n';
     text += '-'.repeat(55) + '\n';
     text += 'CHANGES:\n';
     text += '-'.repeat(55) + '\n\n';
@@ -3352,7 +3955,7 @@ const employees = [
     {n: "Ludwig Jonsson (W_12323)", pos: "P_93764", desc: "Engineering Manager", loc: "Stockholm - King - Malmskillnadsgatan", cc: "6153 KING - NEW GAMES - SHARED", grade: "12", type: "Regular"},
     {n: "Madhurya Dattagupta (630521)", pos: "P_10553", desc: "Associate Product Director", loc: "Stockholm - King - Malmskillnadsgatan", cc: "6249 KING - NEW GAMES - CANDY SOLITAIRE", grade: "14", type: "Regular"},
     {n: "Magnus Hansson (W_10067)", pos: "P_10067", desc: "Principal Developer", loc: "Stockholm - King - Malmskillnadsgatan", cc: "6153 KING - NEW GAMES - SHARED", grade: "12", type: "Regular"},
-    {n: "Magnus Melander (647021)[C]", pos: "P_124831", desc: "Principal Engineer", loc: "Stockholm - King - Malmskillnadsgatan", cc: "6249 KING - NEW GAMES - CANDY SOLITAIRE", grade: "-", type: "Agency Temporary Worker"},
+    {n: "Open Role", pos: "P_124831", desc: "Principal Backend Engineer", loc: "Stockholm - King - Malmskillnadsgatan", cc: "6249 KING - NEW GAMES - CANDY SOLITAIRE", grade: "-", type: "Contract Worker"},
     {n: "Manel Tso Torres (624825)", pos: "P_12984", desc: "Senior Game Designer", loc: "Work From Home - ESP", cc: "6249 KING - NEW GAMES - CANDY SOLITAIRE", grade: "11", type: "Regular"},
     {n: "Marc Hernandez (635828)", pos: "P_105449", desc: "Vice President Creative", loc: "Barcelona - King - PG", cc: "6958 KING - NEW GAMES – DIAMONDS", grade: "17", type: "Regular"},
     {n: "Marc Pestka (W_10874)", pos: "P_10871", desc: "Director Game Design", loc: "Work From Home - ESP", cc: "6153 KING - NEW GAMES - SHARED", grade: "15", type: "Regular"},
@@ -3388,11 +3991,11 @@ const employees = [
     {n: "Wilhelm Novitsky (635994)", pos: "P_126562", desc: "Backend Developer", loc: "Berlin - King - Stralauer Allee", cc: "6958 KING - NEW GAMES – DIAMONDS", grade: "10", type: "Regular"},
     {n: "Xavier Garcia Court-Payen (638780)", pos: "P_12675", desc: "Lead Artist", loc: "Barcelona - King - PG", cc: "6958 KING - NEW GAMES – DIAMONDS", grade: "13", type: "Regular"},
     // Open Roles
-    {n: "Open Role", pos: "P_10013", desc: "Principal Software Engineer", loc: "Stockholm - King - Malmskillnadsgatan", cc: "6249 KING - NEW GAMES - CANDY SOLITAIRE", grade: "11", type: "Regular"},
     {n: "Open Role", pos: "P_86238", desc: "Portfolio Games Product Marketing Senior Director", loc: "London - King - Ampersand", cc: "6153 KING - NEW GAMES - SHARED", grade: "16", type: "Regular"},
+    {n: "Oussema Masmoudi (638805)", pos: "P_10013", desc: "Senior Software Engineer", loc: "Stockholm - King - Malmskillnadsgatan", cc: "6249 KING - NEW GAMES - CANDY SOLITAIRE", grade: "11", type: "Regular"},
     {n: "Open Role", pos: "P_86211", desc: "Backend Developer", loc: "Barcelona - King - PG", cc: "6958 KING - NEW GAMES – DIAMONDS", grade: "10", type: "Regular"},
     {n: "Open Role", pos: "P_126579", desc: "2D Puzzle Level Designer", loc: "Malmö - King - Storgatan", cc: "6958 KING - NEW GAMES – DIAMONDS", grade: "-", type: "Regular"},
-    {n: "Open Role", pos: "P_126580", desc: "Senior Graphics Engineer/Tooling", loc: "London - King - Ampersand", cc: "6958 KING - NEW GAMES – DIAMONDS", grade: "-", type: "Regular"},
+    {n: "Rakesh Sharanappa (655775)", pos: "P_126580", desc: "Principal Engineer", loc: "London - King - Ampersand", cc: "6958 KING - NEW GAMES – DIAMONDS", grade: "12", type: "Regular"},
     {n: "Open Role", pos: "P_126581", desc: "Senior System and Economy Designer", loc: "Stockholm - King - Malmskillnadsgatan", cc: "6958 KING - NEW GAMES – DIAMONDS", grade: "-", type: "Regular"},
     {n: "Open Role", pos: "P_130440", desc: "Technical Artist I Minecraft Blast", loc: "Barcelona - King - PG", cc: "6958 KING - NEW GAMES – DIAMONDS", grade: "-", type: "Regular"},
     {n: "Open Role", pos: "P_130617", desc: "Senior Game Designer (Core) | Minecraft Blast, New Games", loc: "Barcelona - King - PG", cc: "6958 KING - NEW GAMES – DIAMONDS", grade: "-", type: "Regular"},
@@ -3542,6 +4145,71 @@ function globalFilterCC(cc, btn) {
 
     // Update sidebar badge counts
     updateSidebarBadges();
+
+    // Update KPI cards based on filtered data
+    updateKPICards(cc);
+}
+
+// Base KPI values (unfiltered)
+const baseKPIs = {target: 104, filled: 91, joiners: 2, leaversCwr: -1, leaversNotice: -1, activeHires: 8, inactiveHires: 3};
+
+function updateKPICards(cc) {
+    let filled, openActive, openInactive, joiners, leaversCwr, leaversNotice, target;
+
+    if (cc === 'all') {
+        target = baseKPIs.target;
+        filled = baseKPIs.filled;
+        openActive = baseKPIs.activeHires;
+        openInactive = baseKPIs.inactiveHires;
+        joiners = baseKPIs.joiners;
+        leaversCwr = baseKPIs.leaversCwr;
+        leaversNotice = baseKPIs.leaversNotice;
+    } else {
+        // Filled: non-open employees matching CC
+        filled = employees.filter(e => e.n !== 'Open Role' && e.cc.startsWith(cc)).length;
+
+        // Open roles matching CC
+        const openRoles = employees.filter(e => e.n === 'Open Role' && e.cc.startsWith(cc));
+
+        // Count active vs inactive by checking the Active Hires table for matching positions
+        const activeTable = document.querySelector('#panel-openreq table');
+        const activePositions = new Set();
+        if (activeTable) {
+            activeTable.querySelectorAll('tbody tr').forEach(row => {
+                const cells = row.querySelectorAll('td');
+                if (cells.length > 2) activePositions.add(cells[2].textContent.trim());
+            });
+        }
+        openActive = openRoles.filter(e => activePositions.has(e.pos)).length;
+        openInactive = openRoles.filter(e => !activePositions.has(e.pos)).length;
+
+        // Joiners: count visible rows in joiners panel
+        const joinersPanel = document.getElementById('panel-joiners');
+        joiners = joinersPanel ? joinersPanel.querySelectorAll('tbody tr:not([style*="display: none"])').length : 0;
+
+        // Leavers CWR: count visible rows (negative)
+        const cwrPanel = document.getElementById('panel-leavers-cwr');
+        leaversCwr = cwrPanel ? -(cwrPanel.querySelectorAll('tbody tr:not([style*="display: none"])').length) : 0;
+
+        // Leavers Notice: count visible rows (negative)
+        const noticePanel = document.getElementById('panel-leavers-notice');
+        leaversNotice = noticePanel ? -(noticePanel.querySelectorAll('tbody tr:not([style*="display: none"])').length) : 0;
+
+        target = filled + openActive + openInactive + joiners;
+    }
+
+    const outlook = filled + joiners + leaversCwr + leaversNotice + openActive + openInactive;
+    const gap = outlook - target;
+
+    document.getElementById('kpiTarget').textContent = target;
+    document.querySelector('.kpi-card.filled .kpi-value').textContent = filled;
+    document.querySelector('.kpi-card.joiners .kpi-value').textContent = joiners;
+    document.querySelector('.kpi-card.leavers-cwr .kpi-value').textContent = leaversCwr;
+    document.querySelector('.kpi-card.leavers-notice .kpi-value').textContent = leaversNotice;
+    document.querySelector('.kpi-card.hiring-active .kpi-value').textContent = openActive;
+    document.getElementById('kpiHiringInactive').textContent = openInactive;
+    document.getElementById('kpiOutlook').textContent = outlook;
+    document.getElementById('kpiGap').textContent = gap;
 }
 
 function updateSidebarBadges() {
@@ -3567,6 +4235,134 @@ function updateSidebarBadges() {
         const navBadge = navLink.querySelector('.nav-badge');
         if (navBadge) navBadge.textContent = badge.textContent;
     });
+}
+
+// ============ INITIALISE NEW GAMES BU STORE ============
+buDataStore.newgames.employees = JSON.parse(JSON.stringify(employees));
+buDataStore.newgames.orgData = JSON.parse(JSON.stringify(orgData));
+buDataStore.newgames.badges = {emplist: 104, filled: 91, joiners: 2, 'leavers-cwr': 1, 'leavers-notice': 1, openreq: 8, opennoreq: 3, starters: 3, onleave: 5, transfers: 3, anniversaries: 6};
+
+// ============ REPORT DATE SWITCHING ============
+const baseEmployees = JSON.parse(JSON.stringify(employees));
+
+const employeePatches = {
+    '27/04/2026': {
+        replace: {
+            'P_10013': {n: "Open Role", pos: "P_10013", desc: "Senior Software Engineer", loc: "Stockholm - King - Malmskillnadsgatan", cc: "6249 KING - NEW GAMES - CANDY SOLITAIRE", grade: "11", type: "Regular"},
+            'P_126580': {n: "Open Role", pos: "P_126580", desc: "Senior Graphics Engineer/Tooling", loc: "London - King - Ampersand", cc: "6958 KING - NEW GAMES \u2013 DIAMONDS", grade: "-", type: "Regular"},
+            'P_124831': {n: "Magnus Melander (647021)[C]", pos: "P_124831", desc: "Principal Engineer", loc: "Stockholm - King - Malmskillnadsgatan", cc: "6249 KING - NEW GAMES - CANDY SOLITAIRE", grade: "-", type: "Agency Temporary Worker"},
+        },
+        remove: ['P_86238']
+    }
+};
+
+const reportPanels = {
+    '04/05/2026': {
+        openreq: '<tr><td>1</td><td>6958 KING - NEW GAMES - DIAMONDS</td><td>P_130440</td><td>Technical Artist I Minecraft Blast</td><td>Barcelona - King - PG</td><td>R027344</td><td><span class="status-pill status-newapplicant">New Applicant</span></td><td>-</td><td>Regular</td></tr><tr><td>2</td><td>6958 KING - NEW GAMES - DIAMONDS</td><td>P_130617</td><td>Senior Game Designer (Core) | Minecraft Blast, New Games</td><td>Barcelona - King - PG</td><td>R026962</td><td><span class="status-pill status-interview">Interview</span></td><td>-</td><td>Regular</td></tr><tr><td>3</td><td>6958 KING - NEW GAMES - DIAMONDS</td><td>P_130618</td><td>VFX Artist | Minecraft Blast, New Games</td><td>Barcelona - King - PG</td><td>R026960</td><td><span class="status-pill status-offer">Offer</span></td><td>-</td><td>Regular</td></tr><tr><td>4</td><td>6958 KING - NEW GAMES - DIAMONDS</td><td>P_130620</td><td>Senior Lead Artist (Outsourcing) | Minecraft Blast, New Games</td><td>Barcelona - King - PG</td><td>R026958</td><td><span class="status-pill status-interview">Interview</span></td><td>-</td><td>Regular</td></tr><tr><td>5</td><td>6958 KING - NEW GAMES - DIAMONDS</td><td>P_130616</td><td>Senior Game Designer (Meta) | Minecraft Blast, New Games</td><td>Barcelona - King - PG</td><td>R026963</td><td><span class="status-pill status-interview">Interview</span></td><td>-</td><td>Regular</td></tr><tr><td>6</td><td>6958 KING - NEW GAMES - DIAMONDS</td><td>P_130619</td><td>Animator | Minecraft Blast, New Games</td><td>Barcelona - King - PG</td><td>R026959</td><td><span class="status-pill status-interview">Interview</span></td><td>-</td><td>Regular</td></tr><tr><td>7</td><td>6958 KING - NEW GAMES - DIAMONDS</td><td>P_130621</td><td>Senior Automation Engineer | Minecraft Blast, New Games</td><td>Stockholm - King - Malmskillnadsgatan</td><td>R026957</td><td><span class="status-pill status-interview">Interview</span></td><td>-</td><td>Regular</td></tr><tr><td>8</td><td>6958 KING - NEW GAMES - DIAMONDS</td><td>P_130858</td><td>Senior Unity Developer | Minecraft Blast, New Games</td><td>Stockholm - King - Malmskillnadsgatan</td><td>R027088</td><td><span class="status-pill status-screen">Screen</span></td><td>-</td><td>Regular</td></tr>',
+        opennoreq: '<tr><td>1</td><td>6958 KING - NEW GAMES - DIAMONDS</td><td>P_86211</td><td>Backend Developer</td><td>Barcelona - King - PG</td><td><span class="status-pill status-notrecruiting">Not Recruiting</span></td><td>10</td><td>Regular</td></tr><tr><td>2</td><td>6153 KING - NEW GAMES - SHARED</td><td>P_86238</td><td>Portfolio Games Product Marketing Senior Director</td><td>London - King - Ampersand</td><td><span class="status-pill status-notrecruiting">Not Recruiting</span></td><td>16</td><td>Regular</td></tr><tr><td>3</td><td>6249 KING - NEW GAMES - CANDY SOLITAIRE</td><td>P_124831</td><td>Principal Backend Engineer</td><td>Stockholm - King - Malmskillnadsgatan</td><td><span class="status-pill status-notrecruiting">Not Recruiting</span></td><td>-</td><td>Contract Worker</td></tr>',
+        'leavers-cwr': '<tr><td>1</td><td>Sandra Traven (651795)[C]</td><td>P_126360</td><td>Senior Unity Core Developer</td><td>Stockholm - King - Malmskillnadsgatan</td><td>6958 KING - NEW GAMES - DIAMONDS</td><td>19/07/2026</td><td>Agency Temporary Worker</td></tr>',
+        joiners: '<tr><td>1</td><td>Brian Shurtleff (640346)</td><td>P_126579</td><td>2D Puzzle Level Designer</td><td>Malm\u00f6 - King - Storgatan</td><td>6958 KING - NEW GAMES - DIAMONDS</td><td>05/11/2026</td><td>Regular</td></tr><tr><td>2</td><td>Enrico Schmidt (655966)</td><td>P_126581</td><td>Senior System and Economy Designer</td><td>Stockholm - King - Malmskillnadsgatan</td><td>6958 KING - NEW GAMES - DIAMONDS</td><td>15/06/2026</td><td>Regular</td></tr>',
+        starters: '<tr><td>1</td><td>Angelina Diez Gonzalez (655715)</td><td>P_130464</td><td>Senior Game Artist</td><td>Barcelona - King - PG</td><td>6958 KING - NEW GAMES - DIAMONDS</td><td>20/04/2026</td><td>John Simon Loche (631074)</td></tr><tr><td>2</td><td>Bj\u00f6rn Svanstr\u00f6m (W_10220)</td><td>P_14016</td><td>Lead Game Artist</td><td>Work From Home - SWE</td><td>6294 KING DIGITAL - NEW GAMES - PRIMO</td><td>13/04/2026</td><td>Olle B\u00e4ck (W_10143)</td></tr><tr><td>3</td><td>Rakesh Sharanappa (655775)</td><td>P_126580</td><td>Principal Engineer</td><td>London - King - Ampersand</td><td>6958 KING - NEW GAMES - DIAMONDS</td><td>27/04/2026</td><td>Daniel Ekstr\u00f6m (W_11250)</td></tr>',
+        onleave: '<tr><td>1</td><td>Joel Akerman (W_11021)</td><td>P_10060</td><td>Associate Principal Artist</td><td>Stockholm - King - Malmskillnadsgatan</td><td>6249 KING - NEW GAMES - CANDY SOLITAIRE</td><td>30/06/2026</td><td>No</td></tr><tr><td>2</td><td>Ilian Mitev (On Leave) (622416)</td><td>P_14665</td><td>Associate Director Product</td><td>London - King - Ampersand</td><td>6958 KING - NEW GAMES - DIAMONDS</td><td>30/06/2026</td><td>No</td></tr><tr><td>3</td><td>Anders Olofsson (W_10039)</td><td>P_10039</td><td>Principle UX Designer</td><td>Stockholm - King - Malmskillnadsgatan</td><td>6958 KING - NEW GAMES - DIAMONDS</td><td>10/05/2026</td><td>No</td></tr><tr><td>4</td><td>Pol Vilaseca Mainar (On Leave) (W_12528)</td><td>P_14561</td><td>Assoc. Director Economy Design</td><td>Barcelona - King - PG</td><td>6958 KING - NEW GAMES - DIAMONDS</td><td>02/08/2026</td><td>No</td></tr><tr><td>5</td><td>Silvia Ramos Rodriguez (On Leave) (646069)</td><td>P_117697</td><td>Senior Unity Core Developer</td><td>Barcelona - King - PG</td><td>6958 KING - NEW GAMES - DIAMONDS</td><td>21/06/2026</td><td>No</td></tr>',
+    },
+    '27/04/2026': {
+        openreq: '<tr><td>1</td><td>6249 KING - NEW GAMES - CANDY SOLITAIRE</td><td>P_10013</td><td>Senior Software Engineer</td><td>Stockholm - King - Malmskillnadsgatan</td><td>R026768</td><td><span class="status-pill status-interview">Offer</span></td><td>11</td><td>Regular</td></tr><tr><td>2</td><td>6958 KING - NEW GAMES - DIAMONDS</td><td>P_126581</td><td>Senior System and Economy Designer</td><td>Stockholm - King - Malmskillnadsgatan</td><td>R026538</td><td><span class="status-pill status-bgcheck">Background Check</span></td><td>-</td><td>Regular</td></tr><tr><td>3</td><td>6958 KING - NEW GAMES - DIAMONDS</td><td>P_130440</td><td>Technical Artist I Minecraft Blast</td><td>Barcelona - King - PG</td><td>R027344</td><td><span class="status-pill status-newapplicant">New Applicant</span></td><td>-</td><td>Regular</td></tr><tr><td>4</td><td>6958 KING - NEW GAMES - DIAMONDS</td><td>P_130617</td><td>Senior Game Designer (Core) | Minecraft Blast, New Games</td><td>Barcelona - King - PG</td><td>R026962</td><td><span class="status-pill status-screen">Screen</span></td><td>-</td><td>Regular</td></tr><tr><td>5</td><td>6958 KING - NEW GAMES - DIAMONDS</td><td>P_130618</td><td>VFX Artist | Minecraft Blast, New Games</td><td>Barcelona - King - PG</td><td>R026960</td><td><span class="status-pill status-interview">Interview</span></td><td>-</td><td>Regular</td></tr><tr><td>6</td><td>6958 KING - NEW GAMES - DIAMONDS</td><td>P_130620</td><td>Senior Lead Artist (Outsourcing) | Minecraft Blast, New Games</td><td>Barcelona - King - PG</td><td>R026958</td><td><span class="status-pill status-interview">Interview</span></td><td>-</td><td>Regular</td></tr><tr><td>7</td><td>6958 KING - NEW GAMES - DIAMONDS</td><td>P_130616</td><td>Senior Game Designer (Meta) | Minecraft Blast, New Games</td><td>Barcelona - King - PG</td><td>R026963</td><td><span class="status-pill status-interview">Interview</span></td><td>-</td><td>Regular</td></tr><tr><td>8</td><td>6958 KING - NEW GAMES - DIAMONDS</td><td>P_130619</td><td>Animator | Minecraft Blast, New Games</td><td>Barcelona - King - PG</td><td>R026959</td><td><span class="status-pill status-interview">Interview</span></td><td>-</td><td>Regular</td></tr><tr><td>9</td><td>6958 KING - NEW GAMES - DIAMONDS</td><td>P_130621</td><td>Senior Automation Engineer | Minecraft Blast, New Games</td><td>Stockholm - King - Malmskillnadsgatan</td><td>R026957</td><td><span class="status-pill status-interview">Interview</span></td><td>-</td><td>Regular</td></tr><tr><td>10</td><td>6958 KING - NEW GAMES - DIAMONDS</td><td>P_130858</td><td>Senior Unity Developer | Minecraft Blast, New Games</td><td>Stockholm - King - Malmskillnadsgatan</td><td>R027088</td><td><span class="status-pill status-newapplicant">New Applicant</span></td><td>-</td><td>Regular</td></tr>',
+        opennoreq: '<tr><td>1</td><td>6958 KING - NEW GAMES - DIAMONDS</td><td>P_86211</td><td>Backend Developer</td><td>Barcelona - King - PG</td><td><span class="status-pill status-notrecruiting">Not Recruiting</span></td><td>10</td><td>Regular</td></tr>',
+        'leavers-cwr': '<tr><td>1</td><td>Magnus Melander (647021)[C]</td><td>P_124831</td><td>Principal Backend Engineer</td><td>Stockholm - King - Malmskillnadsgatan</td><td>6249 KING - NEW GAMES - CANDY SOLITAIRE</td><td>01/05/2026</td><td>Agency Temporary Worker</td></tr><tr><td>2</td><td>Sandra Traven (651795)[C]</td><td>P_126360</td><td>Senior Unity Core Developer</td><td>Stockholm - King - Malmskillnadsgatan</td><td>6958 KING - NEW GAMES - DIAMONDS</td><td>19/07/2026</td><td>Agency Temporary Worker</td></tr>',
+        joiners: '<tr><td>1</td><td>Brian Shurtleff (640346)</td><td>P_126579</td><td>2D Puzzle Level Designer</td><td>Malm\u00f6 - King - Storgatan</td><td>6958 KING - NEW GAMES - DIAMONDS</td><td>05/11/2026</td><td>Regular</td></tr><tr><td>2</td><td>Rakesh Sharanappa (655775)</td><td>P_126580</td><td>Senior Graphics Engineer/Tooling</td><td>London - King - Ampersand</td><td>6958 KING - NEW GAMES - DIAMONDS</td><td>27/04/2026</td><td>Regular</td></tr>',
+        starters: '<tr><td>1</td><td>Angelina Diez Gonzalez (655715)</td><td>P_130464</td><td>Senior Game Artist</td><td>Barcelona - King - PG</td><td>6958 KING - NEW GAMES - DIAMONDS</td><td>20/04/2026</td><td>John Simon Loche (631074)</td></tr><tr><td>2</td><td>Bj\u00f6rn Svanstr\u00f6m (W_10220)</td><td>P_14016</td><td>Lead Game Artist</td><td>Work From Home - SWE</td><td>6294 KING DIGITAL - NEW GAMES - PRIMO</td><td>13/04/2026</td><td>Olle B\u00e4ck (W_10143)</td></tr><tr><td>3</td><td>Carmille Gidfors Netzler (655357)</td><td>P_126564</td><td>Producer</td><td>Stockholm - King - Malmskillnadsgatan</td><td>6958 KING - NEW GAMES - DIAMONDS</td><td>23/03/2026</td><td>Gavin Lammin (627008)</td></tr>',
+        onleave: '<tr><td>1</td><td>Joel Akerman (W_11021)</td><td>P_10060</td><td>Associate Principal Artist</td><td>Stockholm - King - Malmskillnadsgatan</td><td>6249 KING - NEW GAMES - CANDY SOLITAIRE</td><td>30/06/2026</td><td>No</td></tr><tr><td>2</td><td>Ilian Mitev (On Leave) (622416)</td><td>P_14665</td><td>Associate Director Product</td><td>London - King - Ampersand</td><td>6958 KING - NEW GAMES - DIAMONDS</td><td>03/05/2026</td><td>No</td></tr><tr><td>3</td><td>Gleb Kornienko (On Leave) (633954)</td><td>P_81285</td><td>Software Engineer</td><td>Stockholm - King - Malmskillnadsgatan</td><td>6958 KING - NEW GAMES - DIAMONDS</td><td>29/04/2026</td><td>No</td></tr><tr><td>4</td><td>Pol Vilaseca Mainar (On Leave) (W_12528)</td><td>P_14561</td><td>Assoc. Director Economy Design</td><td>Barcelona - King - PG</td><td>6958 KING - NEW GAMES - DIAMONDS</td><td>02/08/2026</td><td>No</td></tr><tr><td>5</td><td>Silvia Ramos Rodriguez (On Leave) (646069)</td><td>P_117697</td><td>Senior Unity Core Developer</td><td>Barcelona - King - PG</td><td>6958 KING - NEW GAMES - DIAMONDS</td><td>27/04/2026</td><td>No</td></tr>',
+    }
+};
+
+const reportKPIs = {
+    '04/05/2026': {target: 104, filled: 91, joiners: 2, leaversCwr: -1, leaversNotice: -1, activeHires: 8, inactiveHires: 3},
+    '27/04/2026': {target: 104, filled: 90, joiners: 2, leaversCwr: -2, leaversNotice: -1, activeHires: 10, inactiveHires: 1}
+};
+
+const reportBadges = {
+    '04/05/2026': {emplist: 104, filled: 91, joiners: 2, 'leavers-cwr': 1, 'leavers-notice': 1, openreq: 8, opennoreq: 3, starters: 3, onleave: 5},
+    '27/04/2026': {emplist: 103, filled: 90, joiners: 2, 'leavers-cwr': 2, 'leavers-notice': 1, openreq: 10, opennoreq: 1, starters: 3, onleave: 5}
+};
+
+function loadReport(date) {
+    // Only applies to NEW GAMES (which has multiple dates)
+    if (currentBU !== 'newgames') return;
+    // 1. Rebuild employees array from base + patches
+    employees.length = 0;
+    const patch = employeePatches[date];
+    if (patch) {
+        baseEmployees.forEach(e => {
+            if (patch.remove && patch.remove.includes(e.pos)) return;
+            employees.push(patch.replace && patch.replace[e.pos] ? {...patch.replace[e.pos]} : {...e});
+        });
+    } else {
+        baseEmployees.forEach(e => employees.push({...e}));
+    }
+
+    // 2. Swap panel tbody HTML
+    const panels = reportPanels[date];
+    if (panels) {
+        Object.entries(panels).forEach(([panelKey, html]) => {
+            const panel = document.getElementById('panel-' + panelKey);
+            if (panel) {
+                const tbody = panel.querySelector('tbody');
+                if (tbody) tbody.innerHTML = html;
+            }
+        });
+    }
+
+    // 3. Update KPI card values
+    const kpis = reportKPIs[date];
+    if (kpis) {
+        Object.assign(baseKPIs, kpis);
+        document.getElementById('kpiTarget').textContent = kpis.target;
+        document.querySelector('.kpi-card.filled .kpi-value').textContent = kpis.filled;
+        document.querySelector('.kpi-card.joiners .kpi-value').textContent = kpis.joiners;
+        document.querySelector('.kpi-card.leavers-cwr .kpi-value').textContent = kpis.leaversCwr;
+        document.querySelector('.kpi-card.leavers-notice .kpi-value').textContent = kpis.leaversNotice;
+        document.querySelector('.kpi-card.hiring-active .kpi-value').textContent = kpis.activeHires;
+        document.getElementById('kpiHiringInactive').textContent = kpis.inactiveHires;
+        const outlook = kpis.filled + kpis.joiners + kpis.leaversCwr + kpis.leaversNotice + kpis.activeHires + kpis.inactiveHires;
+        const gap = outlook - kpis.target;
+        document.getElementById('kpiOutlook').textContent = outlook;
+        document.getElementById('kpiGap').textContent = gap;
+    }
+
+    // 4. Update sidebar and panel heading badges
+    const badges = reportBadges[date];
+    if (badges) {
+        const navIds = ['emplist','filled','joiners','leavers-cwr','leavers-notice','openreq','opennoreq','starters','onleave'];
+        navIds.forEach(navId => {
+            const navLink = document.querySelector('[data-panel="' + navId + '"]');
+            if (navLink) {
+                const nb = navLink.querySelector('.nav-badge');
+                if (nb) nb.textContent = badges[navId];
+            }
+        });
+        // Panel heading badges
+        const filledBadge = document.getElementById('badgeFilled');
+        if (filledBadge) filledBadge.textContent = badges.filled;
+        const opennoreqBadge = document.getElementById('badgeOpenNoReq');
+        if (opennoreqBadge) opennoreqBadge.textContent = badges.opennoreq;
+        // Static panel heading badges (query by panel > .badge)
+        ['leavers-cwr','joiners','starters','onleave','openreq','leavers-notice'].forEach(key => {
+            const panel = document.getElementById('panel-' + key);
+            if (panel) {
+                const badge = panel.querySelector('h2 .badge');
+                if (badge) badge.textContent = badges[key];
+            }
+        });
+    }
+
+    // 5. Reset CC filter and re-render dynamic tables
+    globalCCFilter = 'all';
+    currentFilter = 'all';
+    document.querySelectorAll('#globalFilterBar .filter-btn').forEach(b => b.classList.remove('active'));
+    const allBtn = document.querySelector('#globalFilterBar .filter-btn');
+    if (allBtn) allBtn.classList.add('active');
+    filterEmployees();
+    renderFilledTable();
 }
 
 // Render filled table (non-open roles, respects global CC filter)
@@ -3862,7 +4658,8 @@ function exportToPDF(panels) {
 }
 
 function exportToExcel(panels) {
-    let csv = 'L1 - NEW GAMES - Total Headcount Dashboard\nExported: ' + new Date().toLocaleDateString() + '\n\n';
+    const buLabel = currentBU === 'farm' ? 'L1 - FARM' : 'L1 - NEW GAMES';
+    let csv = buLabel + ' - Total Headcount Dashboard\nExported: ' + new Date().toLocaleDateString() + '\n\n';
 
     panels.forEach(panel => {
         const heading = panel.querySelector('h2');
@@ -3890,7 +4687,8 @@ function exportToExcel(panels) {
 }
 
 function exportToEmail(panels) {
-    let body = 'L1 - NEW GAMES - Total Headcount Dashboard\n';
+    const buLabel2 = currentBU === 'farm' ? 'L1 - FARM' : 'L1 - NEW GAMES';
+    let body = buLabel2 + ' - Total Headcount Dashboard\n';
     body += 'Exported: ' + new Date().toLocaleDateString() + '\n\n';
 
     panels.forEach(panel => {
