@@ -857,6 +857,8 @@
             .export-wrapper { order: -1; }
             .export-btn-group { gap: 4px; }
             .export-trigger { padding: 6px 8px; }
+            .export-menu { display: none !important; }
+            .sheet-check { display: none !important; }
 
             /* Org chart */
             .org-chart-controls { flex-wrap: wrap; }
@@ -4871,6 +4873,11 @@ let currentExportFormat = null;
 
 function openExportScope(format) {
     currentExportFormat = format;
+    // On mobile, skip the popup and export current sheet directly
+    if (window.innerWidth <= 640) {
+        doExport('current');
+        return;
+    }
     const menu = document.getElementById('exportMenu');
     const title = document.getElementById('exportOptionsTitle');
     const labels = { pdf: 'PDF — Select Scope', excel: 'Excel — Select Scope', email: 'Email — Select Scope' };
