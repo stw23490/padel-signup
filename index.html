@@ -854,6 +854,13 @@
             .org-chart-search { margin-left: 0; width: 100%; }
             .org-chart-search input { width: 100%; }
 
+            /* Mobile-only nav items */
+            .mobile-only-nav { display: list-item; }
+
+            /* Hide KPI overview on mobile by default */
+            .kpi-overview { display: none; }
+            .kpi-overview.mobile-active { display: block; }
+
             /* Scrollable table touch */
             .scrollable-table {
                 -webkit-overflow-scrolling: touch;
@@ -1656,6 +1663,8 @@ async function checkLogin() {
     <!-- Sidebar Navigation -->
     <nav class="sidebar" id="sidebarNav">
         <ul class="sidebar-nav">
+            <li class="mobile-only-nav"><a onclick="switchPanel('dashboard')" data-panel="dashboard"><input type="checkbox" class="sheet-check" data-sheet="dashboard" onclick="event.stopPropagation()"> ⭐ Dashboard Overview</a></li>
+            <li class="mobile-only-nav" style="border-bottom:1px solid var(--border);margin:6px 0;padding:0;list-style:none;"></li>
             <li><a onclick="switchPanel('emplist')" data-panel="emplist"><input type="checkbox" class="sheet-check" data-sheet="emplist" onclick="event.stopPropagation()"> Employee List <span class="nav-badge">104</span></a></li>
             <li style="border-bottom:1px solid var(--border);margin:6px 0;padding:0;list-style:none;"></li>
             <li><a class="active" onclick="switchPanel('filled')" data-panel="filled"><input type="checkbox" class="sheet-check" data-sheet="filled" onclick="event.stopPropagation()"> Filled <span class="nav-badge" style="background:#d4edda;color:#155724;">91</span></a></li>
@@ -1723,8 +1732,8 @@ async function checkLogin() {
         </div>
     </div>
 
-    <!-- Dashboard Overview (KPIs) - Always visible -->
-    <div class="kpi-overview">
+    <!-- Dashboard Overview (KPIs) -->
+    <div class="kpi-overview" id="kpiOverview">
     <div class="kpi-row">
         <div class="kpi-card target kpi-total" title="Headcount target. All headcount exc. signed future starters." onclick="switchPanel('emplist')">
             <div class="kpi-label">Target</div>
@@ -4828,6 +4837,17 @@ function switchPanel(panelId) {
     document.querySelectorAll('.sidebar-nav a').forEach(a => a.classList.remove('active'));
     const link = document.querySelector('.sidebar-nav a[data-panel="' + panelId + '"]');
     if (link) link.classList.add('active');
+
+    // Mobile: toggle KPI overview visibility
+    const kpiOverview = document.getElementById('kpiOverview');
+    if (window.innerWidth <= 640) {
+        if (panelId === 'dashboard') {
+            kpiOverview.classList.add('mobile-active');
+        } else {
+            kpiOverview.classList.remove('mobile-active');
+        }
+    }
+
     // Close mobile sidebar after selection
     const sidebar = document.getElementById('sidebarNav');
     const overlay = document.getElementById('sidebarOverlay');
