@@ -2,7 +2,9 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>Headcount Dashboard</title>
     <style>
         :root {
@@ -660,18 +662,243 @@
             border-top: 1px solid var(--border);
         }
 
+        /* Hamburger menu button (mobile only) */
+        .hamburger-btn {
+            display: none;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 8px;
+            line-height: 1;
+            border-radius: 6px;
+            flex-shrink: 0;
+        }
+        .hamburger-btn:hover {
+            background: rgba(255,255,255,0.15);
+        }
+
+        /* Mobile sidebar overlay */
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.4);
+            z-index: 899;
+        }
+        .sidebar-overlay.open {
+            display: block;
+        }
+
         /* Responsive */
         @media (max-width: 1024px) {
             .kpi-row { grid-template-columns: repeat(4, 1fr); }
             .sidebar { width: 220px; min-width: 220px; }
         }
 
+        @media (max-width: 768px) {
+            .kpi-row { grid-template-columns: repeat(3, 1fr); }
+            .kpi-card .kpi-value { font-size: 28px; }
+            .kpi-card .kpi-label { font-size: 10px; }
+            .kpi-card { padding: 14px 10px; }
+            .grid-2 { grid-template-columns: 1fr; }
+            .waterfall { gap: 10px; height: 160px; }
+            .waterfall-bar .bar { width: 55px; font-size: 13px; }
+            .waterfall-bar .bar-label { font-size: 9px; }
+        }
+
         @media (max-width: 640px) {
-            .kpi-row { grid-template-columns: repeat(2, 1fr); }
-            .container { flex-direction: column; height: auto; }
-            .sidebar { width: 100%; min-width: 100%; max-height: 200px; border-right: none; border-bottom: 1px solid var(--border); }
-            .main-content { height: calc(100vh - 274px); }
-            .header { flex-direction: column; gap: 12px; text-align: center; }
+            /* Header */
+            .header {
+                flex-direction: row;
+                flex-wrap: wrap;
+                gap: 8px;
+                padding: 12px 16px;
+                align-items: center;
+            }
+            .header h1 {
+                font-size: 15px;
+                flex: 1;
+                min-width: 0;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+            .header > div {
+                width: 100%;
+                flex-wrap: wrap;
+                gap: 8px !important;
+                justify-content: flex-start;
+            }
+            .header .bu-select,
+            .header .date-select,
+            .header #themeSelect {
+                font-size: 12px;
+                padding: 6px 8px;
+                flex: 1;
+                min-width: 0;
+            }
+            .hamburger-btn { display: block; }
+
+            /* Sidebar as slide-out drawer */
+            .container {
+                flex-direction: column;
+                height: auto;
+                min-height: calc(100vh - 90px);
+            }
+            .sidebar {
+                position: fixed;
+                top: 0;
+                left: -280px;
+                width: 270px;
+                min-width: 270px;
+                height: 100vh;
+                max-height: 100vh;
+                z-index: 900;
+                border-right: 1px solid var(--border);
+                border-bottom: none;
+                transition: left 0.3s ease;
+                box-shadow: 4px 0 20px rgba(0,0,0,0.15);
+            }
+            .sidebar.open {
+                left: 0;
+            }
+
+            /* Main content fills screen */
+            .main-content {
+                width: 100%;
+                padding: 16px 12px;
+                overflow-y: auto;
+                height: auto;
+                min-height: calc(100vh - 90px);
+            }
+
+            /* KPI cards */
+            .kpi-row {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 8px;
+                margin-bottom: 16px;
+            }
+            .kpi-card {
+                padding: 12px 8px;
+                border-radius: 10px;
+            }
+            .kpi-card .kpi-value { font-size: 24px; }
+            .kpi-card .kpi-label { font-size: 9px; letter-spacing: 0.5px; }
+            .kpi-sub { flex-wrap: wrap; gap: 4px; font-size: 10px; }
+
+            /* Global filter bar */
+            .global-filter-bar {
+                padding: 8px 10px;
+                gap: 6px;
+                margin-bottom: 12px;
+            }
+            .global-filter-bar span { font-size: 11px; margin-right: 4px; }
+            .filter-btn { padding: 6px 10px; font-size: 11px; }
+
+            /* Tables */
+            .section { border-radius: 10px; margin-bottom: 14px; }
+            .controls {
+                padding: 10px 12px;
+                flex-direction: column;
+                gap: 8px;
+            }
+            .search-box { width: 100%; }
+            table { font-size: 11px; }
+            thead th { padding: 8px 10px; font-size: 10px; }
+            tbody td { padding: 8px 10px; }
+
+            /* Waterfall */
+            .waterfall-container { padding: 14px; }
+            .waterfall { gap: 6px; height: 140px; padding: 10px 0; }
+            .waterfall-bar .bar { width: 40px; font-size: 11px; }
+            .waterfall-bar .bar-label { font-size: 8px; }
+
+            /* Panel headers */
+            .panel h2 { font-size: 15px !important; margin-bottom: 10px !important; }
+            .panel h2 span.badge { font-size: 10px; }
+            .panel h2 > span:last-child { display: block; margin-left: 0 !important; margin-top: 4px; font-size: 12px !important; }
+
+            /* Edit log FAB */
+            .edit-log-fab {
+                bottom: 16px;
+                right: 16px;
+                padding: 10px 16px;
+                font-size: 12px;
+            }
+
+            /* Edit log panel */
+            .edit-log-panel {
+                width: 100vw;
+                max-width: 100vw;
+            }
+
+            /* Modal */
+            .modal {
+                width: 95vw;
+                max-height: 90vh;
+                border-radius: 12px;
+            }
+            .modal-body textarea {
+                min-height: 200px;
+            }
+
+            /* Export buttons */
+            .export-wrapper { order: -1; }
+            .export-btn-group { gap: 4px; }
+            .export-trigger { padding: 6px 8px; }
+
+            /* Org chart */
+            .org-chart-controls { flex-wrap: wrap; }
+            .org-chart-search { margin-left: 0; width: 100%; }
+            .org-chart-search input { width: 100%; }
+
+            /* Scrollable table touch */
+            .scrollable-table {
+                -webkit-overflow-scrolling: touch;
+                max-height: 60vh;
+            }
+
+            /* View toggle */
+            .view-toggle { flex-wrap: wrap; }
+        }
+
+        @media (max-width: 390px) {
+            .kpi-row { grid-template-columns: repeat(2, 1fr); gap: 6px; }
+            .kpi-card .kpi-value { font-size: 20px; }
+            .header h1 { font-size: 13px; }
+            .waterfall-bar .bar { width: 32px; font-size: 10px; }
+        }
+
+        /* Safe area for notched iPhones */
+        @supports (padding: env(safe-area-inset-bottom)) {
+            .header {
+                padding-top: max(12px, env(safe-area-inset-top));
+                padding-left: max(16px, env(safe-area-inset-left));
+                padding-right: max(16px, env(safe-area-inset-right));
+            }
+            .edit-log-fab {
+                bottom: max(16px, env(safe-area-inset-bottom));
+            }
+            .sidebar {
+                padding-bottom: env(safe-area-inset-bottom);
+            }
+        }
+
+        /* Touch-friendly tap targets */
+        @media (pointer: coarse) {
+            .sidebar-nav a {
+                min-height: 44px;
+                padding: 12px 16px;
+            }
+            .filter-btn {
+                min-height: 44px;
+                padding: 8px 14px;
+            }
+            .btn {
+                min-height: 44px;
+            }
         }
 
         /* Print styles */
@@ -1245,7 +1472,7 @@
 <!-- Password Gate -->
 <div id="loginGate" style="position:fixed;top:0;left:0;right:0;bottom:0;background:linear-gradient(135deg,#0f172a 0%,#1e293b 40%,#0f3460 100%);z-index:9999;display:flex;align-items:center;justify-content:center;flex-direction:column;">
     <!-- Landing View -->
-    <div id="landingView" style="text-align:center;animation:fadeInUp 0.6s ease;">
+    <div id="landingView" style="text-align:center;animation:fadeInUp 0.6s ease;padding:20px;">
         <div style="margin-bottom:32px;">
             <div style="margin-bottom:16px;"><svg width="80" height="80" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <!-- People silhouettes on top -->
@@ -1264,8 +1491,8 @@
                 <circle cx="54" cy="56" r="3" fill="white" opacity="0.9"/>
                 <circle cx="48" cy="52" r="3" fill="white" opacity="0.9"/>
             </svg></div>
-            <h1 style="font-size:48px;font-weight:800;color:#ffffff;letter-spacing:-1px;margin:0;">PlayGround</h1>
-            <p style="font-size:16px;color:rgba(255,255,255,0.6);margin-top:10px;font-weight:300;">Headcount Planning & Workforce Intelligence</p>
+            <h1 style="font-size:clamp(32px, 8vw, 48px);font-weight:800;color:#ffffff;letter-spacing:-1px;margin:0;">PlayGround</h1>
+            <p style="font-size:clamp(13px, 3.5vw, 16px);color:rgba(255,255,255,0.6);margin-top:10px;font-weight:300;">Headcount Planning & Workforce Intelligence</p>
         </div>
         <button onclick="showLoginForm()"
             style="padding:14px 48px;background:linear-gradient(135deg,#e94560,#c23152);color:white;border:none;border-radius:12px;font-size:16px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .3s;box-shadow:0 4px 20px rgba(233,69,96,0.4);"
@@ -1374,6 +1601,7 @@ async function checkLogin() {
 </script>
 
 <div class="header">
+    <button class="hamburger-btn" onclick="toggleMobileSidebar()" aria-label="Menu">&#9776;</button>
     <h1 id="headerTitle">L1 &mdash; NEW GAMES &nbsp; Total Headcount Dashboard</h1>
     <div style="display:flex;align-items:center;gap:16px;">
         <select class="bu-select" id="buSelect" onchange="switchBU(this.value)">
@@ -1422,10 +1650,11 @@ async function checkLogin() {
     </div>
 </div>
 
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleMobileSidebar()"></div>
 <div class="container">
 
     <!-- Sidebar Navigation -->
-    <nav class="sidebar">
+    <nav class="sidebar" id="sidebarNav">
         <ul class="sidebar-nav">
             <li><a onclick="switchPanel('emplist')" data-panel="emplist"><input type="checkbox" class="sheet-check" data-sheet="emplist" onclick="event.stopPropagation()"> Employee List <span class="nav-badge">104</span></a></li>
             <li style="border-bottom:1px solid var(--border);margin:6px 0;padding:0;list-style:none;"></li>
@@ -4580,6 +4809,14 @@ function highlightOrgNode(query) {
 // Collapse all sections on page load — no longer needed with sidebar nav
 // Panels are shown/hidden via switchPanel()
 
+// Mobile sidebar toggle
+function toggleMobileSidebar() {
+    const sidebar = document.getElementById('sidebarNav');
+    const overlay = document.getElementById('sidebarOverlay');
+    sidebar.classList.toggle('open');
+    overlay.classList.toggle('open');
+}
+
 // Panel switching
 function switchPanel(panelId) {
     // Hide all panels
@@ -4591,6 +4828,13 @@ function switchPanel(panelId) {
     document.querySelectorAll('.sidebar-nav a').forEach(a => a.classList.remove('active'));
     const link = document.querySelector('.sidebar-nav a[data-panel="' + panelId + '"]');
     if (link) link.classList.add('active');
+    // Close mobile sidebar after selection
+    const sidebar = document.getElementById('sidebarNav');
+    const overlay = document.getElementById('sidebarOverlay');
+    if (sidebar.classList.contains('open')) {
+        sidebar.classList.remove('open');
+        overlay.classList.remove('open');
+    }
 }
 
 // ============ EXPORT FUNCTIONALITY ============
