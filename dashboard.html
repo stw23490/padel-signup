@@ -865,6 +865,11 @@
             .org-chart-search { margin-left: 0; width: 100%; }
             .org-chart-search input { width: 100%; }
 
+            /* Hierarchy tree mobile */
+            .hier-card-details { display: none; }
+            .hier-card-title { min-width: 0; }
+            .hier-card-name { min-width: 0; }
+
             /* Mobile-only nav items */
             .mobile-only-nav { display: list-item; }
 
@@ -944,15 +949,117 @@
         }
 
         /* Org Chart Tree */
-        .hier-toggle { cursor: pointer; font-size: 10px; color: var(--text-light); width: 16px; height: 16px; display: inline-flex; align-items: center; justify-content: center; border-radius: 50%; background: var(--table-stripe); transition: transform 0.2s; flex-shrink: 0; }
+        .hier-toggle { cursor: pointer; font-size: 10px; color: var(--text-light); width: 20px; height: 20px; display: inline-flex; align-items: center; justify-content: center; border-radius: 50%; background: var(--table-stripe); transition: transform 0.2s; flex-shrink: 0; border: 1px solid var(--border); }
         .hier-toggle:hover { background: var(--table-hover); }
         .hier-toggle.collapsed { transform: rotate(-90deg); }
-        .hier-row { transition: background 0.15s; }
-        .hier-row:hover { background: var(--table-hover) !important; }
-        .hier-row[draggable] td:first-child { cursor: grab; }
-        .hier-row.drag-over { border-top: 3px solid var(--primary) !important; }
         .org-highlight { background: #fff3cd; border-radius: 3px; padding: 0 2px; }
         .count-badge { font-size: 10px; background: var(--accent); color: #fff; padding: 1px 6px; border-radius: 10px; font-weight: 600; }
+
+        /* Vertical Tree Layout */
+        .hier-tree-container {
+            padding: 8px 0;
+            max-height: 70vh;
+            overflow-y: auto;
+        }
+        .hier-tree-node {
+            position: relative;
+        }
+        .hier-tree-node .hier-tree-children {
+            margin-left: 24px;
+            border-left: 2px solid var(--border);
+        }
+        .hier-tree-card {
+            display: flex;
+            align-items: stretch;
+            margin: 2px 0;
+            position: relative;
+            cursor: default;
+        }
+        /* Horizontal connector from the vertical border-left to the card */
+        .hier-tree-children > .hier-tree-node > .hier-tree-card::before {
+            content: '';
+            position: absolute;
+            left: -24px;
+            top: 50%;
+            width: 24px;
+            height: 2px;
+            background: var(--border);
+        }
+        .hier-tree-card-inner {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 8px 14px;
+            flex: 1;
+            transition: box-shadow 0.2s, border-color 0.2s, background 0.15s;
+            min-height: 44px;
+            overflow: hidden;
+        }
+        .hier-tree-card-inner:hover {
+            box-shadow: 0 2px 8px var(--shadow-hover);
+            border-color: var(--accent);
+        }
+        .hier-tree-card-inner.is-root {
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            color: #fff;
+            border-color: var(--primary);
+        }
+        .hier-tree-card-inner.is-root .hier-card-title,
+        .hier-tree-card-inner.is-root .hier-card-detail {
+            color: rgba(255,255,255,0.85);
+        }
+        .hier-tree-card-inner.is-manager {
+            border-left: 4px solid var(--accent);
+        }
+        .hier-card-toggle {
+            flex-shrink: 0;
+        }
+        .hier-card-name {
+            font-weight: 600;
+            font-size: 13px;
+            white-space: nowrap;
+            min-width: 160px;
+        }
+        .hier-card-title {
+            font-size: 12px;
+            color: var(--text-light);
+            white-space: nowrap;
+            min-width: 140px;
+        }
+        .hier-card-detail {
+            font-size: 11px;
+            color: var(--text-light);
+            white-space: nowrap;
+        }
+        .hier-card-details {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+            margin-left: auto;
+            flex-shrink: 0;
+        }
+        .hier-card-detail-label {
+            font-size: 9px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-light);
+            opacity: 0.7;
+        }
+        .hier-card-drag {
+            color: #bbb;
+            cursor: grab;
+            font-size: 14px;
+            flex-shrink: 0;
+            padding: 0 2px;
+        }
+        .hier-card-drag:hover { color: var(--text); }
+        .hier-tree-card-inner.drag-over-tree {
+            border-color: var(--primary) !important;
+            box-shadow: 0 0 0 2px rgba(15,52,96,0.3);
+        }
 
         /* View toggle buttons */
         .view-toggle { display: inline-flex; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
@@ -971,6 +1078,10 @@
 
         @media (max-width: 900px) {
             .grid-2 { grid-template-columns: 1fr; }
+            /* Hierarchy tree cards: hide detail columns on narrower screens */
+            .hier-card-details { display: none; }
+            .hier-card-title { min-width: 0; }
+            .hier-card-name { min-width: 0; }
         }
 
         .grid-2 .section {
@@ -1210,10 +1321,9 @@
 
         /* ============ VISUAL ORG CHART ============ */
         .org-chart-container {
-            overflow-x: auto;
             overflow-y: auto;
-            max-height: 80vh;
-            padding: 24px 12px;
+            max-height: 75vh;
+            padding: 8px 0;
         }
         .org-tree {
             display: inline-flex;
@@ -2520,24 +2630,7 @@ async function checkLogin() {
             </div>
             <!-- Hierarchy Tree View -->
             <div id="empHierarchyView" style="display:none;">
-                <div class="scrollable-table">
-                    <table id="hierTable">
-                        <thead>
-                            <tr>
-                                <th style="width:30px;"></th>
-                                <th>Employee Name</th>
-                                <th>Manager</th>
-                                <th>Position</th>
-                                <th>Position Description</th>
-                                <th>Location</th>
-                                <th>Cost Center</th>
-                                <th>Grade</th>
-                                <th>Type</th>
-                            </tr>
-                        </thead>
-                        <tbody id="hierTableBody">
-                        </tbody>
-                    </table>
+                <div id="hierTreeContainer" class="hier-tree-container">
                 </div>
             </div>
             </div>
@@ -3098,10 +3191,6 @@ async function checkLogin() {
     <div class="section">
             <div class="section-body">
                 <div class="org-chart-controls">
-                    <button onclick="orgChartZoom(-0.1)" title="Zoom out">&#8722;</button>
-                    <span id="orgZoomLevel">100%</span>
-                    <button onclick="orgChartZoom(0.1)" title="Zoom in">&#43;</button>
-                    <button onclick="orgChartZoom(0, true)" title="Reset zoom">&#8634;</button>
                     <button onclick="orgExpandAll()" title="Expand all">&#9654; All</button>
                     <button onclick="orgCollapseAll()" title="Collapse all" style="width:auto;padding:0 10px;">&#9664; All</button>
                     <div class="org-chart-search">
@@ -3109,7 +3198,7 @@ async function checkLogin() {
                     </div>
                 </div>
                 <div class="org-chart-container" id="orgChartContainer">
-                    <div class="org-tree" id="orgTree"></div>
+                    <div id="orgTree"></div>
                 </div>
             </div>
         </div>
@@ -3578,67 +3667,70 @@ let hierCollapsed = new Set();
 function renderHierarchyTable() {
     const { childMap, roots } = buildOrgTree();
     const lookup = getEmpLookup();
-    const allRows = [];
-    roots.forEach(root => flattenTree(root, childMap, 0, '', allRows));
-
-    // Filter out collapsed children
-    const visibleRows = [];
-    const collapsedParents = new Set();
-    allRows.forEach(r => {
-        // Check if any ancestor is collapsed
-        let hidden = false;
-        // Walk up to see if parent chain includes a collapsed node
-        let check = r.manager;
-        while (check) {
-            if (hierCollapsed.has(check)) { hidden = true; break; }
-            const parentEntry = orgData.find(d => d.w === check);
-            check = parentEntry ? parentEntry.m : '';
-        }
-        if (!hidden) visibleRows.push(r);
-    });
-
     const search = document.getElementById('empSearch').value.toLowerCase().trim();
-    const tbody = document.getElementById('hierTableBody');
-    tbody.innerHTML = visibleRows.map((r, i) => {
-        const emp = lookup[r.name];
-        const indent = r.depth * 20;
-        const isCollapsed = hierCollapsed.has(r.name);
-        const toggleBtn = r.isManager
-            ? `<span class="hier-toggle ${isCollapsed ? 'collapsed' : ''}" onclick="toggleHierNode('${r.name.replace(/'/g, "\\'")}')">&#9660;</span>`
-            : '';
-        const nameHtml = r.isManager ? `<strong>${r.name}</strong> <span class="count-badge">${r.childCount}</span>` : r.name;
+    const container = document.getElementById('hierTreeContainer');
+    if (!container) return;
 
-        // Highlight search match
-        let displayName = nameHtml;
-        if (search && r.name.toLowerCase().includes(search)) {
-            const idx = r.name.toLowerCase().indexOf(search);
-            const hl = r.name.substring(0, idx) + '<span class="org-highlight">' + r.name.substring(idx, idx + search.length) + '</span>' + r.name.substring(idx + search.length);
-            displayName = r.isManager ? `<strong>${hl}</strong> <span class="count-badge">${r.childCount}</span>` : hl;
-        }
+    function buildNodeHtml(name, parentName) {
+        const children = childMap[name] || [];
+        const isManager = children.length > 0;
+        const isCollapsed = hierCollapsed.has(name);
+        const isRoot = !parentName;
+        const emp = lookup[name];
 
         const pos = emp ? emp.pos : '';
-        const desc = emp ? emp.desc : '';
         const loc = emp ? emp.loc : '';
         const cc = emp ? emp.cc : '';
         const grade = emp ? emp.grade : '';
         const type = emp ? emp.type : '';
-        const managerDisplay = r.manager || '';
-        const isRoot = !r.manager;
 
-        return `<tr class="hier-row" draggable="true" data-name="${r.name}" data-manager="${r.manager}" data-depth="${r.depth}"
-            ondragstart="hierDragStart(event)" ondragover="hierDragOver(event)" ondragleave="hierDragLeave(event)" ondrop="hierDrop(event)"
-            ${isRoot ? 'style="background:#f0f4ff;"' : ''}>
-            <td style="width:30px;text-align:center;cursor:grab;color:#aaa;" title="Drag to change reporting line">&#9776;</td>
-            <td><div style="padding-left:${indent}px;display:flex;align-items:center;gap:6px;">${toggleBtn}${displayName}</div></td>
-            <td>${managerDisplay}</td>
-            <td>${pos}</td>
-            <td>${desc}</td>
-            <td>${loc}</td>
-            <td>${cc}</td>
-            <td>${grade}</td>
-            <td>${type}</td>
-        </tr>`;
-    }).join('');
+        // Name display with search highlight
+        let displayName = name;
+        if (search && name.toLowerCase().includes(search)) {
+            const idx = name.toLowerCase().indexOf(search);
+            displayName = name.substring(0, idx) + '<span class="org-highlight">' + name.substring(idx, idx + search.length) + '</span>' + name.substring(idx + search.length);
+        }
+        const nameHtml = isManager
+            ? `<strong>${displayName}</strong> <span class="count-badge">${children.length}</span>`
+            : displayName;
+
+        const toggleHtml = isManager
+            ? `<span class="hier-card-toggle"><span class="hier-toggle ${isCollapsed ? 'collapsed' : ''}" onclick="toggleHierNode('${name.replace(/'/g, "\\'")}')">&#9660;</span></span>`
+            : '';
+
+        const escapedName = name.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+
+        let cardClass = 'hier-tree-card-inner';
+        if (isRoot) cardClass += ' is-root';
+        else if (isManager) cardClass += ' is-manager';
+
+        const detailsHtml = `<div class="hier-card-details">
+            ${loc ? `<div><div class="hier-card-detail-label">Location</div><div class="hier-card-detail">${loc}</div></div>` : ''}
+            ${grade ? `<div><div class="hier-card-detail-label">Grade</div><div class="hier-card-detail">${grade}</div></div>` : ''}
+            ${type ? `<div><div class="hier-card-detail-label">Type</div><div class="hier-card-detail">${type}</div></div>` : ''}
+        </div>`;
+
+        let childrenHtml = '';
+        if (isManager && !isCollapsed) {
+            childrenHtml = `<div class="hier-tree-children">${children.map(c => buildNodeHtml(c, name)).join('')}</div>`;
+        }
+
+        return `<div class="hier-tree-node">
+            <div class="hier-tree-card" draggable="true" data-name="${escapedName}" data-manager="${(parentName || '').replace(/"/g, '&quot;')}"
+                ondragstart="hierDragStart(event)" ondragover="hierDragOver(event)" ondragleave="hierDragLeave(event)" ondrop="hierDrop(event)">
+                <div class="${cardClass}">
+                    <span class="hier-card-drag" title="Drag to change reporting line">&#9776;</span>
+                    ${toggleHtml}
+                    <div class="hier-card-name">${nameHtml}</div>
+                    <div class="hier-card-title">${pos}</div>
+                    ${detailsHtml}
+                </div>
+            </div>
+            ${childrenHtml}
+        </div>`;
+    }
+
+    container.innerHTML = roots.map(r => buildNodeHtml(r, '')).join('');
 }
 
 function toggleHierNode(name) {
@@ -3654,28 +3746,34 @@ function toggleHierNode(name) {
 let hierDraggedName = null;
 
 function hierDragStart(e) {
-    hierDraggedName = e.currentTarget.getAttribute('data-name');
-    e.currentTarget.style.opacity = '0.4';
+    const card = e.currentTarget;
+    hierDraggedName = card.getAttribute('data-name');
+    card.style.opacity = '0.4';
     e.dataTransfer.effectAllowed = 'move';
 }
 
 function hierDragOver(e) {
     e.preventDefault();
     e.dataTransfer.dropEffect = 'move';
-    const row = e.currentTarget;
-    row.style.borderTop = '3px solid var(--primary)';
+    const card = e.currentTarget;
+    const inner = card.querySelector('.hier-tree-card-inner');
+    if (inner) inner.classList.add('drag-over-tree');
 }
 
 function hierDragLeave(e) {
-    e.currentTarget.style.borderTop = '';
+    const card = e.currentTarget;
+    const inner = card.querySelector('.hier-tree-card-inner');
+    if (inner) inner.classList.remove('drag-over-tree');
 }
 
 function hierDrop(e) {
     e.preventDefault();
-    e.currentTarget.style.borderTop = '';
-    const targetName = e.currentTarget.getAttribute('data-name');
+    const card = e.currentTarget;
+    const inner = card.querySelector('.hier-tree-card-inner');
+    if (inner) inner.classList.remove('drag-over-tree');
+    const targetName = card.getAttribute('data-name');
     if (!hierDraggedName || hierDraggedName === targetName) {
-        document.querySelectorAll('.hier-row').forEach(r => r.style.opacity = '');
+        document.querySelectorAll('.hier-tree-card').forEach(r => r.style.opacity = '');
         return;
     }
 
@@ -3691,7 +3789,7 @@ function hierDrop(e) {
     }
     if (isDescendant(hierDraggedName, targetName)) {
         alert('Cannot move a manager under their own report.');
-        document.querySelectorAll('.hier-row').forEach(r => r.style.opacity = '');
+        document.querySelectorAll('.hier-tree-card').forEach(r => r.style.opacity = '');
         return;
     }
 
@@ -3706,7 +3804,7 @@ function hierDrop(e) {
     const newManager = targetChildren.length > 0 ? targetName : (orgData.find(d => d.w === targetName) || {}).m || targetName;
 
     if (oldManager === newManager) {
-        document.querySelectorAll('.hier-row').forEach(r => r.style.opacity = '');
+        document.querySelectorAll('.hier-tree-card').forEach(r => r.style.opacity = '');
         return;
     }
 
@@ -3733,7 +3831,7 @@ function hierDrop(e) {
 
     // Re-render
     renderHierarchyTable();
-    document.querySelectorAll('.hier-row').forEach(r => r.style.opacity = '');
+    document.querySelectorAll('.hier-tree-card').forEach(r => r.style.opacity = '');
     hierDraggedName = null;
 }
 
@@ -4691,84 +4789,87 @@ function renderVisualOrgChart() {
     const { childMap, roots } = buildOrgTree();
     const container = document.getElementById('orgTree');
     if (!container) return;
-    container.innerHTML = '';
-    container.style.transform = 'scale(' + orgChartScale + ')';
-    container.style.transformOrigin = 'top center';
-    roots.forEach(root => {
-        container.appendChild(buildOrgNodeEl(root, childMap, 0));
-    });
-    // Fix horizontal connector lines after DOM render
-    requestAnimationFrame(fixOrgConnectors);
-}
+    const lookup = getEmpLookup();
+    const searchVal = document.getElementById('orgChartSearch') ? document.getElementById('orgChartSearch').value.toLowerCase().trim() : '';
 
-function fixOrgConnectors() {
-    document.querySelectorAll('.org-children:not(.single-child)').forEach(row => {
-        const wraps = Array.from(row.children);
-        if (wraps.length < 2) return;
-        const first = wraps[0];
-        const last = wraps[wraps.length - 1];
-        const rowRect = row.getBoundingClientRect();
-        const firstCenter = first.getBoundingClientRect().left + first.getBoundingClientRect().width / 2 - rowRect.left;
-        const lastCenter = last.getBoundingClientRect().left + last.getBoundingClientRect().width / 2 - rowRect.left;
-        row.style.setProperty('--hl-left', firstCenter + 'px');
-        row.style.setProperty('--hl-right', (rowRect.width - lastCenter) + 'px');
-    });
-}
+    function buildOrgCardHtml(name, parentName, depth) {
+        const children = childMap[name] || [];
+        const isManager = children.length > 0;
+        const isCollapsed = orgChartCollapsed.has(name);
+        const isRoot = depth === 0;
+        const emp = lookup[name];
 
-function buildOrgNodeEl(name, childMap, depth) {
-    const wrap = document.createElement('div');
-    wrap.className = 'org-node-wrap';
+        const shortName = getShortName(name);
+        const desc = getDescForName(name);
+        const pos = emp ? emp.pos : '';
+        const loc = emp ? emp.loc : '';
+        const grade = emp ? emp.grade : '';
+        const type = emp ? emp.type : '';
 
-    const node = document.createElement('div');
-    node.className = 'org-node';
-    node.setAttribute('data-org-name', name);
-    if (depth === 0) node.classList.add('root');
+        // Search highlight
+        let displayName = escapeHtml(shortName);
+        if (searchVal && shortName.toLowerCase().includes(searchVal)) {
+            const idx = shortName.toLowerCase().indexOf(searchVal);
+            displayName = escapeHtml(shortName.substring(0, idx)) + '<span class="org-highlight">' + escapeHtml(shortName.substring(idx, idx + searchVal.length)) + '</span>' + escapeHtml(shortName.substring(idx + searchVal.length));
+        }
 
-    const children = childMap[name] || [];
-    if (children.length > 0) node.classList.add('manager');
+        const nameHtml = isManager
+            ? '<strong>' + displayName + '</strong> <span class="count-badge">' + children.length + '</span>'
+            : displayName;
 
-    const shortName = getShortName(name);
-    const desc = getDescForName(name);
-    
-    node.innerHTML = '<div class="org-name">' + escapeHtml(shortName) + '</div>'
-        + (desc ? '<div class="org-title">' + escapeHtml(desc.split('|')[0].trim()) + '</div>' : '')
-        + (children.length > 0 ? '<span class="org-badge">' + children.length + '</span>' : '');
+        const toggleHtml = isManager
+            ? '<span class="hier-card-toggle"><span class="hier-toggle ' + (isCollapsed ? 'collapsed' : '') + '" data-org-toggle="' + escapeHtml(name).replace(/"/g, '&quot;') + '">&#9660;</span></span>'
+            : '';
 
-    if (children.length > 0) {
-        node.onclick = function(e) {
+        let cardClass = 'hier-tree-card-inner';
+        if (isRoot) cardClass += ' is-root';
+        else if (isManager) cardClass += ' is-manager';
+
+        const highlighted = searchVal && name.toLowerCase().includes(searchVal) ? ' highlighted' : '';
+
+        const descDisplay = desc ? desc.split('|')[0].trim() : '';
+
+        const detailsHtml = '<div class="hier-card-details">' +
+            (loc ? '<div><div class="hier-card-detail-label">Location</div><div class="hier-card-detail">' + escapeHtml(loc) + '</div></div>' : '') +
+            (grade ? '<div><div class="hier-card-detail-label">Grade</div><div class="hier-card-detail">' + escapeHtml(grade) + '</div></div>' : '') +
+            (type ? '<div><div class="hier-card-detail-label">Type</div><div class="hier-card-detail">' + escapeHtml(type) + '</div></div>' : '') +
+            '</div>';
+
+        let childrenHtml = '';
+        if (isManager && !isCollapsed) {
+            childrenHtml = '<div class="hier-tree-children">' + children.map(c => buildOrgCardHtml(c, name, depth + 1)).join('') + '</div>';
+        } else if (isManager && isCollapsed) {
+            childrenHtml = '<div style="margin-left:24px;padding:2px 0 2px 12px;font-size:11px;color:var(--text-light);">&#9656; ' + children.length + ' report' + (children.length > 1 ? 's' : '') + '</div>';
+        }
+
+        return '<div class="hier-tree-node">' +
+            '<div class="hier-tree-card" data-org-name="' + escapeHtml(name).replace(/"/g, '&quot;') + '">' +
+                '<div class="' + cardClass + highlighted + '">' +
+                    toggleHtml +
+                    '<div class="hier-card-name">' + nameHtml + '</div>' +
+                    (descDisplay ? '<div class="hier-card-title">' + escapeHtml(descDisplay) + '</div>' : '') +
+                    detailsHtml +
+                '</div>' +
+            '</div>' +
+            childrenHtml +
+        '</div>';
+    }
+
+    container.innerHTML = roots.map(r => buildOrgCardHtml(r, '', 0)).join('');
+
+    // Attach toggle click handlers
+    container.querySelectorAll('[data-org-toggle]').forEach(el => {
+        el.onclick = function(e) {
             e.stopPropagation();
-            if (orgChartCollapsed.has(name)) {
-                orgChartCollapsed.delete(name);
+            const n = this.getAttribute('data-org-toggle');
+            if (orgChartCollapsed.has(n)) {
+                orgChartCollapsed.delete(n);
             } else {
-                orgChartCollapsed.add(name);
+                orgChartCollapsed.add(n);
             }
             renderVisualOrgChart();
         };
-    }
-
-    wrap.appendChild(node);
-
-    if (children.length > 0) {
-        if (orgChartCollapsed.has(name)) {
-            const ind = document.createElement('div');
-            ind.className = 'org-collapsed-indicator';
-            ind.textContent = '▸ ' + children.length + ' report' + (children.length > 1 ? 's' : '');
-            wrap.appendChild(ind);
-        } else {
-            const childWrap = document.createElement('div');
-            childWrap.className = 'org-children-wrap';
-            const childRow = document.createElement('div');
-            childRow.className = 'org-children';
-            if (children.length === 1) childRow.classList.add('single-child');
-            children.forEach(c => {
-                childRow.appendChild(buildOrgNodeEl(c, childMap, depth + 1));
-            });
-            childWrap.appendChild(childRow);
-            wrap.appendChild(childWrap);
-        }
-    }
-
-    return wrap;
+    });
 }
 
 function escapeHtml(str) {
@@ -4778,14 +4879,7 @@ function escapeHtml(str) {
 }
 
 function orgChartZoom(delta, reset) {
-    if (reset) {
-        orgChartScale = 1;
-    } else {
-        orgChartScale = Math.max(0.3, Math.min(2, orgChartScale + delta));
-    }
-    document.getElementById('orgZoomLevel').textContent = Math.round(orgChartScale * 100) + '%';
-    const tree = document.getElementById('orgTree');
-    if (tree) tree.style.transform = 'scale(' + orgChartScale + ')';
+    // Zoom no longer needed with vertical layout
 }
 
 function orgExpandAll() {
@@ -4800,17 +4894,12 @@ function orgCollapseAll() {
 }
 
 function highlightOrgNode(query) {
-    document.querySelectorAll('.org-node.highlighted').forEach(el => el.classList.remove('highlighted'));
+    // Re-render to apply search highlighting
+    renderVisualOrgChart();
     if (!query || query.length < 2) return;
     const q = query.toLowerCase();
-    document.querySelectorAll('.org-node').forEach(el => {
-        const name = (el.getAttribute('data-org-name') || '').toLowerCase();
-        if (name.includes(q)) {
-            el.classList.add('highlighted');
-            // Scroll into view
-            el.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' });
-        }
-    });
+    const hit = document.querySelector('.hier-tree-card-inner.highlighted');
+    if (hit) hit.scrollIntoView({ behavior: 'smooth', block: 'center' });
 }
 
 // Initial render of the visual org chart — collapse all managers except root by default
