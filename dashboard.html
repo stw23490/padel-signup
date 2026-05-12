@@ -3654,6 +3654,7 @@ function flattenTree(name, childMap, depth, parentName, rows) {
 }
 
 let hierCollapsed = new Set();
+let orgChartCollapsed = new Set();
 
 function renderHierarchyTable() {
     renderVisualOrgChart();
@@ -4696,7 +4697,6 @@ renderHierarchyTable();
 setTimeout(() => initEditableCells(), 100);
 
 // ============ VISUAL ORG CHART ============
-let orgChartCollapsed = new Set();
 let orgChartScale = 1;
 
 function getShortName(fullName) {
