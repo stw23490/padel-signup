@@ -1800,7 +1800,7 @@ async function checkLogin() {
             <li><a onclick="switchPanel('onleave')" data-panel="onleave"><input type="checkbox" class="sheet-check" data-sheet="onleave" onclick="event.stopPropagation()"> Absent or Part-time <span class="nav-badge" style="background:#fff3cd;color:#856404;">5</span></a></li>
             <li><a onclick="switchPanel('anniversaries')" data-panel="anniversaries"><input type="checkbox" class="sheet-check" data-sheet="anniversaries" onclick="event.stopPropagation()"> Work Anniversaries <span class="nav-badge" style="background:#cce5ff;color:#004085;">6</span></a></li>
             <li><a onclick="switchPanel('changelog')" data-panel="changelog"><input type="checkbox" class="sheet-check" data-sheet="changelog" onclick="event.stopPropagation()"> Revision History</a></li>
-            <li><a onclick="switchPanel('orgchart')" data-panel="orgchart"><input type="checkbox" class="sheet-check" data-sheet="orgchart" onclick="event.stopPropagation()"> Organisation Chart</a></li>
+
         </ul>
     </nav>
 
@@ -2630,7 +2630,15 @@ async function checkLogin() {
             </div>
             <!-- Hierarchy Tree View -->
             <div id="empHierarchyView" style="display:none;">
-                <div id="hierTreeContainer" class="hier-tree-container">
+                <div class="org-chart-controls">
+                    <button onclick="orgExpandAll()" title="Expand all" style="width:auto;padding:0 10px;">&#9654; All</button>
+                    <button onclick="orgCollapseAll()" title="Collapse all" style="width:auto;padding:0 10px;">&#9664; All</button>
+                    <div class="org-chart-search">
+                        <input type="text" id="orgChartSearch" placeholder="Search org chart..." oninput="highlightOrgNode(this.value)">
+                    </div>
+                </div>
+                <div class="org-chart-container" id="orgChartContainer">
+                    <div id="orgTree"></div>
                 </div>
             </div>
             </div>
@@ -3185,24 +3193,7 @@ async function checkLogin() {
         </div>
     </div><!-- /panel-changelog -->
 
-    <!-- Panel: Organisation Chart -->
-    <div class="panel" id="panel-orgchart">
-    <h2 style="font-size:18px;font-weight:600;margin-bottom:16px;color:var(--text);">Organisation Chart <span style="font-size:13px;font-weight:400;color:var(--text-light);margin-left:8px;">Visual hierarchy of the team reporting structure</span></h2>
-    <div class="section">
-            <div class="section-body">
-                <div class="org-chart-controls">
-                    <button onclick="orgExpandAll()" title="Expand all" style="width:auto;padding:0 10px;">&#9654; All</button>
-                    <button onclick="orgCollapseAll()" title="Collapse all" style="width:auto;padding:0 10px;">&#9664; All</button>
-                    <div class="org-chart-search">
-                        <input type="text" id="orgChartSearch" placeholder="Search employee..." oninput="highlightOrgNode(this.value)">
-                    </div>
-                </div>
-                <div class="org-chart-container" id="orgChartContainer">
-                    <div id="orgTree"></div>
-                </div>
-            </div>
-        </div>
-    </div><!-- /panel-orgchart -->
+
 
     </div><!-- /main-content -->
 </div><!-- /container -->
@@ -3665,81 +3656,16 @@ function flattenTree(name, childMap, depth, parentName, rows) {
 let hierCollapsed = new Set();
 
 function renderHierarchyTable() {
-    const { childMap, roots } = buildOrgTree();
-    const lookup = getEmpLookup();
-    const search = document.getElementById('empSearch').value.toLowerCase().trim();
-    const container = document.getElementById('hierTreeContainer');
-    if (!container) return;
-
-    function buildNodeHtml(name, parentName) {
-        const children = childMap[name] || [];
-        const isManager = children.length > 0;
-        const isCollapsed = hierCollapsed.has(name);
-        const isRoot = !parentName;
-        const emp = lookup[name];
-
-        const pos = emp ? emp.pos : '';
-        const loc = emp ? emp.loc : '';
-        const cc = emp ? emp.cc : '';
-        const grade = emp ? emp.grade : '';
-        const type = emp ? emp.type : '';
-
-        // Name display with search highlight
-        let displayName = name;
-        if (search && name.toLowerCase().includes(search)) {
-            const idx = name.toLowerCase().indexOf(search);
-            displayName = name.substring(0, idx) + '<span class="org-highlight">' + name.substring(idx, idx + search.length) + '</span>' + name.substring(idx + search.length);
-        }
-        const nameHtml = isManager
-            ? `<strong>${displayName}</strong> <span class="count-badge">${children.length}</span>`
-            : displayName;
-
-        const toggleHtml = isManager
-            ? `<span class="hier-card-toggle"><span class="hier-toggle ${isCollapsed ? 'collapsed' : ''}" onclick="toggleHierNode('${name.replace(/'/g, "\\'")}')">&#9660;</span></span>`
-            : '';
-
-        const escapedName = name.replace(/'/g, "\\'").replace(/"/g, '&quot;');
-
-        let cardClass = 'hier-tree-card-inner';
-        if (isRoot) cardClass += ' is-root';
-        else if (isManager) cardClass += ' is-manager';
-
-        const detailsHtml = `<div class="hier-card-details">
-            ${loc ? `<div><div class="hier-card-detail-label">Location</div><div class="hier-card-detail">${loc}</div></div>` : ''}
-            ${grade ? `<div><div class="hier-card-detail-label">Grade</div><div class="hier-card-detail">${grade}</div></div>` : ''}
-            ${type ? `<div><div class="hier-card-detail-label">Type</div><div class="hier-card-detail">${type}</div></div>` : ''}
-        </div>`;
-
-        let childrenHtml = '';
-        if (isManager && !isCollapsed) {
-            childrenHtml = `<div class="hier-tree-children">${children.map(c => buildNodeHtml(c, name)).join('')}</div>`;
-        }
-
-        return `<div class="hier-tree-node">
-            <div class="hier-tree-card" draggable="true" data-name="${escapedName}" data-manager="${(parentName || '').replace(/"/g, '&quot;')}"
-                ondragstart="hierDragStart(event)" ondragover="hierDragOver(event)" ondragleave="hierDragLeave(event)" ondrop="hierDrop(event)">
-                <div class="${cardClass}">
-                    <span class="hier-card-drag" title="Drag to change reporting line">&#9776;</span>
-                    ${toggleHtml}
-                    <div class="hier-card-name">${nameHtml}</div>
-                    <div class="hier-card-title">${pos}</div>
-                    ${detailsHtml}
-                </div>
-            </div>
-            ${childrenHtml}
-        </div>`;
-    }
-
-    container.innerHTML = roots.map(r => buildNodeHtml(r, '')).join('');
+    renderVisualOrgChart();
 }
 
 function toggleHierNode(name) {
-    if (hierCollapsed.has(name)) {
-        hierCollapsed.delete(name);
+    if (orgChartCollapsed.has(name)) {
+        orgChartCollapsed.delete(name);
     } else {
-        hierCollapsed.add(name);
+        orgChartCollapsed.add(name);
     }
-    renderHierarchyTable();
+    renderVisualOrgChart();
 }
 
 // ============ DRAG & DROP FOR HIERARCHY ============
@@ -3835,11 +3761,6 @@ function hierDrop(e) {
     hierDraggedName = null;
 }
 
-function filterOrgChart() {
-    // Re-render which will pick up the search filter
-    renderHierarchyTable();
-}
-
 // Generic table row filter for search boxes
 function filterTableRows(inputEl) {
     const query = inputEl.value.toLowerCase().trim();
@@ -3873,6 +3794,7 @@ function switchView(view) {
         btnAlpha.classList.remove('active');
         btnHier.classList.add('active');
         desc.textContent = 'Reporting hierarchy for New Games';
+        renderVisualOrgChart();
     }
 }
 
@@ -3880,7 +3802,10 @@ function handleEmpSearch() {
     if (currentEmpView === 'alpha') {
         filterEmployees();
     } else {
-        filterOrgChart();
+        // Sync the main search into org chart search and re-render
+        const orgSearch = document.getElementById('orgChartSearch');
+        if (orgSearch) orgSearch.value = document.getElementById('empSearch').value;
+        highlightOrgNode(document.getElementById('empSearch').value);
     }
 }
 
@@ -4475,7 +4400,7 @@ function globalFilterCC(cc, btn) {
     panels.forEach(panel => {
         const pid = panel.id;
         // Skip dynamically-rendered panels (handled above) and panels without CC data
-        if (['panel-filled', 'panel-emplist', 'panel-changelog', 'panel-orgchart'].includes(pid)) return;
+        if (['panel-filled', 'panel-emplist', 'panel-changelog'].includes(pid)) return;
 
         const table = panel.querySelector('table');
         if (!table) return;
