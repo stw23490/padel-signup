@@ -1,0 +1,2484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>PlayGround Points – Employee Recognition</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #1a1a2e;
+            --primary-light: #0f3460;
+            --primary-dark: #16213e;
+            --secondary: #0f3460;
+            --secondary-light: #2c3e6e;
+            --accent: #e94560;
+            --accent-light: #f39c12;
+            --bg: #f0f2f5;
+            --card: #FFFFFF;
+            --text: #2c3e50;
+            --text-secondary: #636E72;
+            --text-muted: #7f8c8d;
+            --border: #e1e5eb;
+            --success: #27ae60;
+            --warning: #f39c12;
+            --danger: #e74c3c;
+            --gold: #F9CA24;
+            --silver: #95AFC0;
+            --bronze: #E67E22;
+            --shadow-sm: 0 2px 8px rgba(26,26,46,0.08);
+            --shadow-md: 0 4px 20px rgba(26,26,46,0.12);
+            --shadow-lg: 0 8px 40px rgba(26,26,46,0.16);
+            --radius-sm: 12px;
+            --radius-md: 16px;
+            --radius-lg: 24px;
+            --radius-xl: 32px;
+            --nav-height: 72px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.5;
+            overflow-x: hidden;
+            min-height: 100vh;
+            min-height: 100dvh;
+        }
+
+        /* ===== SCROLLBAR ===== */
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: var(--primary-light); border-radius: 4px; }
+
+        /* ===== SCREENS ===== */
+        .screen {
+            display: none;
+            min-height: 100vh;
+            min-height: 100dvh;
+            padding-bottom: calc(var(--nav-height) + 20px);
+            animation: fadeIn 0.3s ease;
+        }
+        .screen.active { display: block; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes scaleIn {
+            from { opacity: 0; transform: scale(0.8); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        @keyframes confetti {
+            0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(-200px) rotate(720deg); opacity: 0; }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+
+        @keyframes bounceIn {
+            0% { transform: scale(0); }
+            50% { transform: scale(1.15); }
+            100% { transform: scale(1); }
+        }
+
+        /* ===== LOGIN SCREEN ===== */
+        #loginScreen {
+            padding-bottom: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 40%, #0f3460 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .login-bg-shapes {
+            position: absolute;
+            inset: 0;
+            overflow: hidden;
+            pointer-events: none;
+        }
+
+        .login-bg-shapes .shape {
+            position: absolute;
+            border-radius: 50%;
+            opacity: 0.1;
+            background: white;
+        }
+        .login-bg-shapes .shape:nth-child(1) { width: 300px; height: 300px; top: -50px; right: -80px; }
+        .login-bg-shapes .shape:nth-child(2) { width: 200px; height: 200px; bottom: 10%; left: -60px; }
+        .login-bg-shapes .shape:nth-child(3) { width: 150px; height: 150px; top: 40%; right: 10%; opacity: 0.06; }
+
+        .login-card {
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(20px);
+            border-radius: var(--radius-lg);
+            padding: 40px 32px;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: var(--shadow-lg);
+            text-align: center;
+            z-index: 1;
+            animation: slideUp 0.6s ease;
+        }
+
+        .login-logo {
+            font-size: 48px;
+            margin-bottom: 8px;
+        }
+
+        .login-title {
+            font-size: 28px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #1a1a2e, #e94560);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 4px;
+        }
+
+        .login-subtitle {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 32px;
+        }
+
+        .login-field {
+            margin-bottom: 16px;
+            text-align: left;
+        }
+
+        .login-field label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 6px;
+        }
+
+        .login-field select,
+        .login-field input {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid var(--border);
+            border-radius: var(--radius-sm);
+            font-size: 15px;
+            font-family: inherit;
+            color: var(--text);
+            background: var(--card);
+            transition: all 0.2s;
+            appearance: none;
+            -webkit-appearance: none;
+        }
+
+        .login-field input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(15,52,96,0.15);
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            border: none;
+            border-radius: var(--radius-sm);
+            font-size: 16px;
+            font-weight: 700;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-top: 8px;
+        }
+
+        .login-btn:active { transform: scale(0.98); }
+        .login-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        /* ===== TOP HEADER BAR ===== */
+        .top-bar {
+            padding: 16px 20px 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .top-bar-left h2 {
+            font-size: 22px;
+            font-weight: 800;
+        }
+
+        .top-bar-left p {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .top-bar-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .notification-btn {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            border: none;
+            background: var(--card);
+            box-shadow: var(--shadow-sm);
+            font-size: 20px;
+            cursor: pointer;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .notification-btn .badge {
+            position: absolute;
+            top: 6px;
+            right: 6px;
+            width: 10px;
+            height: 10px;
+            background: var(--danger);
+            border-radius: 50%;
+            border: 2px solid var(--bg);
+        }
+
+        .avatar-btn {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            border: 2px solid var(--primary-light);
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* ===== POINTS HERO CARD ===== */
+        .points-hero {
+            margin: 8px 20px 20px;
+            background: linear-gradient(135deg, #1a1a2e 0%, #0f3460 60%, #16213e 100%);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            color: white;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 8px 32px rgba(26,26,46,0.3);
+        }
+
+        .points-hero::before {
+            content: '';
+            position: absolute;
+            top: -40%;
+            right: -20%;
+            width: 200px;
+            height: 200px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 50%;
+        }
+
+        .points-hero::after {
+            content: '';
+            position: absolute;
+            bottom: -30%;
+            left: -10%;
+            width: 150px;
+            height: 150px;
+            background: rgba(255,255,255,0.06);
+            border-radius: 50%;
+        }
+
+        .points-hero-label {
+            font-size: 13px;
+            opacity: 0.85;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .points-hero-value {
+            font-size: 48px;
+            font-weight: 800;
+            line-height: 1.1;
+            margin: 4px 0 2px;
+        }
+
+        .points-hero-sub {
+            font-size: 13px;
+            opacity: 0.75;
+        }
+
+        .points-hero-stats {
+            display: flex;
+            gap: 20px;
+            margin-top: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .points-hero-stat {
+            flex: 1;
+            background: rgba(255,255,255,0.15);
+            border-radius: var(--radius-sm);
+            padding: 12px;
+            text-align: center;
+            backdrop-filter: blur(10px);
+        }
+
+        .points-hero-stat .stat-val {
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .points-hero-stat .stat-label {
+            font-size: 11px;
+            opacity: 0.8;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* ===== QUICK ACTIONS ===== */
+        .quick-actions {
+            display: flex;
+            gap: 12px;
+            padding: 0 20px;
+            margin-bottom: 24px;
+        }
+
+        .quick-action {
+            flex: 1;
+            background: var(--card);
+            border-radius: var(--radius-md);
+            padding: 16px 12px;
+            text-align: center;
+            cursor: pointer;
+            box-shadow: var(--shadow-sm);
+            transition: all 0.2s;
+            border: none;
+            font-family: inherit;
+            color: var(--text);
+        }
+
+        .quick-action:active { transform: scale(0.95); }
+
+        .quick-action .qa-icon {
+            font-size: 28px;
+            margin-bottom: 6px;
+        }
+
+        .quick-action .qa-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+
+        /* ===== SECTION HEADERS ===== */
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+            margin-bottom: 12px;
+        }
+
+        .section-header h3 {
+            font-size: 17px;
+            font-weight: 700;
+        }
+
+        .section-header .see-all {
+            font-size: 13px;
+            color: var(--primary);
+            font-weight: 600;
+            cursor: pointer;
+            background: none;
+            border: none;
+            font-family: inherit;
+        }
+
+        /* ===== ACTIVITY FEED ===== */
+        .feed-list {
+            padding: 0 20px;
+        }
+
+        .feed-item {
+            display: flex;
+            gap: 12px;
+            background: var(--card);
+            border-radius: var(--radius-md);
+            padding: 16px;
+            margin-bottom: 10px;
+            box-shadow: var(--shadow-sm);
+            animation: slideUp 0.4s ease;
+        }
+
+        .feed-avatar {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            font-weight: 700;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .feed-content { flex: 1; min-width: 0; }
+
+        .feed-content .feed-text {
+            font-size: 14px;
+            line-height: 1.45;
+        }
+
+        .feed-content .feed-text strong {
+            font-weight: 700;
+            color: var(--primary-dark);
+        }
+
+        .feed-content .feed-meta {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 4px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .feed-points {
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            color: white;
+            font-size: 13px;
+            font-weight: 700;
+            padding: 6px 14px;
+            border-radius: 20px;
+            white-space: nowrap;
+            flex-shrink: 0;
+            align-self: center;
+        }
+
+        /* ===== GIVE RECOGNITION SCREEN ===== */
+        .give-screen-content {
+            padding: 20px;
+        }
+
+        .give-header {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .give-header .give-emoji { font-size: 48px; }
+        .give-header h2 { font-size: 22px; font-weight: 800; margin-top: 8px; }
+        .give-header p { font-size: 14px; color: var(--text-secondary); margin-top: 4px; }
+
+        .give-form-group {
+            margin-bottom: 20px;
+        }
+
+        .give-form-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+
+        .give-form-group input,
+        .give-form-group select,
+        .give-form-group textarea {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid var(--border);
+            border-radius: var(--radius-sm);
+            font-size: 15px;
+            font-family: inherit;
+            color: var(--text);
+            background: var(--card);
+            transition: all 0.2s;
+        }
+
+        .give-form-group textarea {
+            height: 100px;
+            resize: none;
+        }
+
+        .give-form-group input:focus,
+        .give-form-group select:focus,
+        .give-form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(15,52,96,0.15);
+        }
+
+        .points-selector {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .points-chip {
+            padding: 10px 20px;
+            border: 2px solid var(--border);
+            border-radius: 24px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: var(--card);
+            font-family: inherit;
+            color: var(--text);
+        }
+
+        .points-chip.selected {
+            border-color: var(--primary);
+            background: var(--primary);
+            color: white;
+        }
+
+        .points-chip:active { transform: scale(0.95); }
+
+        .category-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+
+        .category-chip {
+            padding: 12px;
+            border: 2px solid var(--border);
+            border-radius: var(--radius-sm);
+            font-size: 14px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: var(--card);
+            font-family: inherit;
+            color: var(--text);
+        }
+
+        .category-chip .cat-icon { font-size: 24px; display: block; margin-bottom: 4px; }
+        .category-chip .cat-name { font-weight: 600; font-size: 12px; }
+
+        .category-chip.selected {
+            border-color: var(--primary);
+            background: rgba(15,52,96,0.08);
+        }
+
+        .give-submit-btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            border: none;
+            border-radius: var(--radius-sm);
+            font-size: 16px;
+            font-weight: 700;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-top: 8px;
+        }
+
+        .give-submit-btn:active { transform: scale(0.98); }
+        .give-submit-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+        /* ===== BADGES SCREEN ===== */
+        .badges-header {
+            text-align: center;
+            padding: 20px 20px 0;
+        }
+
+        .badges-header h2 { font-size: 22px; font-weight: 800; }
+        .badges-header p { font-size: 14px; color: var(--text-secondary); margin-top: 4px; }
+
+        .badges-progress-bar {
+            margin: 16px 20px 24px;
+            background: var(--card);
+            border-radius: var(--radius-md);
+            padding: 16px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .badges-progress-bar .bp-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .bp-track {
+            height: 8px;
+            background: var(--border);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .bp-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            border-radius: 4px;
+            transition: width 1s ease;
+        }
+
+        .badges-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            padding: 0 20px 20px;
+        }
+
+        .badge-card {
+            background: var(--card);
+            border-radius: var(--radius-md);
+            padding: 16px 8px;
+            text-align: center;
+            box-shadow: var(--shadow-sm);
+            position: relative;
+            transition: all 0.2s;
+        }
+
+        .badge-card.earned { border: 2px solid var(--gold); }
+        .badge-card.locked { opacity: 0.5; filter: grayscale(0.8); }
+
+        .badge-card .badge-icon {
+            font-size: 36px;
+            margin-bottom: 6px;
+        }
+
+        .badge-card .badge-name {
+            font-size: 11px;
+            font-weight: 700;
+            line-height: 1.3;
+        }
+
+        .badge-card .badge-desc {
+            font-size: 10px;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        .badge-card .badge-check {
+            position: absolute;
+            top: 6px;
+            right: 6px;
+            width: 20px;
+            height: 20px;
+            background: var(--success);
+            border-radius: 50%;
+            color: white;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* ===== LEADERBOARD SCREEN ===== */
+        .leaderboard-header {
+            text-align: center;
+            padding: 20px 20px 0;
+        }
+
+        .leaderboard-header h2 { font-size: 22px; font-weight: 800; }
+
+        .leaderboard-tabs {
+            display: flex;
+            gap: 8px;
+            padding: 16px 20px;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .leaderboard-tabs::-webkit-scrollbar { display: none; }
+
+        .lb-tab {
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            border: 2px solid var(--border);
+            background: var(--card);
+            cursor: pointer;
+            white-space: nowrap;
+            font-family: inherit;
+            color: var(--text);
+            transition: all 0.2s;
+        }
+
+        .lb-tab.active {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: white;
+        }
+
+        .podium {
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            gap: 8px;
+            padding: 0 20px 20px;
+            height: 200px;
+        }
+
+        .podium-item {
+            text-align: center;
+            flex: 1;
+            max-width: 110px;
+        }
+
+        .podium-avatar {
+            width: 52px;
+            height: 52px;
+            border-radius: 50%;
+            margin: 0 auto 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            font-weight: 700;
+            color: white;
+            position: relative;
+        }
+
+        .podium-crown {
+            position: absolute;
+            top: -14px;
+            font-size: 18px;
+        }
+
+        .podium-name {
+            font-size: 12px;
+            font-weight: 700;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .podium-pts {
+            font-size: 11px;
+            color: var(--primary);
+            font-weight: 700;
+        }
+
+        .podium-bar {
+            border-radius: 12px 12px 0 0;
+            margin-top: 8px;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            padding-bottom: 8px;
+            font-size: 24px;
+            font-weight: 800;
+            color: white;
+        }
+
+        .podium-item:nth-child(1) .podium-bar { background: linear-gradient(180deg, #95AFC0, #778CA3); height: 70px; }
+        .podium-item:nth-child(2) .podium-bar { background: linear-gradient(180deg, #F9CA24, #F0932B); height: 90px; }
+        .podium-item:nth-child(3) .podium-bar { background: linear-gradient(180deg, #E67E22, #D35400); height: 55px; }
+
+        .lb-list {
+            padding: 0 20px 20px;
+        }
+
+        .lb-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: var(--card);
+            border-radius: var(--radius-sm);
+            padding: 12px 16px;
+            margin-bottom: 8px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .lb-rank {
+            font-size: 16px;
+            font-weight: 800;
+            color: var(--text-muted);
+            width: 28px;
+            text-align: center;
+        }
+
+        .lb-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 15px;
+            font-weight: 700;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .lb-info { flex: 1; min-width: 0; }
+        .lb-info .lb-name { font-size: 14px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .lb-info .lb-title { font-size: 12px; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+        .lb-points {
+            font-size: 15px;
+            font-weight: 800;
+            color: var(--primary);
+            white-space: nowrap;
+        }
+
+        .lb-row.me {
+            border: 2px solid var(--primary-light);
+            background: rgba(15,52,96,0.06);
+        }
+
+        /* ===== PROFILE SCREEN ===== */
+        .profile-header-card {
+            margin: 20px;
+            background: linear-gradient(135deg, #1a1a2e, #0f3460);
+            border-radius: var(--radius-lg);
+            padding: 32px 24px;
+            text-align: center;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .profile-header-card::before {
+            content: '';
+            position: absolute;
+            top: -40%;
+            right: -20%;
+            width: 200px;
+            height: 200px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 50%;
+        }
+
+        .profile-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            margin: 0 auto 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            font-weight: 800;
+            background: rgba(255,255,255,0.2);
+            border: 3px solid rgba(255,255,255,0.4);
+        }
+
+        .profile-name { font-size: 22px; font-weight: 800; }
+        .profile-title { font-size: 14px; opacity: 0.85; margin-top: 2px; }
+        .profile-level-badge {
+            display: inline-block;
+            margin-top: 8px;
+            padding: 4px 16px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .profile-stats {
+            display: flex;
+            gap: 12px;
+            padding: 0 20px;
+            margin-bottom: 24px;
+        }
+
+        .profile-stat {
+            flex: 1;
+            background: var(--card);
+            border-radius: var(--radius-md);
+            padding: 16px;
+            text-align: center;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .profile-stat .ps-val { font-size: 24px; font-weight: 800; color: var(--primary); }
+        .profile-stat .ps-label { font-size: 11px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+
+        .profile-section {
+            padding: 0 20px;
+            margin-bottom: 20px;
+        }
+
+        .profile-section h3 {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+
+        .profile-badges-row {
+            display: flex;
+            gap: 12px;
+            overflow-x: auto;
+            padding-bottom: 4px;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .profile-badges-row::-webkit-scrollbar { display: none; }
+
+        .profile-badge-mini {
+            flex-shrink: 0;
+            width: 64px;
+            text-align: center;
+        }
+
+        .profile-badge-mini .pbm-icon { font-size: 32px; }
+        .profile-badge-mini .pbm-name { font-size: 10px; font-weight: 600; margin-top: 2px; color: var(--text-secondary); }
+
+        .profile-menu-item {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            background: var(--card);
+            border-radius: var(--radius-sm);
+            padding: 16px;
+            margin-bottom: 8px;
+            box-shadow: var(--shadow-sm);
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+            width: 100%;
+            font-family: inherit;
+            color: var(--text);
+            text-align: left;
+            font-size: 15px;
+        }
+
+        .profile-menu-item:active { transform: scale(0.98); }
+        .profile-menu-item .pm-icon { font-size: 20px; }
+        .profile-menu-item .pm-label { flex: 1; font-weight: 500; }
+        .profile-menu-item .pm-arrow { color: var(--text-muted); }
+
+        .logout-btn {
+            width: calc(100% - 40px);
+            margin: 20px;
+            padding: 16px;
+            background: none;
+            border: 2px solid var(--danger);
+            border-radius: var(--radius-sm);
+            color: var(--danger);
+            font-size: 15px;
+            font-weight: 700;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .logout-btn:active { background: var(--danger); color: white; }
+
+        /* ===== BOTTOM NAV ===== */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: var(--nav-height);
+            background: var(--card);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            box-shadow: 0 -4px 20px rgba(0,0,0,0.06);
+            z-index: 100;
+            padding-bottom: env(safe-area-inset-bottom, 0px);
+        }
+
+        .bottom-nav.hidden { display: none; }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2px;
+            cursor: pointer;
+            padding: 8px 16px;
+            border: none;
+            background: none;
+            font-family: inherit;
+            color: var(--text-muted);
+            transition: color 0.2s;
+            position: relative;
+        }
+
+        .nav-item .nav-icon { font-size: 22px; }
+        .nav-item .nav-label { font-size: 10px; font-weight: 600; letter-spacing: 0.3px; }
+
+        .nav-item.active { color: var(--primary); }
+
+        .nav-item.give-btn {
+            position: relative;
+            top: -16px;
+        }
+
+        .nav-item.give-btn .nav-icon {
+            width: 52px;
+            height: 52px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: white;
+            box-shadow: 0 4px 16px rgba(26,26,46,0.4);
+        }
+
+        .nav-item.give-btn .nav-label { color: var(--primary); }
+
+        /* ===== SUCCESS MODAL ===== */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 200;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal-overlay.visible { display: flex; }
+
+        .modal-card {
+            background: var(--card);
+            border-radius: var(--radius-lg);
+            padding: 40px 32px;
+            max-width: 340px;
+            width: 100%;
+            text-align: center;
+            animation: scaleIn 0.3s ease;
+        }
+
+        .modal-emoji { font-size: 64px; animation: bounceIn 0.5s ease; }
+        .modal-title { font-size: 22px; font-weight: 800; margin-top: 12px; }
+        .modal-msg { font-size: 14px; color: var(--text-secondary); margin-top: 8px; line-height: 1.5; }
+
+        .modal-close-btn {
+            margin-top: 24px;
+            padding: 14px 48px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            border: none;
+            border-radius: var(--radius-sm);
+            font-size: 15px;
+            font-weight: 700;
+            font-family: inherit;
+            cursor: pointer;
+        }
+
+        /* ===== CONFETTI ===== */
+        .confetti-container {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 300;
+            overflow: hidden;
+        }
+
+        .confetti-piece {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            border-radius: 2px;
+            animation: confettiFall 3s ease-out forwards;
+        }
+
+        @keyframes confettiFall {
+            0% { transform: translateY(-10px) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(110vh) rotate(720deg); opacity: 0; }
+        }
+
+        /* ===== SEARCH INPUT ===== */
+        .search-input-wrapper {
+            position: relative;
+            margin-bottom: 16px;
+        }
+
+        .search-input-wrapper input {
+            width: 100%;
+            padding: 14px 16px 14px 44px;
+            border: 2px solid var(--border);
+            border-radius: var(--radius-sm);
+            font-size: 15px;
+            font-family: inherit;
+            color: var(--text);
+            background: var(--card);
+        }
+
+        .search-input-wrapper input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(15,52,96,0.15);
+        }
+
+        .search-input-wrapper .search-icon {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 18px;
+            color: var(--text-muted);
+        }
+
+        .employee-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: var(--card);
+            border: 2px solid var(--border);
+            border-radius: var(--radius-sm);
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 50;
+            display: none;
+            box-shadow: var(--shadow-md);
+        }
+
+        .employee-dropdown.visible { display: block; }
+
+        .employee-option {
+            padding: 12px 16px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: background 0.15s;
+        }
+
+        .employee-option:hover { background: rgba(15,52,96,0.06); }
+
+        .employee-option .eo-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 700;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .employee-option .eo-info { flex: 1; }
+        .employee-option .eo-name { font-size: 14px; font-weight: 600; }
+        .employee-option .eo-role { font-size: 12px; color: var(--text-muted); }
+
+        /* ===== KUDOS SCREEN ===== */
+        .kudos-summary {
+            display: flex;
+            gap: 10px;
+            padding: 16px 20px;
+        }
+
+        .kudos-summary-stat {
+            flex: 1;
+            background: var(--card);
+            border-radius: var(--radius-md);
+            padding: 14px 8px;
+            text-align: center;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .kudos-summary-stat .kss-val {
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--primary);
+        }
+
+        .kudos-summary-stat .kss-label {
+            font-size: 10px;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-top: 2px;
+        }
+
+        .kudos-filter-bar {
+            display: flex;
+            gap: 6px;
+            padding: 0 20px 16px;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .kudos-filter-bar::-webkit-scrollbar { display: none; }
+
+        .kudos-filter {
+            padding: 7px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            border: 2px solid var(--border);
+            background: var(--card);
+            cursor: pointer;
+            white-space: nowrap;
+            font-family: inherit;
+            color: var(--text);
+            transition: all 0.2s;
+        }
+
+        .kudos-filter.active {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: white;
+        }
+
+        .kudos-list {
+            padding: 0 20px 20px;
+        }
+
+        .kudos-card {
+            background: var(--card);
+            border-radius: var(--radius-md);
+            padding: 16px;
+            margin-bottom: 12px;
+            box-shadow: var(--shadow-sm);
+            border-left: 4px solid var(--primary-light);
+            animation: slideUp 0.4s ease both;
+        }
+
+        .kudos-card-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .kudos-card-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 700;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .kudos-card-from { flex: 1; min-width: 0; }
+        .kudos-card-name { font-size: 14px; font-weight: 700; }
+        .kudos-card-time { font-size: 11px; color: var(--text-muted); }
+
+        .kudos-card-points {
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            color: white;
+            font-size: 14px;
+            font-weight: 800;
+            padding: 6px 14px;
+            border-radius: 20px;
+            flex-shrink: 0;
+        }
+
+        .kudos-card-message {
+            font-size: 14px;
+            line-height: 1.55;
+            color: var(--text);
+            padding: 10px 14px;
+            background: rgba(15,52,96,0.06);
+            border-radius: var(--radius-sm);
+            margin-bottom: 10px;
+        }
+
+        .kudos-card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+        }
+
+        .kudos-card-cat {
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .kudos-card-channel {
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .kudos-empty {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-secondary);
+        }
+
+        .kudos-empty h3 { font-size: 18px; font-weight: 700; margin-bottom: 8px; }
+        .kudos-empty p { font-size: 14px; line-height: 1.5; }
+
+        /* ===== RESPONSIVE ===== */
+        @media (min-width: 768px) {
+            body { display: flex; justify-content: center; background: #e1e5eb; }
+            .app-wrapper { width: 100%; max-width: 430px; background: var(--bg); min-height: 100vh; position: relative; box-shadow: 0 0 60px rgba(0,0,0,0.1); }
+            .bottom-nav { max-width: 430px; left: 50%; transform: translateX(-50%); }
+        }
+    </style>
+</head>
+<body>
+
+<div class="app-wrapper">
+    <!-- ===== LOGIN SCREEN ===== -->
+    <div class="screen active" id="loginScreen">
+        <div class="login-bg-shapes">
+            <div class="shape"></div>
+            <div class="shape"></div>
+            <div class="shape"></div>
+        </div>
+        <div class="login-card" id="loginCard">
+            <div class="login-logo"><svg width="60" height="60" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="30" cy="16" r="6" fill="#1a1a2e" opacity="0.8"/><path d="M22 30c0-4.4 3.6-8 8-8s8 3.6 8 8v2H22v-2z" fill="#1a1a2e" opacity="0.8"/><circle cx="50" cy="16" r="6" fill="#1a1a2e" opacity="0.8"/><path d="M42 30c0-4.4 3.6-8 8-8s8 3.6 8 8v2H42v-2z" fill="#1a1a2e" opacity="0.8"/><path d="M12 48c0-6 4-11 10-12h36c6 1 10 6 10 12v4c0 8-4 14-10 16-4 1-7-1-9-4l-2-4H33l-2 4c-2 3-5 5-9 4-6-2-10-8-10-16v-4z" fill="#e94560"/><rect x="22" y="46" width="4" height="12" rx="1" fill="white" opacity="0.9"/><rect x="18" y="50" width="12" height="4" rx="1" fill="white" opacity="0.9"/><circle cx="54" cy="48" r="3" fill="white" opacity="0.9"/><circle cx="60" cy="52" r="3" fill="white" opacity="0.9"/><circle cx="54" cy="56" r="3" fill="white" opacity="0.9"/><circle cx="48" cy="52" r="3" fill="white" opacity="0.9"/></svg></div>
+            <div class="login-title">PlayGround Points</div>
+            <div class="login-subtitle">Recognize. Reward. Celebrate.</div>
+            <div class="login-field">
+                <label>Username</label>
+                <input type="text" id="loginUsername" placeholder="Enter your username" value="stephen.wood">
+            </div>
+            <div class="login-field">
+                <label>PIN</label>
+                <input type="password" id="loginPin" placeholder="Enter 4-digit PIN" maxlength="4" inputmode="numeric">
+            </div>
+            <button class="login-btn" id="loginBtn" onclick="handleLogin()">Sign In</button>
+            <p style="font-size:11px; color:var(--text-muted); margin-top:16px;">Demo: use PIN <strong>1234</strong></p>
+            <p style="font-size:13px; color:var(--text-secondary); margin-top:20px;">
+                Not registered? <a href="#" onclick="showRegisterForm()" style="color:var(--primary); font-weight:600; text-decoration:none;">Create Account</a>
+            </p>
+        </div>
+        <div class="login-card" id="registerCard" style="display:none;">
+            <div class="login-logo"><svg width="60" height="60" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="30" cy="16" r="6" fill="#1a1a2e" opacity="0.8"/><path d="M22 30c0-4.4 3.6-8 8-8s8 3.6 8 8v2H22v-2z" fill="#1a1a2e" opacity="0.8"/><circle cx="50" cy="16" r="6" fill="#1a1a2e" opacity="0.8"/><path d="M42 30c0-4.4 3.6-8 8-8s8 3.6 8 8v2H42v-2z" fill="#1a1a2e" opacity="0.8"/><path d="M12 48c0-6 4-11 10-12h36c6 1 10 6 10 12v4c0 8-4 14-10 16-4 1-7-1-9-4l-2-4H33l-2 4c-2 3-5 5-9 4-6-2-10-8-10-16v-4z" fill="#e94560"/><rect x="22" y="46" width="4" height="12" rx="1" fill="white" opacity="0.9"/><rect x="18" y="50" width="12" height="4" rx="1" fill="white" opacity="0.9"/><circle cx="54" cy="48" r="3" fill="white" opacity="0.9"/><circle cx="60" cy="52" r="3" fill="white" opacity="0.9"/><circle cx="54" cy="56" r="3" fill="white" opacity="0.9"/><circle cx="48" cy="52" r="3" fill="white" opacity="0.9"/></svg></div>
+            <div class="login-title">Register</div>
+            <div class="login-subtitle">Enter your name exactly as it appears on Slack</div>
+            <div class="login-field">
+                <label>First Name</label>
+                <input type="text" id="regFirstName" placeholder="e.g. Stephen">
+            </div>
+            <div class="login-field">
+                <label>Last Name</label>
+                <input type="text" id="regLastName" placeholder="e.g. Wood">
+            </div>
+            <div id="regError" style="color:var(--danger); font-size:13px; margin-bottom:8px; display:none;"></div>
+            <div id="regSuccess" style="color:var(--success); font-size:13px; margin-bottom:8px; display:none;"></div>
+            <button class="login-btn" onclick="handleRegister()">Register</button>
+            <p style="font-size:13px; color:var(--text-secondary); margin-top:20px;">
+                Already registered? <a href="#" onclick="showLoginForm()" style="color:var(--primary); font-weight:600; text-decoration:none;">Sign In</a>
+            </p>
+        </div>
+    </div>
+
+    <!-- ===== HOME SCREEN ===== -->
+    <div class="screen" id="homeScreen">
+        <div class="top-bar">
+            <div class="top-bar-left">
+                <h2 id="homeGreeting">Good morning 👋</h2>
+                <p id="homeUserName"></p>
+            </div>
+            <div class="top-bar-right">
+                <button class="notification-btn" onclick="showScreen('homeScreen')">
+                    🔔
+                    <span class="badge"></span>
+                </button>
+                <button class="avatar-btn" id="homeAvatar" onclick="showScreen('profileScreen')"></button>
+            </div>
+        </div>
+
+        <div class="points-hero">
+            <div class="points-hero-label">Your Points Balance</div>
+            <div class="points-hero-value" id="heroPointsBalance">0</div>
+            <div class="points-hero-sub" id="heroPointsSub">0 points to give this month</div>
+            <div class="points-hero-stats">
+                <div class="points-hero-stat">
+                    <div class="stat-val" id="heroGiven">0</div>
+                    <div class="stat-label">Given</div>
+                </div>
+                <div class="points-hero-stat">
+                    <div class="stat-val" id="heroReceived">0</div>
+                    <div class="stat-label">Received</div>
+                </div>
+                <div class="points-hero-stat">
+                    <div class="stat-val" id="heroBadges">0</div>
+                    <div class="stat-label">Badges</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="quick-actions">
+            <button class="quick-action" onclick="showScreen('giveScreen')">
+                <div class="qa-icon">🎉</div>
+                <div class="qa-label">Give Points</div>
+            </button>
+            <button class="quick-action" onclick="showScreen('badgesScreen')">
+                <div class="qa-icon">🏆</div>
+                <div class="qa-label">Badges</div>
+            </button>
+            <button class="quick-action" onclick="showScreen('leaderboardScreen')">
+                <div class="qa-icon">📊</div>
+                <div class="qa-label">Leaderboard</div>
+            </button>
+        </div>
+
+        <div class="section-header">
+            <h3>Recent Activity 🔥</h3>
+        </div>
+        <div class="feed-list" id="feedList"></div>
+    </div>
+
+    <!-- ===== GIVE RECOGNITION SCREEN ===== -->
+    <div class="screen" id="giveScreen">
+        <div class="top-bar">
+            <div class="top-bar-left">
+                <h2>Give Recognition</h2>
+            </div>
+        </div>
+        <div class="give-screen-content">
+            <div class="give-header">
+                <div class="give-emoji">🌟</div>
+                <h2>Send Some Love!</h2>
+                <p>Recognize a colleague for their awesome work</p>
+            </div>
+
+            <div class="give-form-group">
+                <label>Who are you recognizing?</label>
+                <div class="search-input-wrapper">
+                    <span class="search-icon">🔍</span>
+                    <input type="text" id="recipientSearch" placeholder="Search for a colleague..." autocomplete="off">
+                    <div class="employee-dropdown" id="recipientDropdown"></div>
+                </div>
+                <input type="hidden" id="selectedRecipientId">
+            </div>
+
+            <div class="give-form-group">
+                <label>Category</label>
+                <div class="category-grid" id="categoryGrid">
+                    <button class="category-chip" data-cat="teamwork" onclick="selectCategory(this)">
+                        <span class="cat-icon">🤝</span>
+                        <span class="cat-name">Teamwork</span>
+                    </button>
+                    <button class="category-chip" data-cat="innovation" onclick="selectCategory(this)">
+                        <span class="cat-icon">💡</span>
+                        <span class="cat-name">Innovation</span>
+                    </button>
+                    <button class="category-chip" data-cat="leadership" onclick="selectCategory(this)">
+                        <span class="cat-icon">🚀</span>
+                        <span class="cat-name">Leadership</span>
+                    </button>
+                    <button class="category-chip" data-cat="customer" onclick="selectCategory(this)">
+                        <span class="cat-icon">💎</span>
+                        <span class="cat-name">Customer Focus</span>
+                    </button>
+                    <button class="category-chip" data-cat="growth" onclick="selectCategory(this)">
+                        <span class="cat-icon">📈</span>
+                        <span class="cat-name">Growth</span>
+                    </button>
+                    <button class="category-chip" data-cat="culture" onclick="selectCategory(this)">
+                        <span class="cat-icon">🎯</span>
+                        <span class="cat-name">Culture Champion</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="give-form-group">
+                <label>Points to Give</label>
+                <div class="points-selector" id="pointsSelector">
+                    <button class="points-chip" data-pts="5" onclick="selectPoints(this)">5</button>
+                    <button class="points-chip" data-pts="10" onclick="selectPoints(this)">10</button>
+                    <button class="points-chip" data-pts="25" onclick="selectPoints(this)">25</button>
+                    <button class="points-chip" data-pts="50" onclick="selectPoints(this)">50</button>
+                    <button class="points-chip" data-pts="100" onclick="selectPoints(this)">100</button>
+                </div>
+            </div>
+
+            <div class="give-form-group">
+                <label>Message (optional)</label>
+                <textarea id="giveMessage" placeholder="Write a nice message..."></textarea>
+            </div>
+
+            <button class="give-submit-btn" id="giveSubmitBtn" onclick="submitRecognition()" disabled>
+                🎉 Send Recognition
+            </button>
+        </div>
+    </div>
+
+    <!-- ===== BADGES SCREEN ===== -->
+    <div class="screen" id="badgesScreen">
+        <div class="top-bar">
+            <div class="top-bar-left">
+                <h2>Badges & Rewards</h2>
+            </div>
+        </div>
+        <div class="badges-header">
+            <p>Collect badges by giving and receiving recognition!</p>
+        </div>
+        <div class="badges-progress-bar">
+            <div class="bp-label">
+                <span>Badge Progress</span>
+                <span id="badgeProgressText">0 / 15</span>
+            </div>
+            <div class="bp-track">
+                <div class="bp-fill" id="badgeProgressFill" style="width:0%"></div>
+            </div>
+        </div>
+        <div class="badges-grid" id="badgesGrid"></div>
+    </div>
+
+    <!-- ===== LEADERBOARD SCREEN ===== -->
+    <div class="screen" id="leaderboardScreen">
+        <div class="top-bar">
+            <div class="top-bar-left">
+                <h2>Leaderboard 🏅</h2>
+            </div>
+        </div>
+        <div class="leaderboard-tabs">
+            <button class="lb-tab active" onclick="switchLBTab(this,'received')">Most Received</button>
+            <button class="lb-tab" onclick="switchLBTab(this,'given')">Most Given</button>
+            <button class="lb-tab" onclick="switchLBTab(this,'badges')">Most Badges</button>
+        </div>
+        <div class="podium" id="podiumArea"></div>
+        <div class="lb-list" id="lbList"></div>
+    </div>
+
+    <!-- ===== KUDOS SCREEN ===== -->
+    <div class="screen" id="kudosScreen">
+        <div class="top-bar">
+            <div class="top-bar-left">
+                <h2>My Kudos 💬</h2>
+                <p>Recognition from #playgroundpoints</p>
+            </div>
+        </div>
+        <div class="kudos-summary" id="kudosSummary">
+            <div class="kudos-summary-stat">
+                <div class="kss-val" id="kudosTotalCount">0</div>
+                <div class="kss-label">Kudos Received</div>
+            </div>
+            <div class="kudos-summary-stat">
+                <div class="kss-val" id="kudosTotalPoints">0</div>
+                <div class="kss-label">Total Points</div>
+            </div>
+            <div class="kudos-summary-stat">
+                <div class="kss-val" id="kudosFromCount">0</div>
+                <div class="kss-label">Unique Givers</div>
+            </div>
+        </div>
+        <div class="kudos-filter-bar">
+            <button class="kudos-filter active" data-filter="all" onclick="filterKudos(this,'all')">All</button>
+            <button class="kudos-filter" data-filter="teamwork" onclick="filterKudos(this,'teamwork')">🤝 Teamwork</button>
+            <button class="kudos-filter" data-filter="innovation" onclick="filterKudos(this,'innovation')">💡 Innovation</button>
+            <button class="kudos-filter" data-filter="leadership" onclick="filterKudos(this,'leadership')">🚀 Leadership</button>
+            <button class="kudos-filter" data-filter="customer" onclick="filterKudos(this,'customer')">💎 Customer</button>
+            <button class="kudos-filter" data-filter="growth" onclick="filterKudos(this,'growth')">📈 Growth</button>
+            <button class="kudos-filter" data-filter="culture" onclick="filterKudos(this,'culture')">🎯 Culture</button>
+        </div>
+        <div class="kudos-list" id="kudosList">
+            <div class="kudos-empty" id="kudosEmpty">
+                <div style="font-size:48px;margin-bottom:12px;">💬</div>
+                <h3>No Kudos Yet</h3>
+                <p>When colleagues recognize you in <strong>#playgroundpoints</strong> on Slack, your kudos will appear here.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== PROFILE SCREEN ===== -->
+    <div class="screen" id="profileScreen">
+        <div class="top-bar">
+            <div class="top-bar-left">
+                <h2>My Profile</h2>
+            </div>
+        </div>
+        <div class="profile-header-card">
+            <div class="profile-avatar" id="profileAvatar"></div>
+            <div class="profile-name" id="profileName"></div>
+            <div class="profile-title" id="profileTitle"></div>
+            <div class="profile-level-badge" id="profileLevel"></div>
+        </div>
+        <div class="profile-stats">
+            <div class="profile-stat">
+                <div class="ps-val" id="profStatReceived">0</div>
+                <div class="ps-label">Received</div>
+            </div>
+            <div class="profile-stat">
+                <div class="ps-val" id="profStatGiven">0</div>
+                <div class="ps-label">Given</div>
+            </div>
+            <div class="profile-stat">
+                <div class="ps-val" id="profStatBadges">0</div>
+                <div class="ps-label">Badges</div>
+            </div>
+        </div>
+        <div class="profile-section">
+            <h3>My Badges</h3>
+            <div class="profile-badges-row" id="profileBadgesRow"></div>
+        </div>
+        <div class="profile-section">
+            <h3>Settings</h3>
+            <button class="profile-menu-item">
+                <span class="pm-icon">🔔</span>
+                <span class="pm-label">Notifications</span>
+                <span class="pm-arrow">›</span>
+            </button>
+            <button class="profile-menu-item">
+                <span class="pm-icon">🎨</span>
+                <span class="pm-label">Appearance</span>
+                <span class="pm-arrow">›</span>
+            </button>
+            <button class="profile-menu-item">
+                <span class="pm-icon">🔒</span>
+                <span class="pm-label">Privacy</span>
+                <span class="pm-arrow">›</span>
+            </button>
+            <button class="profile-menu-item">
+                <span class="pm-icon">❓</span>
+                <span class="pm-label">Help & Support</span>
+                <span class="pm-arrow">›</span>
+            </button>
+        </div>
+        <button class="logout-btn" onclick="handleLogout()">Sign Out</button>
+    </div>
+
+    <!-- ===== BOTTOM NAV ===== -->
+    <nav class="bottom-nav hidden" id="bottomNav">
+        <button class="nav-item active" data-screen="homeScreen" onclick="showScreen('homeScreen')">
+            <span class="nav-icon">🏠</span>
+            <span class="nav-label">Home</span>
+        </button>
+        <button class="nav-item" data-screen="leaderboardScreen" onclick="showScreen('leaderboardScreen')">
+            <span class="nav-icon">🏆</span>
+            <span class="nav-label">Rankings</span>
+        </button>
+        <button class="nav-item give-btn" data-screen="giveScreen" onclick="showScreen('giveScreen')">
+            <span class="nav-icon">⭐</span>
+            <span class="nav-label">Give</span>
+        </button>
+        <button class="nav-item" data-screen="kudosScreen" onclick="showScreen('kudosScreen')">
+            <span class="nav-icon">💬</span>
+            <span class="nav-label">Kudos</span>
+        </button>
+        <button class="nav-item" data-screen="profileScreen" onclick="showScreen('profileScreen')">
+            <span class="nav-icon">👤</span>
+            <span class="nav-label">Profile</span>
+        </button>
+    </nav>
+
+    <!-- ===== SUCCESS MODAL ===== -->
+    <div class="modal-overlay" id="successModal">
+        <div class="modal-card">
+            <div class="modal-emoji">🎊</div>
+            <div class="modal-title">Recognition Sent!</div>
+            <div class="modal-msg" id="successMsg">You just made someone's day!</div>
+            <button class="modal-close-btn" onclick="closeModal()">Awesome!</button>
+        </div>
+    </div>
+</div>
+
+<script>
+// ===================================================================
+// PLAYGROUND POINTS APP – Employee Recognition Tool
+// ===================================================================
+
+// ===== APP STATE =====
+const APP = {
+    currentUser: null,
+    employees: [],
+    recognitions: [],
+    selectedCategory: null,
+    selectedPoints: null,
+    selectedRecipient: null,
+    currentLBTab: 'received'
+};
+
+// ===== BADGE DEFINITIONS =====
+const BADGES = [
+    { id: 'first_give', icon: '🌟', name: 'First Star', desc: 'Give your first recognition', condition: u => u.given >= 1 },
+    { id: 'give_5', icon: '🔥', name: 'On Fire', desc: 'Give 5 recognitions', condition: u => u.given >= 5 },
+    { id: 'give_10', icon: '⚡', name: 'Energizer', desc: 'Give 10 recognitions', condition: u => u.given >= 10 },
+    { id: 'give_25', icon: '🦄', name: 'Unicorn Giver', desc: 'Give 25 recognitions', condition: u => u.given >= 25 },
+    { id: 'first_receive', icon: '💜', name: 'Loved', desc: 'Receive your first recognition', condition: u => u.received >= 1 },
+    { id: 'receive_5', icon: '🌈', name: 'Rainbow Star', desc: 'Receive 5 recognitions', condition: u => u.received >= 5 },
+    { id: 'receive_10', icon: '👑', name: 'Royalty', desc: 'Receive 10 recognitions', condition: u => u.received >= 10 },
+    { id: 'pts_100', icon: '💰', name: 'Century Club', desc: 'Collect 100 points', condition: u => u.totalReceived >= 100 },
+    { id: 'pts_500', icon: '💎', name: 'Diamond Tier', desc: 'Collect 500 points', condition: u => u.totalReceived >= 500 },
+    { id: 'pts_1000', icon: '🏆', name: 'Legend', desc: 'Collect 1000 points', condition: u => u.totalReceived >= 1000 },
+    { id: 'teamwork', icon: '🤝', name: 'Team Player', desc: 'Give 3 teamwork awards', condition: u => (u.catGiven?.teamwork || 0) >= 3 },
+    { id: 'innovation', icon: '💡', name: 'Innovator', desc: 'Give 3 innovation awards', condition: u => (u.catGiven?.innovation || 0) >= 3 },
+    { id: 'all_cats', icon: '🎯', name: 'Well Rounded', desc: 'Give in all categories', condition: u => { const cats = u.catGiven || {}; return ['teamwork','innovation','leadership','customer','growth','culture'].every(c => (cats[c]||0) >= 1); } },
+    { id: 'streak_3', icon: '📅', name: 'Hat Trick', desc: '3-day giving streak', condition: u => u.streak >= 3 },
+    { id: 'social', icon: '🎪', name: 'Social Butterfly', desc: 'Recognize 5 different people', condition: u => u.uniqueRecipients >= 5 },
+];
+
+// ===== AVATAR COLORS =====
+const AVATAR_COLORS = [
+    '#1a1a2e', '#0f3460', '#e94560', '#e74c3c', '#27ae60',
+    '#3498db', '#f39c12', '#16213e', '#2c3e50', '#9b59b6',
+    '#34495e', '#636E72', '#c0392b', '#2980b9', '#1abc9c'
+];
+
+// ===== POINTS PER LEVEL =====
+function getMonthlyPoints(grade) {
+    const g = parseInt(grade) || 10;
+    if (g >= 17) return 500;
+    if (g >= 16) return 400;
+    if (g >= 14) return 300;
+    if (g >= 12) return 200;
+    return 100;
+}
+
+function getLevelLabel(levelStr) {
+    if (!levelStr) return 'Team Member';
+    const m = levelStr.match(/^(\d)/);
+    if (!m) return 'Team Member';
+    const lvl = parseInt(m[1]);
+    switch(lvl) {
+        case 1: return 'Executive';
+        case 2: return 'Senior Leader';
+        case 3: return 'Director';
+        case 4: return 'Manager / Lead';
+        case 5: return 'Individual Contributor';
+        default: return 'Team Member';
+    }
+}
+
+function getInitials(name) {
+    const clean = name.replace(/\s*\(.*?\)\s*/g, '').trim();
+    const parts = clean.split(/\s+/).filter(Boolean);
+    if (parts.length === 0) return '?';
+    if (parts.length === 1) return parts[0][0].toUpperCase();
+    return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+}
+
+function getAvatarColor(name) {
+    let hash = 0;
+    for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);
+    return AVATAR_COLORS[Math.abs(hash) % AVATAR_COLORS.length];
+}
+
+function cleanName(name) {
+    return name.replace(/\s*\(.*?\)\s*/g, '').trim();
+}
+
+// ===== LOAD EMPLOYEES =====
+async function loadEmployees() {
+    try {
+        const resp = await fetch('employees.json');
+        const data = await resp.json();
+        APP.employees = data
+            .filter(e => {
+                const n = e['Employee Name']?.trim();
+                return n && !n.startsWith('Open') && n !== '';
+            })
+            .map((e, i) => {
+                const rawName = e['Employee Name'] || '';
+                const name = cleanName(rawName);
+                const grade = e['Grade'];
+                return {
+                    id: i + 1,
+                    name,
+                    position: e['Position Description'] || 'Team Member',
+                    location: e['Location'] || '',
+                    level: e['Level (Craft)'] || '',
+                    grade: grade,
+                    monthlyPoints: getMonthlyPoints(grade),
+                    pointsToGive: getMonthlyPoints(grade),
+                    pointsBalance: Math.floor(Math.random() * 200) + 50,
+                    given: Math.floor(Math.random() * 15),
+                    received: Math.floor(Math.random() * 12),
+                    totalReceived: Math.floor(Math.random() * 600) + 20,
+                    streak: Math.floor(Math.random() * 7),
+                    uniqueRecipients: Math.floor(Math.random() * 8),
+                    catGiven: {
+                        teamwork: Math.floor(Math.random() * 5),
+                        innovation: Math.floor(Math.random() * 4),
+                        leadership: Math.floor(Math.random() * 3),
+                        customer: Math.floor(Math.random() * 3),
+                        growth: Math.floor(Math.random() * 3),
+                        culture: Math.floor(Math.random() * 2)
+                    }
+                };
+            });
+
+        populateLoginDropdown();
+    } catch (err) {
+        console.error('Failed to load employees:', err);
+    }
+}
+
+// ===== LOGIN =====
+function populateLoginDropdown() {
+    // No longer needed - using username field
+}
+
+function showRegisterForm() {
+    document.getElementById('loginCard').style.display = 'none';
+    document.getElementById('registerCard').style.display = '';
+    document.getElementById('regError').style.display = 'none';
+    document.getElementById('regSuccess').style.display = 'none';
+}
+
+function showLoginForm() {
+    document.getElementById('registerCard').style.display = 'none';
+    document.getElementById('loginCard').style.display = '';
+}
+
+async function handleRegister() {
+    const firstName = document.getElementById('regFirstName').value.trim();
+    const lastName = document.getElementById('regLastName').value.trim();
+    const errEl = document.getElementById('regError');
+    const successEl = document.getElementById('regSuccess');
+    errEl.style.display = 'none';
+    successEl.style.display = 'none';
+
+    if (!firstName || !lastName) {
+        errEl.textContent = 'Please enter both first and last name.';
+        errEl.style.display = 'block';
+        return;
+    }
+
+    try {
+        const resp = await fetch('/api/users', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ firstName, lastName })
+        });
+        const data = await resp.json();
+        if (!resp.ok) {
+            errEl.textContent = data.error || 'Registration failed.';
+            errEl.style.display = 'block';
+            return;
+        }
+        successEl.textContent = `Registered! You can now sign in as ${firstName.toLowerCase()}.${lastName.toLowerCase()}`;
+        successEl.style.display = 'block';
+        document.getElementById('regFirstName').value = '';
+        document.getElementById('regLastName').value = '';
+        // Pre-fill the login username
+        document.getElementById('loginUsername').value = `${firstName.toLowerCase()}.${lastName.toLowerCase()}`;
+        setTimeout(() => showLoginForm(), 2000);
+    } catch (e) {
+        errEl.textContent = 'Could not connect to server.';
+        errEl.style.display = 'block';
+    }
+}
+
+function handleLogin() {
+    const username = document.getElementById('loginUsername').value.trim();
+    const pin = document.getElementById('loginPin').value;
+    if (!username) {
+        document.getElementById('loginUsername').style.borderColor = 'var(--danger)';
+        return;
+    }
+    if (pin !== '1234') {
+        document.getElementById('loginPin').style.borderColor = 'var(--danger)';
+        return;
+    }
+
+    // Convert username like "stephen.wood" to display name "Stephen Wood"
+    const displayName = username.split('.').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+
+    // Check if user matches an employee from data
+    const matchedEmp = APP.employees.find(e => e.name.toLowerCase().replace(/\s+/g, '.') === username.toLowerCase());
+
+    if (matchedEmp) {
+        APP.currentUser = matchedEmp;
+    } else {
+        // Create a user profile for the username
+        APP.currentUser = {
+            id: 999,
+            name: displayName,
+            position: 'Team Member',
+            location: '',
+            level: '3 (Management)',
+            grade: 14,
+            monthlyPoints: 300,
+            pointsToGive: 300,
+            pointsBalance: 175,
+            given: 8,
+            received: 12,
+            totalReceived: 320,
+            streak: 4,
+            uniqueRecipients: 6,
+            catGiven: {
+                teamwork: 3,
+                innovation: 2,
+                leadership: 1,
+                customer: 1,
+                growth: 1,
+                culture: 0
+            }
+        };
+    }
+
+    document.getElementById('bottomNav').classList.remove('hidden');
+    populateHome();
+    showScreen('homeScreen');
+}
+
+function handleLogout() {
+    APP.currentUser = null;
+    document.getElementById('bottomNav').classList.add('hidden');
+    document.getElementById('loginPin').value = '';
+    showScreen('loginScreen');
+}
+
+// ===== SCREEN NAVIGATION =====
+function showScreen(screenId) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(screenId).classList.add('active');
+
+    document.querySelectorAll('.nav-item').forEach(n => {
+        n.classList.toggle('active', n.dataset.screen === screenId);
+    });
+
+    if (screenId === 'homeScreen') populateHome();
+    if (screenId === 'badgesScreen') populateBadges();
+    if (screenId === 'leaderboardScreen') populateLeaderboard();
+    if (screenId === 'kudosScreen') populateKudos();
+    if (screenId === 'profileScreen') populateProfile();
+    if (screenId === 'giveScreen') resetGiveForm();
+}
+
+// ===== HOME SCREEN =====
+function populateHome() {
+    const u = APP.currentUser;
+    if (!u) return;
+
+    const hour = new Date().getHours();
+    let greeting = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
+    document.getElementById('homeGreeting').textContent = `${greeting} 👋`;
+    document.getElementById('homeUserName').textContent = u.name;
+    document.getElementById('homeAvatar').textContent = getInitials(u.name);
+
+    document.getElementById('heroPointsBalance').textContent = u.pointsBalance.toLocaleString();
+    document.getElementById('heroPointsSub').textContent = `${u.pointsToGive} points to give this month`;
+    document.getElementById('heroGiven').textContent = u.given;
+    document.getElementById('heroReceived').textContent = u.received;
+
+    const earnedBadges = BADGES.filter(b => b.condition(u));
+    document.getElementById('heroBadges').textContent = earnedBadges.length;
+
+    populateFeed();
+}
+
+async function populateFeed() {
+    const feed = document.getElementById('feedList');
+    feed.innerHTML = '';
+
+    const catEmojis = { teamwork: '🤝', innovation: '💡', leadership: '🚀', customer: '💎', growth: '📈', culture: '🎯' };
+    let feedItems = [];
+
+    // Try to load real Slack data from the backend API
+    try {
+        const resp = await fetch('/api/recognitions?limit=20');
+        if (resp.ok) {
+            const slackData = await resp.json();
+            if (slackData.length > 0) {
+                feedItems = slackData.map(r => ({
+                    from: { name: r.from.name },
+                    to: { name: r.to.name },
+                    cat: r.category,
+                    pts: r.points,
+                    msg: r.message,
+                    time: formatTimeAgo(r.timestamp),
+                    source: 'slack'
+                }));
+            }
+        }
+    } catch (e) {
+        // Backend not running — fall back to demo data
+    }
+
+    // If no Slack data, show demo feed
+    if (feedItems.length === 0) {
+        const categories = ['teamwork', 'innovation', 'leadership', 'customer', 'growth', 'culture'];
+        const messages = [
+            'Amazing collaboration on the project!',
+            'Great leadership during the sprint.',
+            'Incredible innovation – loved the idea!',
+            'Going above and beyond for the team.',
+            'Outstanding customer focus this week.',
+            'True culture champion!',
+            'Excellent mentoring and support.',
+            'Brilliant problem-solving skills.',
+            'Always bringing positive energy!',
+            'Fantastic work on the release.'
+        ];
+        const times = ['2m ago', '15m ago', '1h ago', '2h ago', '3h ago', 'Yesterday', 'Yesterday', '2 days ago'];
+
+        const otherEmps = APP.employees.filter(e => e.id !== APP.currentUser?.id);
+
+        for (let i = 0; i < 8; i++) {
+            const from = otherEmps[Math.floor(Math.random() * otherEmps.length)];
+            const to = otherEmps[Math.floor(Math.random() * otherEmps.length)];
+            if (from.id === to.id) continue;
+            const cat = categories[Math.floor(Math.random() * categories.length)];
+            const pts = [5, 10, 25, 50][Math.floor(Math.random() * 4)];
+            feedItems.push({ from, to, cat, pts, msg: messages[i % messages.length], time: times[i] });
+        }
+
+        if (APP.currentUser && otherEmps.length > 1) {
+            const sender = otherEmps[0];
+            feedItems.unshift({
+                from: sender,
+                to: APP.currentUser,
+                cat: 'teamwork',
+                pts: 25,
+                msg: 'Awesome teamwork on the recent project!',
+                time: 'Just now'
+            });
+        }
+    }
+
+    feedItems.forEach((item, idx) => {
+        const div = document.createElement('div');
+        div.className = 'feed-item';
+        div.style.animationDelay = `${idx * 0.05}s`;
+        const fromName = item.from.name || 'Unknown';
+        const toName = item.to.name || item.to?.name || 'Unknown';
+        const color = getAvatarColor(fromName);
+        const slackTag = item.source === 'slack' ? ' <span style="font-size:11px;color:var(--text-muted);">via Slack</span>' : '';
+        div.innerHTML = `
+            <div class="feed-avatar" style="background:${color}">${getInitials(fromName)}</div>
+            <div class="feed-content">
+                <div class="feed-text"><strong>${fromName}</strong> recognized <strong>${toName}</strong> ${catEmojis[item.cat] || ''}${slackTag}</div>
+                <div class="feed-meta">${item.time}</div>
+            </div>
+            <div class="feed-points">+${item.pts}</div>
+        `;
+        feed.appendChild(div);
+    });
+}
+
+function formatTimeAgo(timestamp) {
+    const now = new Date();
+    const then = new Date(timestamp);
+    const diffMs = now - then;
+    const diffMin = Math.floor(diffMs / 60000);
+    if (diffMin < 1) return 'Just now';
+    if (diffMin < 60) return `${diffMin}m ago`;
+    const diffHr = Math.floor(diffMin / 60);
+    if (diffHr < 24) return `${diffHr}h ago`;
+    const diffDay = Math.floor(diffHr / 24);
+    if (diffDay === 1) return 'Yesterday';
+    return `${diffDay} days ago`;
+}
+
+// ===== GIVE RECOGNITION =====
+function resetGiveForm() {
+    APP.selectedCategory = null;
+    APP.selectedPoints = null;
+    APP.selectedRecipient = null;
+    document.getElementById('recipientSearch').value = '';
+    document.getElementById('selectedRecipientId').value = '';
+    document.getElementById('giveMessage').value = '';
+    document.querySelectorAll('.category-chip').forEach(c => c.classList.remove('selected'));
+    document.querySelectorAll('.points-chip').forEach(c => c.classList.remove('selected'));
+    document.getElementById('giveSubmitBtn').disabled = true;
+}
+
+// Recipient search
+const recipientSearch = document.getElementById('recipientSearch');
+const recipientDropdown = document.getElementById('recipientDropdown');
+
+recipientSearch.addEventListener('input', function() {
+    const q = this.value.toLowerCase().trim();
+    if (q.length < 1) {
+        recipientDropdown.classList.remove('visible');
+        return;
+    }
+    const matches = APP.employees
+        .filter(e => e.id !== APP.currentUser?.id && e.name.toLowerCase().includes(q))
+        .slice(0, 6);
+
+    if (matches.length === 0) {
+        recipientDropdown.classList.remove('visible');
+        return;
+    }
+
+    recipientDropdown.innerHTML = matches.map(e => `
+        <div class="employee-option" onclick="pickRecipient(${e.id})">
+            <div class="eo-avatar" style="background:${getAvatarColor(e.name)}">${getInitials(e.name)}</div>
+            <div class="eo-info">
+                <div class="eo-name">${e.name}</div>
+                <div class="eo-role">${e.position}</div>
+            </div>
+        </div>
+    `).join('');
+    recipientDropdown.classList.add('visible');
+});
+
+recipientSearch.addEventListener('blur', () => {
+    setTimeout(() => recipientDropdown.classList.remove('visible'), 200);
+});
+
+function pickRecipient(id) {
+    const emp = APP.employees.find(e => e.id === id);
+    if (!emp) return;
+    APP.selectedRecipient = emp;
+    recipientSearch.value = emp.name;
+    document.getElementById('selectedRecipientId').value = id;
+    recipientDropdown.classList.remove('visible');
+    validateGiveForm();
+}
+
+function selectCategory(el) {
+    document.querySelectorAll('.category-chip').forEach(c => c.classList.remove('selected'));
+    el.classList.add('selected');
+    APP.selectedCategory = el.dataset.cat;
+    validateGiveForm();
+}
+
+function selectPoints(el) {
+    document.querySelectorAll('.points-chip').forEach(c => c.classList.remove('selected'));
+    el.classList.add('selected');
+    APP.selectedPoints = parseInt(el.dataset.pts);
+    validateGiveForm();
+}
+
+function validateGiveForm() {
+    const valid = APP.selectedRecipient && APP.selectedCategory && APP.selectedPoints;
+    document.getElementById('giveSubmitBtn').disabled = !valid;
+}
+
+function submitRecognition() {
+    if (!APP.selectedRecipient || !APP.selectedCategory || !APP.selectedPoints) return;
+    const u = APP.currentUser;
+    if (APP.selectedPoints > u.pointsToGive) {
+        alert('Not enough points to give!');
+        return;
+    }
+
+    // Update state
+    u.pointsToGive -= APP.selectedPoints;
+    u.given += 1;
+    u.catGiven[APP.selectedCategory] = (u.catGiven[APP.selectedCategory] || 0) + 1;
+
+    const recipient = APP.selectedRecipient;
+    recipient.received += 1;
+    recipient.pointsBalance += APP.selectedPoints;
+    recipient.totalReceived += APP.selectedPoints;
+
+    APP.recognitions.push({
+        from: u,
+        to: recipient,
+        category: APP.selectedCategory,
+        points: APP.selectedPoints,
+        message: document.getElementById('giveMessage').value,
+        time: new Date()
+    });
+
+    // Show success
+    document.getElementById('successMsg').textContent =
+        `You sent ${APP.selectedPoints} points to ${recipient.name}! 🎉`;
+    document.getElementById('successModal').classList.add('visible');
+
+    launchConfetti();
+    resetGiveForm();
+}
+
+function closeModal() {
+    document.getElementById('successModal').classList.remove('visible');
+    showScreen('homeScreen');
+}
+
+function launchConfetti() {
+    const container = document.createElement('div');
+    container.className = 'confetti-container';
+    document.body.appendChild(container);
+
+    const colors = ['#1a1a2e', '#0f3460', '#e94560', '#f39c12', '#27ae60', '#e74c3c', '#3498db'];
+    for (let i = 0; i < 50; i++) {
+        const piece = document.createElement('div');
+        piece.className = 'confetti-piece';
+        piece.style.left = Math.random() * 100 + '%';
+        piece.style.top = '-10px';
+        piece.style.background = colors[Math.floor(Math.random() * colors.length)];
+        piece.style.animationDelay = Math.random() * 0.5 + 's';
+        piece.style.animationDuration = (2 + Math.random() * 2) + 's';
+        piece.style.width = (6 + Math.random() * 8) + 'px';
+        piece.style.height = (6 + Math.random() * 8) + 'px';
+        piece.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+        container.appendChild(piece);
+    }
+    setTimeout(() => container.remove(), 4000);
+}
+
+// ===== BADGES SCREEN =====
+function populateBadges() {
+    const u = APP.currentUser;
+    if (!u) return;
+
+    const grid = document.getElementById('badgesGrid');
+    grid.innerHTML = '';
+
+    let earnedCount = 0;
+    BADGES.forEach(b => {
+        const earned = b.condition(u);
+        if (earned) earnedCount++;
+        const div = document.createElement('div');
+        div.className = `badge-card ${earned ? 'earned' : 'locked'}`;
+        div.innerHTML = `
+            <div class="badge-icon">${b.icon}</div>
+            <div class="badge-name">${b.name}</div>
+            <div class="badge-desc">${b.desc}</div>
+            ${earned ? '<div class="badge-check">✓</div>' : ''}
+        `;
+        grid.appendChild(div);
+    });
+
+    document.getElementById('badgeProgressText').textContent = `${earnedCount} / ${BADGES.length}`;
+    document.getElementById('badgeProgressFill').style.width = `${(earnedCount / BADGES.length) * 100}%`;
+}
+
+// ===== LEADERBOARD SCREEN =====
+function switchLBTab(el, tab) {
+    document.querySelectorAll('.lb-tab').forEach(t => t.classList.remove('active'));
+    el.classList.add('active');
+    APP.currentLBTab = tab;
+    populateLeaderboard();
+}
+
+function populateLeaderboard() {
+    const sortKey = APP.currentLBTab;
+    let sorted;
+
+    if (sortKey === 'received') {
+        sorted = [...APP.employees].sort((a, b) => b.totalReceived - a.totalReceived);
+    } else if (sortKey === 'given') {
+        sorted = [...APP.employees].sort((a, b) => b.given - a.given);
+    } else {
+        sorted = [...APP.employees].sort((a, b) => {
+            const aB = BADGES.filter(badge => badge.condition(a)).length;
+            const bB = BADGES.filter(badge => badge.condition(b)).length;
+            return bB - aB;
+        });
+    }
+
+    // Podium (top 3)
+    const podium = document.getElementById('podiumArea');
+    podium.innerHTML = '';
+
+    const top3 = sorted.slice(0, 3);
+    const podiumOrder = [top3[1], top3[0], top3[2]]; // 2nd, 1st, 3rd
+
+    podiumOrder.forEach((emp, idx) => {
+        if (!emp) return;
+        const rank = idx === 0 ? 2 : idx === 1 ? 1 : 3;
+        const pts = sortKey === 'received' ? emp.totalReceived :
+                    sortKey === 'given' ? emp.given :
+                    BADGES.filter(b => b.condition(emp)).length;
+
+        const div = document.createElement('div');
+        div.className = 'podium-item';
+        div.innerHTML = `
+            <div class="podium-avatar" style="background:${getAvatarColor(emp.name)}">
+                ${rank === 1 ? '<span class="podium-crown">👑</span>' : ''}
+                ${getInitials(emp.name)}
+            </div>
+            <div class="podium-name">${emp.name.split(' ')[0]}</div>
+            <div class="podium-pts">${pts} ${sortKey === 'badges' ? '🎖️' : 'pts'}</div>
+            <div class="podium-bar">${rank}</div>
+        `;
+        podium.appendChild(div);
+    });
+
+    // Rest of the list
+    const list = document.getElementById('lbList');
+    list.innerHTML = '';
+
+    sorted.slice(3, 15).forEach((emp, idx) => {
+        const rank = idx + 4;
+        const pts = sortKey === 'received' ? emp.totalReceived :
+                    sortKey === 'given' ? emp.given :
+                    BADGES.filter(b => b.condition(emp)).length;
+        const isMe = emp.id === APP.currentUser?.id;
+
+        const div = document.createElement('div');
+        div.className = `lb-row ${isMe ? 'me' : ''}`;
+        div.innerHTML = `
+            <span class="lb-rank">${rank}</span>
+            <div class="lb-avatar" style="background:${getAvatarColor(emp.name)}">${getInitials(emp.name)}</div>
+            <div class="lb-info">
+                <div class="lb-name">${emp.name}${isMe ? ' (You)' : ''}</div>
+                <div class="lb-title">${emp.position}</div>
+            </div>
+            <span class="lb-points">${pts} ${sortKey === 'badges' ? '🎖️' : 'pts'}</span>
+        `;
+        list.appendChild(div);
+    });
+}
+
+// ===== PROFILE SCREEN =====
+function populateProfile() {
+    const u = APP.currentUser;
+    if (!u) return;
+
+    document.getElementById('profileAvatar').textContent = getInitials(u.name);
+    document.getElementById('profileName').textContent = u.name;
+    document.getElementById('profileTitle').textContent = u.position;
+    document.getElementById('profileLevel').textContent = getLevelLabel(u.level);
+
+    document.getElementById('profStatReceived').textContent = u.totalReceived;
+    document.getElementById('profStatGiven').textContent = u.given;
+
+    const earnedBadges = BADGES.filter(b => b.condition(u));
+    document.getElementById('profStatBadges').textContent = earnedBadges.length;
+
+    const row = document.getElementById('profileBadgesRow');
+    row.innerHTML = '';
+    if (earnedBadges.length === 0) {
+        row.innerHTML = '<p style="font-size:13px;color:var(--text-muted);">No badges yet — start recognizing colleagues!</p>';
+    } else {
+        earnedBadges.forEach(b => {
+            const div = document.createElement('div');
+            div.className = 'profile-badge-mini';
+            div.innerHTML = `
+                <div class="pbm-icon">${b.icon}</div>
+                <div class="pbm-name">${b.name}</div>
+            `;
+            row.appendChild(div);
+        });
+    }
+}
+
+// ===== KUDOS SCREEN =====
+let allKudos = [];
+
+async function populateKudos(filter = 'all') {
+    const u = APP.currentUser;
+    if (!u) return;
+
+    const list = document.getElementById('kudosList');
+    const empty = document.getElementById('kudosEmpty');
+    const catEmojis = { teamwork: '🤝', innovation: '💡', leadership: '🚀', customer: '💎', growth: '📈', culture: '🎯' };
+
+    // Try fetching from backend
+    try {
+        const resp = await fetch(`/api/recognitions/user/${encodeURIComponent(u.name)}`);
+        if (resp.ok) {
+            const data = await resp.json();
+            allKudos = data.filter(r => r.to.name.toLowerCase() === u.name.toLowerCase());
+        }
+    } catch (e) {
+        // Backend not running — use local recognitions + generate demo Slack kudos
+        const localReceived = APP.recognitions.filter(r => r.to.id === u.id);
+        if (localReceived.length > 0) {
+            allKudos = localReceived.map(r => ({
+                from: { name: r.from.name },
+                to: { name: r.to.name },
+                category: r.category,
+                points: r.points,
+                message: r.message || 'Great work!',
+                timestamp: r.time?.toISOString?.() || new Date().toISOString()
+            }));
+        }
+
+        // Add demo Slack kudos if none exist
+        if (allKudos.length === 0) {
+            const demoMessages = [
+                { from: 'Sarah Mitchell', cat: 'teamwork', pts: 25, msg: `@${u.name.split(' ')[0].toLowerCase()} amazing teamwork on the Q2 budget review! You made the whole process smoother 🤝`, time: '2026-05-11T09:30:00Z' },
+                { from: 'James Chen', cat: 'innovation', pts: 50, msg: `Huge kudos to @${u.name.split(' ')[0].toLowerCase()} for the brilliant dashboard automation idea 💡 Saved us hours!`, time: '2026-05-10T14:22:00Z' },
+                { from: 'Emma Rodriguez', cat: 'leadership', pts: 25, msg: `@${u.name.split(' ')[0].toLowerCase()} thanks for leading the new process training — everyone really appreciated your guidance 🚀`, time: '2026-05-09T11:05:00Z' },
+                { from: 'David Kim', cat: 'customer', pts: 10, msg: `Props to @${u.name.split(' ')[0].toLowerCase()} for handling that stakeholder request so quickly 💎`, time: '2026-05-08T16:45:00Z' },
+                { from: 'Lisa Thompson', cat: 'culture', pts: 25, msg: `@${u.name.split(' ')[0].toLowerCase()} you always bring such positive energy to the team. True culture champion! 🎯`, time: '2026-05-07T10:15:00Z' },
+                { from: 'Michael Park', cat: 'growth', pts: 10, msg: `Shoutout to @${u.name.split(' ')[0].toLowerCase()} for taking on that new reporting tool and nailing it 📈`, time: '2026-05-06T13:30:00Z' },
+                { from: 'Rachel Adams', cat: 'teamwork', pts: 50, msg: `:star: @${u.name.split(' ')[0].toLowerCase()} went above and beyond helping with month-end close. Couldn't have done it without you!`, time: '2026-05-05T17:00:00Z' },
+            ];
+            allKudos = demoMessages.map(d => ({
+                from: { name: d.from },
+                to: { name: u.name },
+                category: d.cat,
+                points: d.pts,
+                message: d.msg,
+                timestamp: d.time,
+                source: 'slack'
+            }));
+        }
+    }
+
+    // Update summary stats
+    document.getElementById('kudosTotalCount').textContent = allKudos.length;
+    document.getElementById('kudosTotalPoints').textContent = allKudos.reduce((sum, k) => sum + (k.points || 0), 0);
+    document.getElementById('kudosFromCount').textContent = new Set(allKudos.map(k => k.from.name)).size;
+
+    // Filter
+    const filtered = filter === 'all' ? allKudos : allKudos.filter(k => k.category === filter);
+
+    list.innerHTML = '';
+    if (filtered.length === 0) {
+        list.appendChild(empty.cloneNode(true)).style.display = 'block';
+        return;
+    }
+
+    filtered.forEach((k, idx) => {
+        const div = document.createElement('div');
+        div.className = 'kudos-card';
+        div.style.animationDelay = `${idx * 0.06}s`;
+        const color = getAvatarColor(k.from.name);
+        const catEmoji = catEmojis[k.category] || '⭐';
+        const catLabel = k.category ? k.category.charAt(0).toUpperCase() + k.category.slice(1) : '';
+        div.innerHTML = `
+            <div class="kudos-card-header">
+                <div class="kudos-card-avatar" style="background:${color}">${getInitials(k.from.name)}</div>
+                <div class="kudos-card-from">
+                    <div class="kudos-card-name">${k.from.name}</div>
+                    <div class="kudos-card-time">${formatTimeAgo(k.timestamp)}${k.source === 'slack' ? ' · via Slack' : ''}</div>
+                </div>
+                <div class="kudos-card-points">+${k.points}</div>
+            </div>
+            <div class="kudos-card-message">${escapeHtml(k.message)}</div>
+            <div class="kudos-card-footer">
+                <span class="kudos-card-cat">${catEmoji} ${catLabel}</span>
+                <span class="kudos-card-channel">#playgroundpoints</span>
+            </div>
+        `;
+        list.appendChild(div);
+    });
+}
+
+function filterKudos(el, filter) {
+    document.querySelectorAll('.kudos-filter').forEach(f => f.classList.remove('active'));
+    el.classList.add('active');
+    populateKudos(filter);
+}
+
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+// ===== INIT =====
+document.addEventListener('DOMContentLoaded', loadEmployees);
+</script>
+
+</body>
+</html>
