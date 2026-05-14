@@ -1,0 +1,964 @@
+﻿<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PlayGround Analytics</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #f4f6f9;
+            --surface: #ffffff;
+            --surface-elevated: #ffffff;
+            --text: #0f172a;
+            --text-secondary: #475569;
+            --text-muted: #94a3b8;
+            --border: #e2e8f0;
+            --border-light: #f1f5f9;
+            --row-hover: #eef4ff;
+            --row-hover-text: #1e40af;
+            --header-bg: #f8fafc;
+            --positive: #0369a1;
+            --negative: #dc2626;
+            --neutral: #1e293b;
+            --expand-icon: #64748b;
+            --accent: #2563eb;
+            --accent-soft: #3b82f6;
+            --accent-light: #eff6ff;
+            --accent-border: #bfdbfe;
+            --brand-gradient-1: #1e3a5f;
+            --brand-gradient-2: #2563eb;
+            --dim-panel-bg: #ffffff;
+            --dim-chip-bg: #f8fafc;
+            --dim-chip-border: #e2e8f0;
+            --dim-chip-drag: #eff6ff;
+            --expanded-bg: #f8fafd;
+            --drag-indicator: #2563eb;
+            --shadow-sm: 0 1px 2px rgba(0,0,0,0.04);
+            --shadow-md: 0 4px 12px rgba(0,0,0,0.06);
+            --shadow-lg: 0 8px 24px rgba(0,0,0,0.08);
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+        }
+
+        [data-theme="dark"] {
+            --bg: #0c1220;
+            --surface: #1a2332;
+            --surface-elevated: #1f2b3d;
+            --text: #e8edf5;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --border: #2d3a4d;
+            --border-light: #1f2b3d;
+            --row-hover: #1e3a5f;
+            --row-hover-text: #93c5fd;
+            --header-bg: #151f2e;
+            --positive: #38bdf8;
+            --negative: #f87171;
+            --neutral: #e2e8f0;
+            --expand-icon: #94a3b8;
+            --accent: #3b82f6;
+            --accent-soft: #60a5fa;
+            --accent-light: #1e3a5f;
+            --accent-border: #1d4ed8;
+            --brand-gradient-1: #1e3a5f;
+            --brand-gradient-2: #3b82f6;
+            --dim-panel-bg: #1a2332;
+            --dim-chip-bg: #1f2b3d;
+            --dim-chip-border: #2d3a4d;
+            --dim-chip-drag: #1e3a5f;
+            --expanded-bg: #151f2e;
+            --drag-indicator: #3b82f6;
+            --shadow-sm: 0 1px 2px rgba(0,0,0,0.2);
+            --shadow-md: 0 4px 12px rgba(0,0,0,0.3);
+            --shadow-lg: 0 8px 24px rgba(0,0,0,0.4);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            font-size: 13px;
+            background: var(--bg);
+            color: var(--text);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        /* ===== TOP NAV BAR / BRANDING ===== */
+        .top-bar {
+            background: linear-gradient(135deg, var(--brand-gradient-1), var(--brand-gradient-2));
+            padding: 14px 40px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: var(--shadow-md);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .brand-logo {
+            width: 32px;
+            height: 32px;
+            background: rgba(255,255,255,0.15);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            backdrop-filter: blur(4px);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .brand-text {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .brand-name {
+            font-size: 16px;
+            font-weight: 700;
+            color: #ffffff;
+            letter-spacing: -0.02em;
+        }
+
+        .brand-sub {
+            font-size: 11px;
+            font-weight: 400;
+            color: rgba(255,255,255,0.7);
+            letter-spacing: 0.02em;
+        }
+
+        .top-bar-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        /* Theme Toggle */
+        .theme-toggle {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 20px;
+            padding: 5px 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            backdrop-filter: blur(4px);
+        }
+
+        .theme-toggle:hover {
+            background: rgba(255,255,255,0.2);
+        }
+
+        .theme-toggle-icon {
+            font-size: 14px;
+            transition: transform 0.3s ease;
+        }
+
+        .theme-toggle-label {
+            font-size: 11px;
+            font-weight: 500;
+            color: rgba(255,255,255,0.9);
+        }
+
+        /* ===== PAGE CONTENT ===== */
+        .page-container {
+            max-width: 1560px;
+            margin: 0 auto;
+            padding: 28px 40px;
+        }
+
+        .page-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 24px;
+        }
+
+        .page-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text);
+            letter-spacing: -0.025em;
+        }
+
+        .page-subtitle {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 3px;
+            font-weight: 400;
+        }
+
+        /* View Toggle Switch */
+        .view-toggle-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .view-toggle {
+            display: flex;
+            background: var(--border-light);
+            border-radius: 10px;
+            padding: 4px;
+            border: 1px solid var(--border);
+        }
+
+        .view-toggle-btn {
+            padding: 8px 20px;
+            border: none;
+            background: transparent;
+            font-family: 'Inter', sans-serif;
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            border-radius: 7px;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            white-space: nowrap;
+            letter-spacing: -0.01em;
+        }
+
+        .view-toggle-btn.active {
+            background: var(--surface);
+            color: var(--text);
+            font-weight: 600;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04);
+        }
+
+        .view-toggle-btn:hover:not(.active) {
+            color: var(--text);
+            background: var(--accent-light);
+        }
+
+        /* Dimension Ordering Panel */
+        .dimension-panel {
+            background: var(--dim-panel-bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 14px 20px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .dimension-panel-label {
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--text-muted);
+            margin-right: 4px;
+            white-space: nowrap;
+        }
+
+        .dimension-chips {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .dimension-chip {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 7px 14px;
+            background: var(--dim-chip-bg);
+            border: 1px solid var(--dim-chip-border);
+            border-radius: var(--radius-sm);
+            cursor: grab;
+            font-size: 12px;
+            font-weight: 500;
+            user-select: none;
+            transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+            color: var(--text-secondary);
+        }
+
+        .dimension-chip:hover {
+            border-color: var(--accent-border);
+            background: var(--accent-light);
+            color: var(--text);
+        }
+
+        .dimension-chip:active { cursor: grabbing; transform: scale(0.97); }
+
+        .dimension-chip.dragging {
+            opacity: 0.4;
+            border-color: var(--accent);
+        }
+
+        .dimension-chip.drag-over {
+            border-color: var(--accent);
+            background: var(--dim-chip-drag);
+            transform: scale(1.03);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+        }
+
+        .dimension-chip .chip-icon { color: var(--text-muted); font-size: 11px; }
+
+        .dimension-chip .chip-number {
+            background: var(--accent);
+            color: white;
+            width: 20px;
+            height: 20px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: 700;
+        }
+
+        /* ===== TABLE ===== */
+        .table-container {
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            overflow-x: auto;
+            background: var(--surface);
+            box-shadow: var(--shadow-sm);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+            min-width: 1200px;
+        }
+
+        thead th {
+            background: var(--header-bg);
+            padding: 10px 12px;
+            text-align: right;
+            font-weight: 600;
+            font-size: 10px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            border-bottom: 1px solid var(--border);
+            white-space: nowrap;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        thead th:first-child {
+            text-align: left;
+            min-width: 320px;
+            position: sticky;
+            left: 0;
+            background: var(--header-bg);
+            z-index: 11;
+        }
+
+        thead tr.header-group th {
+            text-align: center;
+            border-bottom: 1px solid var(--border);
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--text-secondary);
+            letter-spacing: 0.02em;
+            padding: 12px;
+        }
+
+        /* Rows */
+        tbody tr {
+            border-bottom: 1px solid var(--border-light);
+            transition: all 0.1s ease;
+        }
+
+        /* STRONG HOVER EFFECT */
+        tbody tr:hover {
+            background: var(--row-hover) !important;
+            box-shadow: inset 0 0 0 1px var(--accent-border);
+        }
+
+        tbody tr:hover td {
+            color: var(--row-hover-text) !important;
+        }
+
+        tbody tr:hover .row-name {
+            color: var(--row-hover-text) !important;
+        }
+
+        tbody tr:hover .val-neutral {
+            color: var(--row-hover-text) !important;
+        }
+
+        tbody td {
+            padding: 10px 12px;
+            text-align: right;
+            white-space: nowrap;
+            font-variant-numeric: tabular-nums;
+            font-size: 12px;
+            color: var(--text-secondary);
+            transition: color 0.1s ease;
+        }
+
+        tbody td:first-child {
+            text-align: left;
+            position: sticky;
+            left: 0;
+            background: inherit;
+            z-index: 5;
+        }
+
+        tbody tr:hover td:first-child {
+            background: var(--row-hover);
+        }
+
+        /* Expanded section styling */
+        tbody tr.row-expanded {
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
+        }
+
+        tbody tr.row-child { background: var(--expanded-bg); }
+        tbody tr.row-child-depth-3 { background: var(--border-light); }
+        tbody tr.row-child-depth-4 { background: var(--border-light); }
+
+        /* Active expanded row left accent */
+        tbody tr.row-expanded > td:first-child {
+            border-left: 3px solid var(--accent);
+            padding-left: 9px;
+        }
+
+        tbody tr.row-child > td:first-child {
+            border-left: 3px solid var(--accent-border);
+            padding-left: 9px;
+        }
+
+        /* Tree structure */
+        .row-label {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+        }
+
+        .row-drag-handle {
+            width: 16px;
+            height: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-muted);
+            font-size: 10px;
+            cursor: grab;
+            opacity: 0;
+            transition: opacity 0.15s ease;
+            flex-shrink: 0;
+            border-radius: 3px;
+        }
+
+        tbody tr:hover .row-drag-handle {
+            opacity: 1;
+        }
+
+        .row-drag-handle:hover {
+            background: var(--accent-light);
+            color: var(--accent);
+        }
+
+        .row-drag-handle:active { cursor: grabbing; }
+
+        .row-expand-icon {
+            width: 18px;
+            height: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--expand-icon);
+            font-size: 9px;
+            flex-shrink: 0;
+            transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 4px;
+        }
+
+        .row-expand-icon:hover {
+            background: var(--accent-light);
+            color: var(--accent);
+        }
+
+        .row-expand-icon.expanded {
+            transform: rotate(90deg);
+            color: var(--accent);
+        }
+
+        .row-expand-icon.leaf { visibility: hidden; }
+
+        .row-name { font-weight: 400; color: var(--text-secondary); }
+
+        .row-level-0 .row-name { font-weight: 700; color: var(--text); font-size: 13px; }
+        .row-level-1 .row-name { font-weight: 600; color: var(--text); }
+        .row-level-2 .row-name { font-weight: 500; color: var(--text); }
+        .row-level-3 .row-name { font-weight: 400; color: var(--text-secondary); }
+
+        /* Value colors */
+        .val-positive { color: var(--positive); font-weight: 500; }
+        .val-negative { color: var(--negative); font-weight: 500; }
+        .val-neutral { color: var(--neutral); }
+
+        /* Total row */
+        .row-total { font-weight: 700; background: var(--surface) !important; }
+        .row-total td {
+            border-bottom: 2px solid var(--border);
+            padding: 12px 12px;
+            color: var(--text);
+            font-weight: 600;
+        }
+
+        /* Row drag visual */
+        tbody tr.row-dragging { opacity: 0.35; }
+
+        tbody tr.row-drag-target-above {
+            border-top: 2px solid var(--drag-indicator);
+            box-shadow: inset 0 2px 0 var(--accent-light);
+        }
+
+        tbody tr.row-drag-target-below {
+            border-bottom: 2px solid var(--drag-indicator);
+            box-shadow: inset 0 -2px 0 var(--accent-light);
+        }
+
+        /* Drag ghost tooltip */
+        .drag-ghost {
+            position: fixed;
+            pointer-events: none;
+            z-index: 9999;
+            background: var(--accent);
+            color: white;
+            padding: 6px 14px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            box-shadow: var(--shadow-lg);
+            opacity: 0.95;
+            white-space: nowrap;
+        }
+
+        /* Reset button */
+        .reset-btn {
+            margin-left: auto;
+            padding: 6px 14px;
+            background: transparent;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-family: 'Inter', sans-serif;
+            font-size: 11px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.15s ease;
+            white-space: nowrap;
+        }
+
+        .reset-btn:hover {
+            background: var(--accent-light);
+            border-color: var(--accent-border);
+            color: var(--accent);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .page-container { padding: 16px; }
+            .dimension-panel { padding: 10px 14px; }
+            .page-header { flex-direction: column; align-items: flex-start; gap: 12px; }
+            .top-bar { padding: 12px 16px; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Top Navigation Bar with Branding -->
+    <div class="top-bar">
+        <div class="brand">
+            <div class="brand-logo">&#9654;</div>
+            <div class="brand-text">
+                <span class="brand-name">PlayGround</span>
+                <span class="brand-sub">Analytics</span>
+            </div>
+        </div>
+        <div class="top-bar-actions">
+            <div class="theme-toggle" id="themeToggle" onclick="toggleTheme()">
+                <span class="theme-toggle-icon" id="themeIcon">&#9790;</span>
+                <span class="theme-toggle-label" id="themeLabel">Dark</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="page-container">
+        <!-- Header with title and toggle -->
+        <div class="page-header">
+            <div>
+                <div class="page-title" id="pageTitle">Game View</div>
+                <div class="page-subtitle">Click rows to drill down. Drag rows or chips to reorder the hierarchy.</div>
+            </div>
+            <div class="view-toggle-container">
+                <div class="view-toggle">
+                    <button class="view-toggle-btn active" id="btnGameView" onclick="setView('game')">Game View</button>
+                    <button class="view-toggle-btn" id="btnKpiView" onclick="setView('kpi')">KPI View</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dimension Order Panel -->
+        <div class="dimension-panel">
+            <span class="dimension-panel-label">Drill-down order</span>
+            <div class="dimension-chips" id="dimensionChips"></div>
+            <button class="reset-btn" onclick="resetOrder()" title="Reset to default order">&#8634; Reset</button>
+        </div>
+
+        <!-- Analytics Table -->
+        <div class="table-container">
+            <table id="analyticsTable">
+                <thead>
+                    <tr class="header-group">
+                        <th rowspan="2"></th>
+                        <th colspan="3">Week</th>
+                        <th colspan="3">MTD</th>
+                        <th colspan="3">QTD</th>
+                        <th colspan="3">YTD</th>
+                    </tr>
+                    <tr>
+                        <th>$M</th>
+                        <th>% WoW</th>
+                        <th>% Vs Fcst</th>
+                        <th>$M</th>
+                        <th>% MoM</th>
+                        <th>% Vs Fcst</th>
+                        <th>$M</th>
+                        <th>% QoQ</th>
+                        <th>% Vs Fcst</th>
+                        <th>$M</th>
+                        <th>% YoY</th>
+                        <th>% Vs AOP</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+    // ===== THEME TOGGLE =====
+    function toggleTheme() {
+        const html = document.documentElement;
+        const current = html.getAttribute('data-theme');
+        const next = current === 'dark' ? 'light' : 'dark';
+        html.setAttribute('data-theme', next);
+        document.getElementById('themeIcon').textContent = next === 'dark' ? 'â˜€' : 'â˜¾';
+        document.getElementById('themeLabel').textContent = next === 'dark' ? 'Light' : 'Dark';
+    }
+    function setView(view) { window._app.setView(view); }
+    function resetOrder() { window._app.reset(); }
+    </script>
+    <script>
+    (function() {
+        const GAMES = [
+            'Candy Crush Saga', 'Candy Crush Soda Saga', 'Farm Heroes Saga',
+            'Candy Solitaire', 'Catalog Games', 'Candy Crush Jelly Saga',
+            'Candy Friends', 'Bubble Witch Saga 3', 'Pet Rescue Saga',
+            'Bubble Witch Saga 2', 'Farm Heroes Super Saga', 'Pyramid Solitaire',
+            'Blossom Blast', 'Diamond Diaries'
+        ];
+        const KPIS = [
+            'Revenue ($M)', 'DAU (M)', 'MAU (M)', 'Sessions (M)',
+            'ARPDAU ($)', 'Payer Conversion (%)', 'D1 Retention (%)',
+            'D7 Retention (%)', 'D30 Retention (%)', 'Avg Session Length (min)',
+            'Installs (K)', 'ROAS (%)'
+        ];
+
+        // ALL_DIMENSIONS: 0=Game, 1-6=standard, 7=KPI
+        const ALL_DIMENSIONS = [
+            { id: 'game', label: 'Game', values: GAMES },
+            { id: 'installSource', label: 'Install Source', values: ['Paid', 'Organic'] },
+            { id: 'region', label: 'Region', values: ['US', 'APAC', 'EMEA'] },
+            { id: 'country', label: 'Country', valuesByParent: {
+                'US': ['United States'],
+                'APAC': ['Japan', 'South Korea', 'Australia', 'China'],
+                'EMEA': ['United Kingdom', 'Germany', 'France', 'Sweden']
+            }},
+            { id: 'payerSegment', label: 'Payer Segment', values: ['Non-Payer', 'Minnow', 'Dolphin', 'Whale'] },
+            { id: 'progressionLevel', label: 'Progression Level', values: ['Early (1-20)', 'Mid (21-100)', 'Late (101-500)', 'End-game (500+)'] },
+            { id: 'tenure', label: 'Tenure', values: ['0-7 days', '8-30 days', '31-90 days', '90+ days'] },
+            { id: 'kpi', label: 'KPI', values: KPIS }
+        ];
+
+        const DEFAULT_GAME = [0, 1, 2, 3, 4, 5, 6];
+        const DEFAULT_KPI = [7, 0, 1, 2, 3, 4, 5, 6];
+        let dimensionOrder = DEFAULT_GAME.slice();
+        let currentView = 'game';
+
+        function getDims() { return ALL_DIMENSIONS; }
+
+        // === DATA ===
+        let seed = 42;
+        function sr() { seed = (seed * 16807) % 2147483647; return (seed - 1) / 2147483646; }
+        function genMetrics(scale) {
+            const w = +(scale * (0.5 + sr() * 2)).toFixed(1);
+            const wow = +((sr() - 0.45) * 15).toFixed(1);
+            const vf1 = +((sr() - 0.5) * 8).toFixed(1);
+            const m = +(w * (3 + sr() * 2)).toFixed(1);
+            const mom = +((sr() - 0.45) * 12).toFixed(1);
+            const vf2 = +((sr() - 0.5) * 6).toFixed(1);
+            const q = +(m * (2.5 + sr() * 1.5)).toFixed(1);
+            const qoq = +((sr() - 0.45) * 10).toFixed(1);
+            const vf3 = +((sr() - 0.5) * 8).toFixed(1);
+            const y = +(q * (3 + sr() * 2)).toFixed(1);
+            const yoy = +((sr() - 0.4) * 18).toFixed(1);
+            const va = +((sr() - 0.5) * 12).toFixed(1);
+            return { week: w, wow, vsFcstW: vf1, mtd: m, mom, vsFcstM: vf2, qtd: q, qoq, vsFcstQ: vf3, ytd: y, yoy, vsAOP: va };
+        }
+        function hash(s) { let h = 5381; for (let i = 0; i < s.length; i++) { h = ((h << 5) + h) + s.charCodeAt(i); h = h & h; } return Math.abs(h) % 2147483647 || 1; }
+        function totalMetrics() { return { week: 44.1, wow: -4.6, vsFcstW: -0.9, mtd: 65.3, mom: -2.3, vsFcstM: -0.2, qtd: 261.8, qoq: -3.2, vsFcstQ: 1.1, ytd: 2143.5, yoy: -7.6, vsAOP: -267.2 }; }
+
+        function getValuesForLevel(levelIdx, parentPath) {
+            const dims = getDims();
+            const dim = dims[dimensionOrder[levelIdx]];
+            if (dim.valuesByParent && parentPath.length > 0) {
+                for (let i = parentPath.length - 1; i >= 0; i--) {
+                    if (dim.valuesByParent[parentPath[i]]) return dim.valuesByParent[parentPath[i]];
+                }
+                return Object.values(dim.valuesByParent).flat();
+            }
+            return dim.values;
+        }
+
+        function findDimForValue(value) {
+            const dims = getDims();
+            for (let i = 0; i < dims.length; i++) {
+                const d = dims[i];
+                if (d.values && d.values.includes(value)) return i;
+                if (d.valuesByParent) { for (const v of Object.values(d.valuesByParent)) { if (v.includes(value)) return i; } }
+            }
+            return -1;
+        }
+
+        // === STATE ===
+        const expanded = new Set();
+
+        // === RENDER ===
+        function vc(v) { return v > 0 ? 'val-positive' : v < 0 ? 'val-negative' : 'val-neutral'; }
+        function metricCells(m) {
+            const c = [
+                [m.week,0],[m.wow,1],[m.vsFcstW,1],[m.mtd,0],[m.mom,1],[m.vsFcstM,1],
+                [m.qtd,0],[m.qoq,1],[m.vsFcstQ,1],[m.ytd,0],[m.yoy,1],[m.vsAOP,1]
+            ];
+            return c.map(([v,p]) => p
+                ? `<td><span class="${vc(v)}">(${v>0?'+':''}${v.toFixed(1)}%)</span></td>`
+                : `<td><span class="val-neutral">${v.toFixed(1)}</span></td>`
+            ).join('');
+        }
+        function esc(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+
+        function renderTable() {
+            const tbody = document.getElementById('tableBody');
+            let h = '';
+            const te = expanded.has('__total__');
+            h += `<tr class="row-total row-level-0 ${te?'row-expanded':''}" data-row-path="__total__" data-row-depth="0" data-row-label="__total__">`;
+            h += `<td><div class="row-label"><span class="row-drag-handle">&nbsp;</span>`;
+            h += `<span class="row-expand-icon ${te?'expanded':''}" data-path="__total__">&#9654;</span>`;
+            h += `<span class="row-name">Total</span></div></td>`;
+            h += metricCells(totalMetrics());
+            h += `</tr>`;
+            if (te) {
+                const vals = getValuesForLevel(0, []);
+                vals.forEach(v => { h += renderRow([v], 1, 0); });
+            }
+            tbody.innerHTML = h;
+            attachHandlers();
+        }
+
+        function renderRow(path, depth, levelIdx) {
+            const pk = path.join('|||');
+            const isExp = expanded.has(pk);
+            const label = path[path.length - 1];
+            const hasKids = (levelIdx + 1) < dimensionOrder.length;
+
+            seed = hash(pk + currentView + dimensionOrder.join(','));
+            const scale = Math.max(0.1, 44 / Math.pow(2, depth) * (0.3 + sr() * 1.4));
+            const m = genMetrics(scale);
+
+            const dc = `row-level-${Math.min(depth, 4)}`;
+            const cc = depth > 1 ? `row-child row-child-depth-${Math.min(depth, 4)}` : '';
+            const ec = isExp ? 'row-expanded' : '';
+
+            let h = '';
+            h += `<tr class="${dc} ${cc} ${ec}" data-row-path="${esc(pk)}" data-row-depth="${depth}" data-row-label="${esc(label)}" draggable="true">`;
+            h += `<td><div class="row-label" style="padding-left:${depth*20}px;">`;
+            h += `<span class="row-drag-handle">&#8942;&#8942;</span>`;
+            if (hasKids) {
+                h += `<span class="row-expand-icon ${isExp?'expanded':''}" data-path="${esc(pk)}">&#9654;</span>`;
+            } else {
+                h += `<span class="row-expand-icon leaf">&#9654;</span>`;
+            }
+            h += `<span class="row-name">${esc(label)}</span></div></td>`;
+            h += metricCells(m);
+            h += `</tr>`;
+
+            if (isExp && hasKids) {
+                const nextLevel = levelIdx + 1;
+                const cv = getValuesForLevel(nextLevel, path);
+                if (cv) cv.forEach(c => { h += renderRow([...path, c], depth + 1, nextLevel); });
+            }
+            return h;
+        }
+
+        // === HANDLERS ===
+        function attachHandlers() {
+            const tbody = document.getElementById('tableBody');
+            tbody.querySelectorAll('.row-expand-icon:not(.leaf)').forEach(i => i.addEventListener('click', onExpand));
+            tbody.querySelectorAll('tr[data-row-path]').forEach(r => {
+                r.addEventListener('dragover', onRowOver);
+                r.addEventListener('dragleave', onRowLeave);
+                r.addEventListener('drop', onRowDrop);
+            });
+            tbody.querySelectorAll('tr[draggable="true"]').forEach(r => {
+                r.addEventListener('dragstart', onRowStart);
+                r.addEventListener('dragend', onRowEnd);
+            });
+        }
+
+        function onExpand(e) {
+            e.stopPropagation();
+            const pk = e.currentTarget.getAttribute('data-path');
+            if (expanded.has(pk)) {
+                expanded.forEach(k => { if (k === pk || k.startsWith(pk + '|||')) expanded.delete(k); });
+            } else { expanded.add(pk); }
+            renderTable();
+        }
+
+        // Row DnD
+        let dragLabel = null, dragGhost = null;
+        function onRowStart(e) {
+            const r = e.currentTarget;
+            dragLabel = r.getAttribute('data-row-label');
+            r.classList.add('row-dragging');
+            e.dataTransfer.effectAllowed = 'move';
+            e.dataTransfer.setData('text/plain', dragLabel);
+            dragGhost = document.createElement('div');
+            dragGhost.className = 'drag-ghost';
+            dragGhost.textContent = 'â†• ' + dragLabel;
+            document.body.appendChild(dragGhost);
+            e.dataTransfer.setDragImage(dragGhost, 0, 0);
+        }
+        function onRowEnd(e) {
+            e.currentTarget.classList.remove('row-dragging');
+            document.querySelectorAll('.row-drag-target-above,.row-drag-target-below').forEach(el => el.classList.remove('row-drag-target-above','row-drag-target-below'));
+            if (dragGhost) { dragGhost.remove(); dragGhost = null; }
+            dragLabel = null;
+        }
+        function onRowOver(e) {
+            e.preventDefault(); e.dataTransfer.dropEffect = 'move';
+            const r = e.currentTarget, rect = r.getBoundingClientRect(), mid = rect.top + rect.height / 2;
+            r.classList.remove('row-drag-target-above','row-drag-target-below');
+            r.classList.add(e.clientY < mid ? 'row-drag-target-above' : 'row-drag-target-below');
+        }
+        function onRowLeave(e) { e.currentTarget.classList.remove('row-drag-target-above','row-drag-target-below'); }
+
+        function onRowDrop(e) {
+            e.preventDefault();
+            const tr = e.currentTarget;
+            tr.classList.remove('row-drag-target-above','row-drag-target-below');
+            if (!dragLabel) return;
+            const tl = tr.getAttribute('data-row-label');
+            if (dragLabel === tl) return;
+
+            const di = findDimForValue(dragLabel);
+            if (di === -1) return;
+            const dp = dimensionOrder.indexOf(di);
+            if (dp === -1) return;
+
+            let tp;
+            if (tl === '__total__') { tp = 0; }
+            else {
+                const ti = findDimForValue(tl);
+                if (ti === -1) { tp = 0; }
+                else { tp = dimensionOrder.indexOf(ti); if (tp === -1) return; }
+            }
+
+            if (dp !== tp) {
+                const moved = dimensionOrder.splice(dp, 1)[0];
+                dimensionOrder.splice(tp, 0, moved);
+                renderChips();
+                renderTable();
+            }
+        }
+
+        // === VIEW & RESET ===
+        window._app = {
+            setView(v) {
+                currentView = v;
+                document.getElementById('btnGameView').classList.toggle('active', v === 'game');
+                document.getElementById('btnKpiView').classList.toggle('active', v === 'kpi');
+                document.getElementById('pageTitle').textContent = v === 'game' ? 'Game View' : 'KPI View';
+                dimensionOrder = (v === 'game' ? DEFAULT_GAME : DEFAULT_KPI).slice();
+                expanded.clear(); expanded.add('__total__');
+                renderChips(); renderTable();
+            },
+            reset() {
+                dimensionOrder = (currentView === 'game' ? DEFAULT_GAME : DEFAULT_KPI).slice();
+                expanded.clear(); expanded.add('__total__');
+                renderChips(); renderTable();
+            }
+        };
+
+        // === CHIPS ===
+        function renderChips() {
+            const c = document.getElementById('dimensionChips');
+            c.innerHTML = '';
+            const dims = getDims();
+            dimensionOrder.forEach((di, pos) => {
+                const dim = dims[di];
+                const chip = document.createElement('div');
+                chip.className = 'dimension-chip';
+                chip.draggable = true;
+                chip.setAttribute('data-position', pos);
+                chip.innerHTML = `<span class="chip-icon">&#9776;</span><span class="chip-number">${pos+1}</span><span>${dim.label}</span>`;
+                chip.addEventListener('dragstart', onChipStart);
+                chip.addEventListener('dragend', onChipEnd);
+                chip.addEventListener('dragover', onChipOver);
+                chip.addEventListener('dragleave', onChipLeave);
+                chip.addEventListener('drop', onChipDrop);
+                c.appendChild(chip);
+            });
+        }
+        let chipDrag = null;
+        function onChipStart(e) { chipDrag = +e.currentTarget.getAttribute('data-position'); e.currentTarget.classList.add('dragging'); e.dataTransfer.effectAllowed = 'move'; }
+        function onChipEnd(e) { e.currentTarget.classList.remove('dragging'); document.querySelectorAll('.dimension-chip').forEach(c=>c.classList.remove('drag-over')); chipDrag = null; }
+        function onChipOver(e) { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; e.currentTarget.classList.add('drag-over'); }
+        function onChipLeave(e) { e.currentTarget.classList.remove('drag-over'); }
+        function onChipDrop(e) {
+            e.preventDefault(); e.currentTarget.classList.remove('drag-over');
+            const tp = +e.currentTarget.getAttribute('data-position');
+            if (chipDrag !== null && chipDrag !== tp) {
+                const m = dimensionOrder.splice(chipDrag, 1)[0];
+                dimensionOrder.splice(tp, 0, m);
+                renderChips(); renderTable();
+            }
+        }
+
+        // === INIT ===
+        expanded.add('__total__');
+        renderChips();
+        renderTable();
+    })();
+    </script>
+</body>
+</html>
