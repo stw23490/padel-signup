@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Padel Sessions Poster</title>
+    <style>
+        @page { size: A4; margin: 0; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+            width: 210mm;
+            min-height: 297mm;
+            margin: 0 auto;
+            background: linear-gradient(180deg, #e8f4fc 0%, #fce4ec 30%, #f5f5f5 60%, #e8f4fc 100%);
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .poster {
+            width: 100%;
+            height: 100%;
+            position: relative;
+        }
+
+        /* Header */
+        .title {
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .title h1 {
+            font-size: 52px;
+            font-weight: 900;
+            color: #1a2a4a;
+            line-height: 1;
+            text-transform: uppercase;
+        }
+
+        .title h1 span {
+            color: #e91e63;
+            font-size: 58px;
+        }
+
+        .subtitle {
+            text-align: center;
+            background: linear-gradient(135deg, #e91e63, #c2185b);
+            color: white;
+            padding: 8px 24px;
+            border-radius: 30px;
+            font-weight: 700;
+            font-size: 14px;
+            letter-spacing: 2px;
+            display: inline-block;
+            margin: 8px auto;
+        }
+
+        .center { text-align: center; }
+
+        /* Welcome banner */
+        .welcome {
+            text-align: center;
+            margin: 16px 0;
+            padding: 12px;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .welcome h2 {
+            font-size: 22px;
+            color: #1a2a4a;
+            font-weight: 800;
+        }
+
+        .welcome p {
+            color: #5a6a8a;
+            font-size: 13px;
+        }
+
+        /* Schedule */
+        .schedule-header {
+            background: linear-gradient(135deg, #e91e63, #c2185b);
+            color: white;
+            text-align: center;
+            padding: 8px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 13px;
+            letter-spacing: 1px;
+            margin: 12px 0;
+        }
+
+        .schedule-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 14px;
+        }
+
+        .schedule-card {
+            background: white;
+            border-radius: 14px;
+            padding: 16px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            text-align: center;
+        }
+
+        .schedule-card .label {
+            background: #e8f4fc;
+            color: #1a2a4a;
+            padding: 6px 10px;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+            display: inline-block;
+        }
+
+        .schedule-card .time {
+            font-size: 22px;
+            font-weight: 800;
+            color: #1a2a4a;
+            margin: 6px 0;
+        }
+
+        .schedule-card .note {
+            font-size: 11px;
+            color: #5a6a8a;
+        }
+
+        /* QR Section - THE MAIN FEATURE */
+        .qr-section {
+            background: linear-gradient(135deg, #1a2a4a, #2a4a7a);
+            border-radius: 20px;
+            padding: 24px;
+            text-align: center;
+            margin: 16px 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .qr-section::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(233,30,99,0.1) 0%, transparent 50%);
+        }
+
+        .qr-section h2 {
+            color: white;
+            font-size: 24px;
+            font-weight: 800;
+            margin-bottom: 4px;
+            position: relative;
+        }
+
+        .qr-section .qr-subtitle {
+            color: rgba(255,255,255,0.8);
+            font-size: 13px;
+            margin-bottom: 16px;
+            position: relative;
+        }
+
+        .qr-box {
+            background: white;
+            border-radius: 16px;
+            padding: 16px;
+            display: inline-block;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        .qr-box img {
+            width: 180px;
+            height: 180px;
+            display: block;
+        }
+
+        .qr-arrow {
+            font-size: 28px;
+            margin-top: 12px;
+            position: relative;
+            color: #e91e63;
+            font-weight: 800;
+        }
+
+        .qr-cta {
+            color: white;
+            font-size: 16px;
+            font-weight: 700;
+            margin-top: 8px;
+            position: relative;
+            background: #e91e63;
+            display: inline-block;
+            padding: 8px 20px;
+            border-radius: 20px;
+        }
+
+        /* Location & Info */
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin: 12px 0;
+        }
+
+        .info-card {
+            background: white;
+            border-radius: 14px;
+            padding: 14px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .info-card h3 {
+            color: #e91e63;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 6px;
+        }
+
+        .info-card p {
+            font-size: 12px;
+            color: #1a2a4a;
+            line-height: 1.4;
+        }
+
+        /* Contact */
+        .contact {
+            background: white;
+            border-radius: 14px;
+            padding: 12px 16px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .contact h3 {
+            color: #e91e63;
+            font-size: 12px;
+            margin-bottom: 6px;
+        }
+
+        .contact p {
+            font-size: 12px;
+            color: #1a2a4a;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            margin-top: 12px;
+            font-size: 13px;
+            font-weight: 700;
+            color: #1a2a4a;
+            letter-spacing: 1px;
+        }
+
+        .footer span {
+            color: #e91e63;
+        }
+
+        @media print {
+            body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+        }
+    </style>
+</head>
+<body>
+    <div class="poster">
+        <div class="title">
+            <h1>PADEL<br><span>4</span> PADEL</h1>
+        </div>
+
+        <div class="center">
+            <div class="subtitle">PLAY. CONNECT. ENERGIZE.</div>
+        </div>
+
+        <div class="welcome">
+            <h2>🎾 ALL ARE WELCOME!</h2>
+            <p>Great people. Great games. Great vibe.</p>
+        </div>
+
+        <div class="schedule-header">📅 REGULAR SESSIONS – MARK YOUR CALENDAR!</div>
+
+        <div class="schedule-grid">
+            <div class="schedule-card">
+                <div class="label">Every Other Tuesday Evening</div>
+                <div class="time">6:00 – 7:00 PM</div>
+                <div class="note">(Every other Tuesday)</div>
+            </div>
+            <div class="schedule-card">
+                <div class="label">Lunchtime – 2nd to Last Thursday</div>
+                <div class="time">12:00 – 1:00 PM</div>
+                <div class="note">(Second to last Thursday of the month)</div>
+            </div>
+        </div>
+
+        <!-- QR CODE SECTION -->
+        <div class="qr-section">
+            <h2>📱 SIGN UP NOW!</h2>
+            <div class="qr-subtitle">Scan the QR code to book your spot & pay</div>
+            <div class="qr-box">
+                <img src="qr-padel.png" alt="Scan to sign up for Padel Sessions">
+            </div>
+            <div class="qr-arrow">⬆️ SCAN ME ⬆️</div>
+            <div class="qr-cta">£15 per person • 4 players per court</div>
+        </div>
+
+        <div class="info-grid">
+            <div class="info-card">
+                <h3>📍 Location</h3>
+                <p>
+                    <strong>Vauxhall Padel Yard "Game4Padel"</strong><br>
+                    73A South Lambeth Road<br>
+                    London SW8 1SP<br><br>
+                    Nearest station: Vauxhall (7 min walk)
+                </p>
+            </div>
+            <div class="info-card">
+                <h3>🚶 Directions from King Office</h3>
+                <p>
+                    1. Head south on Wardour St to Cambridge Circus<br>
+                    2. Northern Line (southbound) to Kennington<br>
+                    3. Walk to Vauxhall Station<br>
+                    4. South on Vauxhall Bridge Road<br>
+                    5. Left onto South Lambeth Road<br><br>
+                    ⏱️ ~25-30 min door-to-door
+                </p>
+            </div>
+        </div>
+
+        <div class="contact">
+            <h3>❓ ANY QUESTIONS?</h3>
+            <p><strong>Stephen Wood</strong> &nbsp;•&nbsp; stephen.wood@king.com &nbsp;•&nbsp; 07742966869</p>
+        </div>
+
+        <div class="footer">
+            GOOD PLAY. GREAT PEOPLE. EVEN BETTER VIBES.<br>
+            <span>SEE YOU ON COURT! 🎾</span>
+        </div>
+    </div>
+</body>
+</html>
