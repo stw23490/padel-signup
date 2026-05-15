@@ -364,6 +364,50 @@ api.delete('/api/users/:id', (req, res) => {
     res.json({ ok: true });
 });
 
+// ===== PADEL SESSION REGISTRATION =====
+const PADEL_FILE = path.join(__dirname, 'padel-registrations.json');
+
+function loadPadelRegistrations() {
+    try {
+        if (fs.existsSync(PADEL_FILE)) {
+            return JSON.parse(fs.readFileSync(PADEL_FILE, 'utf8'));
+        }
+    } catch (e) {
+        console.error('Error loading padel registrations:', e.message);
+    }
+    return [];
+}
+
+function savePadelRegistrations(data) {
+    fs.writeFileSync(PADEL_FILE, JSON.stringify(data, null, 2));
+}
+
+api.post('/api/padel/register', (req, res) => {
+    const { name, email, session, time, type, date } = req.body;
+    if (!name || !email || !session) {
+        return res.status(400).json({ error: 'Name, email, and session are required.' });
+    }
+    const registrations = loadPadelRegistrations();
+    const entry = {
+        id: Date.now(),
+        name: name.trim(),
+        email: email.trim(),
+        session,
+        time,
+        type,
+        date,
+        registeredAt: new Date().toISOString()
+    };
+    registrations.push(entry);
+    savePadelRegistrations(registrations);
+    console.log(`🎾 Padel registration: ${name} for ${session} ${time}`);
+    res.status(201).json(entry);
+});
+
+api.get('/api/padel/registrations', (req, res) => {
+    res.json(loadPadelRegistrations());
+});
+
 // Health check
 api.get('/api/health', (req, res) => {
     res.json({ status: 'ok', channel: RECOGNITION_CHANNEL, recognitions: store.recognitions.length });

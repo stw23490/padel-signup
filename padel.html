@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Padel Sessions – Sign Up</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #f0f4ff 0%, #fce4ec 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #1a2a4a;
+        }
+
+        .container {
+            max-width: 420px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            font-weight: 800;
+            color: #1a2a4a;
+            margin-bottom: 4px;
+        }
+
+        .header h1 span {
+            color: #e91e63;
+        }
+
+        .header p {
+            color: #5a6a8a;
+            font-size: 14px;
+        }
+
+        .tagline {
+            background: linear-gradient(135deg, #1a2a4a, #2a4a7a);
+            color: white;
+            text-align: center;
+            padding: 10px 16px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 13px;
+            letter-spacing: 1px;
+            margin-bottom: 24px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            margin-bottom: 16px;
+        }
+
+        .card h2 {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            color: #1a2a4a;
+        }
+
+        .step-indicator {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 24px;
+        }
+
+        .step-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #ddd;
+            transition: all 0.3s;
+        }
+
+        .step-dot.active {
+            background: #e91e63;
+            transform: scale(1.3);
+        }
+
+        .step-dot.done {
+            background: #4caf50;
+        }
+
+        /* Step sections */
+        .step { display: none; }
+        .step.active { display: block; }
+
+        /* Date selection */
+        .date-option {
+            border: 2px solid #e8ecf4;
+            border-radius: 12px;
+            padding: 14px 16px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .date-option:hover {
+            border-color: #e91e63;
+            background: #fce4ec;
+        }
+
+        .date-option.selected {
+            border-color: #e91e63;
+            background: #fce4ec;
+        }
+
+        .date-option .date-icon {
+            font-size: 24px;
+        }
+
+        .date-option .date-info {
+            flex: 1;
+        }
+
+        .date-option .date-info .day {
+            font-weight: 700;
+            font-size: 15px;
+        }
+
+        .date-option .date-info .time {
+            font-size: 13px;
+            color: #5a6a8a;
+        }
+
+        .date-option .spots {
+            font-size: 12px;
+            background: #e8f5e9;
+            color: #2e7d32;
+            padding: 4px 8px;
+            border-radius: 8px;
+            font-weight: 600;
+        }
+
+        .date-option .spots.low {
+            background: #fff3e0;
+            color: #e65100;
+        }
+
+        .date-option .spots.full {
+            background: #ffebee;
+            color: #c62828;
+        }
+
+        .date-option .weather {
+            text-align: center;
+            min-width: 44px;
+        }
+
+        .date-option .weather img {
+            width: 32px;
+            height: 32px;
+        }
+
+        .date-option .weather .temp {
+            font-size: 11px;
+            color: #5a6a8a;
+            font-weight: 600;
+        }
+
+        /* Form inputs */
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: #5a6a8a;
+            margin-bottom: 6px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid #e8ecf4;
+            border-radius: 12px;
+            font-size: 16px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .form-group input:focus {
+            border-color: #e91e63;
+        }
+
+        /* Buttons */
+        .btn {
+            width: 100%;
+            padding: 16px;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #e91e63, #c2185b);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(233, 30, 99, 0.4);
+        }
+
+        .btn-primary:disabled {
+            background: #ccc;
+            transform: none;
+            box-shadow: none;
+            cursor: not-allowed;
+        }
+
+        .btn-secondary {
+            background: #f5f5f5;
+            color: #1a2a4a;
+            margin-top: 8px;
+        }
+
+        /* Payment summary */
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 14px;
+        }
+
+        .summary-row:last-child {
+            border-bottom: none;
+            font-weight: 700;
+            font-size: 16px;
+            padding-top: 14px;
+        }
+
+        .summary-row .label {
+            color: #5a6a8a;
+        }
+
+        /* Success state */
+        .success-icon {
+            text-align: center;
+            font-size: 64px;
+            margin-bottom: 16px;
+        }
+
+        .success-text {
+            text-align: center;
+        }
+
+        .success-text h2 {
+            color: #2e7d32;
+            margin-bottom: 8px;
+        }
+
+        .success-text p {
+            color: #5a6a8a;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .info-box {
+            background: #f0f4ff;
+            border-radius: 12px;
+            padding: 14px 16px;
+            margin-top: 16px;
+            font-size: 13px;
+            color: #1a2a4a;
+            line-height: 1.5;
+        }
+
+        .info-box strong {
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .price-tag {
+            font-size: 24px;
+            font-weight: 800;
+            color: #1a2a4a;
+            text-align: center;
+            margin: 16px 0;
+        }
+
+        .price-tag span {
+            font-size: 14px;
+            color: #5a6a8a;
+            font-weight: 400;
+        }
+
+        #paypal-button-container {
+            margin-top: 16px;
+        }
+
+        .payment-error {
+            background: #ffebee;
+            color: #c62828;
+            padding: 12px 16px;
+            border-radius: 10px;
+            font-size: 13px;
+            margin-top: 12px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>PADEL <span>4</span> PADEL</h1>
+            <p>Office Padel Sessions</p>
+        </div>
+
+        <div class="tagline">PLAY. CONNECT. ENERGIZE.</div>
+
+        <div class="step-indicator">
+            <div class="step-dot active" id="dot-1"></div>
+            <div class="step-dot" id="dot-2"></div>
+            <div class="step-dot" id="dot-3"></div>
+        </div>
+
+        <!-- Step 1: Select Date -->
+        <div class="step active" id="step-1">
+            <div class="card">
+                <h2>📅 Choose Your Session</h2>
+                <div id="session-list">
+                    <!-- Sessions populated by JS -->
+                </div>
+            </div>
+            <button class="btn btn-primary" id="btn-to-step2" disabled onclick="goToStep(2)">Continue</button>
+        </div>
+
+        <!-- Step 2: Enter Name -->
+        <div class="step" id="step-2">
+            <div class="card">
+                <h2>👤 Your Details</h2>
+                <div class="form-group">
+                    <label>Full Name</label>
+                    <input type="text" id="input-name" placeholder="e.g. John Smith" autocomplete="name">
+                </div>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="input-email" placeholder="e.g. john.smith@king.com" autocomplete="email">
+                </div>
+            </div>
+            <button class="btn btn-primary" id="btn-to-step3" disabled onclick="goToStep(3)">Continue to Payment (£15)</button>
+            <button class="btn btn-secondary" onclick="goToStep(1)">← Back</button>
+        </div>
+
+        <!-- Step 3: Payment -->
+        <div class="step" id="step-3">
+            <div class="card">
+                <h2>💳 Payment</h2>
+                <div class="summary-row">
+                    <span class="label">Session</span>
+                    <span id="summary-session">-</span>
+                </div>
+                <div class="summary-row">
+                    <span class="label">Name</span>
+                    <span id="summary-name">-</span>
+                </div>
+                <div class="summary-row">
+                    <span class="label">Players per court</span>
+                    <span>4</span>
+                </div>
+                <div class="summary-row">
+                    <span class="label">Total</span>
+                    <span>£15.00</span>
+                </div>
+                <div class="price-tag">£15.00 <span>per person</span></div>
+                <button class="btn btn-primary" id="btn-pay" onclick="openPayPal()">💳 Pay £15.00 with PayPal</button>
+                <div class="payment-error" id="payment-error">Payment was not completed. Please try again.</div>
+            </div>
+            <button class="btn btn-secondary" onclick="goToStep(2)">← Back</button>
+        </div>
+
+        <!-- Step 4: Confirmation -->
+        <div class="step" id="step-4">
+            <div class="card">
+                <div class="success-icon">🎉</div>
+                <div class="success-text">
+                    <h2>You're In!</h2>
+                    <p>Your spot is confirmed. See you on court!</p>
+                </div>
+                <div class="info-box">
+                    <strong>📍 Location</strong>
+                    Vauxhall Padel Yard "Game4Padel"<br>
+                    73A South Lambeth Road, London SW8 1SP<br><br>
+                    <strong>🚇 Nearest Station</strong>
+                    Vauxhall (Mainline & Victoria Line) – 7 min walk<br><br>
+                    <strong>❓ Questions?</strong>
+                    Stephen Wood – stephen.wood@king.com
+                </div>
+            </div>
+            <button class="btn btn-secondary" onclick="resetForm()">Sign Up for Another Session</button>
+        </div>
+    </div>
+
+    <script>
+        // ===== SESSION DATA =====
+        // Generate upcoming sessions based on the schedule:
+        // - Every other Tuesday evening: 6:00-7:00 PM
+        // - Second to last Thursday of the month: 12:00-1:00 PM
+
+        function getUpcomingSessions() {
+            const sessions = [];
+            const now = new Date();
+            const maxSessions = 6;
+
+            // Find upcoming Tuesday evenings (every other week)
+            // Start from a known Tuesday anchor: May 20, 2026 (a Tuesday)
+            const tuesdayAnchor = new Date(2026, 4, 20); // May 20, 2026
+            let tuesday = new Date(tuesdayAnchor);
+            
+            // Move to next even-week Tuesday from anchor
+            while (tuesday < now) {
+                tuesday.setDate(tuesday.getDate() + 14);
+            }
+
+            for (let i = 0; i < 4; i++) {
+                const d = new Date(tuesday);
+                d.setDate(d.getDate() + (i * 14));
+                if (d > now) {
+                    sessions.push({
+                        date: d,
+                        type: 'evening',
+                        label: formatDate(d),
+                        time: '6:00 – 7:00 PM'
+                    });
+                }
+            }
+
+            // Find second-to-last Thursdays
+            for (let monthOffset = 0; monthOffset < 3; monthOffset++) {
+                const targetMonth = now.getMonth() + monthOffset;
+                const targetYear = now.getFullYear() + Math.floor(targetMonth / 12);
+                const adjustedMonth = targetMonth % 12;
+
+                const lastDay = new Date(targetYear, adjustedMonth + 1, 0);
+                const thursdays = [];
+                
+                for (let day = 1; day <= lastDay.getDate(); day++) {
+                    const d = new Date(targetYear, adjustedMonth, day);
+                    if (d.getDay() === 4) thursdays.push(new Date(d));
+                }
+
+                if (thursdays.length >= 2) {
+                    const secondToLast = thursdays[thursdays.length - 2];
+                    if (secondToLast > now) {
+                        sessions.push({
+                            date: secondToLast,
+                            type: 'lunchtime',
+                            label: formatDate(secondToLast),
+                            time: '12:00 – 1:00 PM'
+                        });
+                    }
+                }
+            }
+
+            // Sort by date
+            sessions.sort((a, b) => a.date - b.date);
+            return sessions.slice(0, maxSessions);
+        }
+
+        function formatDate(date) {
+            const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+            const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+            return `${days[date.getDay()]}, ${date.getDate()} ${months[date.getMonth()]}`;
+        }
+
+        // ===== STATE =====
+        let selectedSession = null;
+        const sessions = getUpcomingSessions();
+        const CAPACITY = 4; // 4 players per court
+        let registrations = [];
+
+        async function fetchRegistrations() {
+            try {
+                const res = await fetch('/api/padel/registrations');
+                registrations = await res.json();
+            } catch (e) {
+                console.log('Could not fetch registrations:', e.message);
+                registrations = [];
+            }
+            renderSessions();
+        }
+
+        function getSignedUp(session) {
+            return registrations.filter(r => r.session === session.label && r.time === session.time).length;
+        }
+
+        // ===== WEATHER =====
+        // Uses Open-Meteo API with UKMO (Met Office) model for UK forecasts
+        const WEATHER_ICONS = {
+            0: { icon: '☀️', desc: 'Clear' },
+            1: { icon: '🌤️', desc: 'Mainly clear' },
+            2: { icon: '⛅', desc: 'Partly cloudy' },
+            3: { icon: '☁️', desc: 'Overcast' },
+            45: { icon: '🌫️', desc: 'Fog' },
+            48: { icon: '🌫️', desc: 'Fog' },
+            51: { icon: '🌦️', desc: 'Light drizzle' },
+            53: { icon: '🌦️', desc: 'Drizzle' },
+            55: { icon: '🌧️', desc: 'Heavy drizzle' },
+            56: { icon: '🌧️', desc: 'Freezing drizzle' },
+            57: { icon: '🌧️', desc: 'Freezing drizzle' },
+            61: { icon: '🌦️', desc: 'Light rain' },
+            63: { icon: '🌧️', desc: 'Rain' },
+            65: { icon: '🌧️', desc: 'Heavy rain' },
+            66: { icon: '🌧️', desc: 'Freezing rain' },
+            67: { icon: '🌧️', desc: 'Freezing rain' },
+            71: { icon: '🌨️', desc: 'Light snow' },
+            73: { icon: '🌨️', desc: 'Snow' },
+            75: { icon: '🌨️', desc: 'Heavy snow' },
+            77: { icon: '🌨️', desc: 'Snow grains' },
+            80: { icon: '🌦️', desc: 'Light showers' },
+            81: { icon: '🌧️', desc: 'Showers' },
+            82: { icon: '🌧️', desc: 'Heavy showers' },
+            85: { icon: '🌨️', desc: 'Snow showers' },
+            86: { icon: '🌨️', desc: 'Heavy snow showers' },
+            95: { icon: '⛈️', desc: 'Thunderstorm' },
+            96: { icon: '⛈️', desc: 'Thunderstorm' },
+            99: { icon: '⛈️', desc: 'Thunderstorm' }
+        };
+
+        let weatherData = {};
+
+        async function fetchWeather() {
+            try {
+                // Vauxhall, London coordinates
+                const lat = 51.4861;
+                const lon = -0.1228;
+                const res = await fetch(
+                    `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&daily=weather_code,temperature_2m_max&timezone=Europe/London&forecast_days=16&models=ukmo_seamless`
+                );
+                const data = await res.json();
+                if (data.daily) {
+                    data.daily.time.forEach((date, i) => {
+                        weatherData[date] = {
+                            code: data.daily.weather_code[i],
+                            temp: Math.round(data.daily.temperature_2m_max[i])
+                        };
+                    });
+                }
+            } catch (e) {
+                console.log('Weather unavailable:', e.message);
+            }
+            renderSessions();
+        }
+
+        function getWeatherForDate(date) {
+            const key = date.toISOString().split('T')[0];
+            return weatherData[key] || null;
+        }
+
+        // ===== RENDER SESSIONS =====
+        function renderSessions() {
+            const list = document.getElementById('session-list');
+            if (sessions.length === 0) {
+                list.innerHTML = '<p style="text-align:center;color:#5a6a8a;padding:20px;">No upcoming sessions available. Check back soon!</p>';
+                return;
+            }
+
+            list.innerHTML = sessions.map((s, i) => {
+                const signedUp = getSignedUp(s);
+                const spotsLeft = Math.max(0, CAPACITY - signedUp);
+                const spotsClass = spotsLeft === 0 ? 'full' : spotsLeft <= 1 ? 'low' : '';
+                const spotsText = spotsLeft === 0 ? 'FULL' : `${signedUp}/${CAPACITY} signed up`;
+                const isFull = spotsLeft === 0;
+                const weather = getWeatherForDate(s.date);
+                const weatherHtml = weather
+                    ? `<div class="weather"><span style="font-size:22px">${WEATHER_ICONS[weather.code]?.icon || '🌤️'}</span><div class="temp">${weather.temp}°C</div></div>`
+                    : '';
+                return `
+                    <div class="date-option ${isFull ? 'full-session' : ''}" onclick="${isFull ? '' : `selectSession(${i})`}" id="session-${i}" style="${isFull ? 'opacity:0.5;cursor:not-allowed;' : ''}">
+                        <div class="date-info">
+                            <div class="day">${s.label}</div>
+                            <div class="time">${s.time}</div>
+                        </div>
+                        ${weatherHtml}
+                        <div class="spots ${spotsClass}">${spotsText}</div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function selectSession(index) {
+            selectedSession = sessions[index];
+            document.querySelectorAll('.date-option').forEach(el => el.classList.remove('selected'));
+            document.getElementById(`session-${index}`).classList.add('selected');
+            document.getElementById('btn-to-step2').disabled = false;
+        }
+
+        // ===== NAVIGATION =====
+        function goToStep(step) {
+            // Validation
+            if (step === 3) {
+                const name = document.getElementById('input-name').value.trim();
+                const email = document.getElementById('input-email').value.trim();
+                if (!name || !email) {
+                    alert('Please fill in your name and email.');
+                    return;
+                }
+                document.getElementById('summary-session').textContent = `${selectedSession.label}, ${selectedSession.time}`;
+                document.getElementById('summary-name').textContent = name;
+            }
+
+            document.querySelectorAll('.step').forEach(el => el.classList.remove('active'));
+            document.getElementById(`step-${step}`).classList.add('active');
+
+            // Update dots
+            for (let i = 1; i <= 3; i++) {
+                const dot = document.getElementById(`dot-${i}`);
+                dot.classList.remove('active', 'done');
+                if (i === step) dot.classList.add('active');
+                else if (i < step) dot.classList.add('done');
+            }
+        }
+
+        // ===== FORM VALIDATION =====
+        document.addEventListener('DOMContentLoaded', () => {
+            renderSessions();
+            fetchRegistrations(); // Fetch real sign-up counts
+            fetchWeather(); // Fetch Met Office weather and re-render
+
+            const nameInput = document.getElementById('input-name');
+            const emailInput = document.getElementById('input-email');
+            const btn = document.getElementById('btn-to-step3');
+
+            function checkForm() {
+                const valid = nameInput.value.trim().length > 0 && emailInput.value.trim().includes('@');
+                btn.disabled = !valid;
+            }
+
+            nameInput.addEventListener('input', checkForm);
+            emailInput.addEventListener('input', checkForm);
+        });
+
+        // ===== PAYPAL PAYMENT =====
+        function openPayPal() {
+            const name = document.getElementById('input-name').value.trim();
+            const email = document.getElementById('input-email').value.trim();
+            const itemName = `Padel Session - ${selectedSession.label} ${selectedSession.time} (${name})`;
+
+            // Build PayPal payment URL
+            const paypalUrl = 'https://www.paypal.com/cgi-bin/webscr?' + new URLSearchParams({
+                cmd: '_xclick',
+                business: 'steviewoods03@hotmail.com',
+                item_name: itemName,
+                amount: '15.00',
+                currency_code: 'GBP',
+                no_shipping: '1',
+                return: window.location.href,
+                cancel_return: window.location.href
+            }).toString();
+
+            // Save registration
+            const registration = {
+                name,
+                email,
+                session: selectedSession.label,
+                time: selectedSession.time,
+                type: selectedSession.type,
+                date: selectedSession.date.toISOString(),
+                registeredAt: new Date().toISOString()
+            };
+
+            fetch('/api/padel/register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(registration)
+            }).catch(() => console.log('Offline - registration saved locally'));
+
+            // Open PayPal in new tab
+            window.open(paypalUrl, '_blank');
+
+            // Show confirmation
+            goToStep(4);
+        }
+
+        function resetForm() {
+            selectedSession = null;
+            document.getElementById('input-name').value = '';
+            document.getElementById('input-email').value = '';
+            document.getElementById('btn-to-step2').disabled = true;
+            document.getElementById('btn-to-step3').disabled = true;
+            document.querySelectorAll('.date-option').forEach(el => el.classList.remove('selected'));
+            renderSessions();
+            goToStep(1);
+        }
+    </script>
+</body>
+</html>

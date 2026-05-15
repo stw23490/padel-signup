@@ -11,7 +11,6 @@
         :root {
             --bg: #f4f6f9;
             --surface: #ffffff;
-            --surface-elevated: #ffffff;
             --text: #0f172a;
             --text-secondary: #475569;
             --text-muted: #94a3b8;
@@ -20,58 +19,69 @@
             --row-hover: #eef4ff;
             --row-hover-text: #1e40af;
             --header-bg: #f8fafc;
-            --positive: #0369a1;
+            --positive: #15803d;
             --negative: #dc2626;
             --neutral: #1e293b;
             --expand-icon: #64748b;
-            --accent: #2563eb;
-            --accent-soft: #3b82f6;
-            --accent-light: #eff6ff;
-            --accent-border: #bfdbfe;
-            --brand-gradient-1: #1e3a5f;
-            --brand-gradient-2: #2563eb;
+            --accent: #15803d;
+            --accent-soft: #22c55e;
+            --accent-light: #f0fdf4;
+            --accent-border: #bbf7d0;
+            --brand-1: #166534;
+            --brand-2: #15803d;
+            --brand-3: #22c55e;
             --dim-panel-bg: #ffffff;
             --dim-chip-bg: #f8fafc;
             --dim-chip-border: #e2e8f0;
-            --dim-chip-drag: #eff6ff;
+            --dim-chip-drag: #f0fdf4;
             --expanded-bg: #f8fafd;
-            --drag-indicator: #2563eb;
+            --drag-indicator: #15803d;
+            --card-bg: #ffffff;
+            --card-border: #e2e8f0;
+            --section-header: #166534;
+            --walk-positive: #15803d;
+            --walk-negative: #dc2626;
             --shadow-sm: 0 1px 2px rgba(0,0,0,0.04);
             --shadow-md: 0 4px 12px rgba(0,0,0,0.06);
             --shadow-lg: 0 8px 24px rgba(0,0,0,0.08);
-            --radius-sm: 8px;
-            --radius-md: 12px;
-            --radius-lg: 16px;
+            --radius-sm: 6px;
+            --radius-md: 10px;
+            --radius-lg: 14px;
         }
 
         [data-theme="dark"] {
             --bg: #0c1220;
             --surface: #1a2332;
-            --surface-elevated: #1f2b3d;
             --text: #e8edf5;
             --text-secondary: #94a3b8;
             --text-muted: #64748b;
             --border: #2d3a4d;
             --border-light: #1f2b3d;
-            --row-hover: #1e3a5f;
-            --row-hover-text: #93c5fd;
+            --row-hover: #1a3a2e;
+            --row-hover-text: #86efac;
             --header-bg: #151f2e;
-            --positive: #38bdf8;
+            --positive: #4ade80;
             --negative: #f87171;
             --neutral: #e2e8f0;
             --expand-icon: #94a3b8;
-            --accent: #3b82f6;
-            --accent-soft: #60a5fa;
-            --accent-light: #1e3a5f;
-            --accent-border: #1d4ed8;
-            --brand-gradient-1: #1e3a5f;
-            --brand-gradient-2: #3b82f6;
+            --accent: #22c55e;
+            --accent-soft: #4ade80;
+            --accent-light: #14532d;
+            --accent-border: #166534;
+            --brand-1: #14532d;
+            --brand-2: #166534;
+            --brand-3: #22c55e;
             --dim-panel-bg: #1a2332;
             --dim-chip-bg: #1f2b3d;
             --dim-chip-border: #2d3a4d;
-            --dim-chip-drag: #1e3a5f;
+            --dim-chip-drag: #14532d;
             --expanded-bg: #151f2e;
-            --drag-indicator: #3b82f6;
+            --drag-indicator: #22c55e;
+            --card-bg: #1a2332;
+            --card-border: #2d3a4d;
+            --section-header: #166534;
+            --walk-positive: #4ade80;
+            --walk-negative: #f87171;
             --shadow-sm: 0 1px 2px rgba(0,0,0,0.2);
             --shadow-md: 0 4px 12px rgba(0,0,0,0.3);
             --shadow-lg: 0 8px 24px rgba(0,0,0,0.4);
@@ -85,517 +95,341 @@
             background: var(--bg);
             color: var(--text);
             -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
             transition: background-color 0.3s ease, color 0.3s ease;
         }
 
-        /* ===== TOP NAV BAR / BRANDING ===== */
-        .top-bar {
-            background: linear-gradient(135deg, var(--brand-gradient-1), var(--brand-gradient-2));
-            padding: 14px 40px;
+        /* ===== BRANDED BANNER ===== */
+        .banner {
+            background: linear-gradient(135deg, var(--brand-1), var(--brand-2));
+            padding: 18px 40px;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            box-shadow: var(--shadow-md);
             position: sticky;
             top: 0;
             z-index: 100;
+            box-shadow: var(--shadow-md);
         }
-
-        .brand {
+        .banner-left {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 16px;
         }
-
-        .brand-logo {
-            width: 32px;
-            height: 32px;
+        .banner-logo {
+            width: 36px; height: 36px;
             background: rgba(255,255,255,0.15);
             border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 18px;
-            backdrop-filter: blur(4px);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 20px;
             border: 1px solid rgba(255,255,255,0.2);
         }
-
-        .brand-text {
-            display: flex;
-            flex-direction: column;
+        .banner-title {
+            font-size: 22px; font-weight: 800; color: #fff;
+            letter-spacing: -0.03em;
         }
+        .banner-tagline {
+            font-size: 13px; font-weight: 400; color: rgba(255,255,255,0.75);
+            font-style: italic;
+            margin-left: 16px;
+        }
+        .banner-right {
+            display: flex; align-items: center; gap: 12px;
+        }
+        .banner-meta {
+            font-size: 11px; color: rgba(255,255,255,0.8); text-align: right;
+        }
+        .banner-meta strong { font-weight: 600; color: #fff; }
+        .theme-toggle {
+            display: flex; align-items: center; gap: 6px;
+            background: rgba(255,255,255,0.12);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 16px; padding: 5px 12px;
+            cursor: pointer; transition: all 0.2s ease;
+        }
+        .theme-toggle:hover { background: rgba(255,255,255,0.2); }
+        .theme-toggle-icon { font-size: 13px; }
+        .theme-toggle-label { font-size: 11px; font-weight: 500; color: rgba(255,255,255,0.9); }
 
-        .brand-name {
-            font-size: 16px;
-            font-weight: 700;
-            color: #ffffff;
+        /* ===== PAGE CONTAINER ===== */
+        .page-container { max-width: 1600px; margin: 0 auto; padding: 20px 32px; }
+
+        /* ===== KPI SUMMARY CARDS ===== */
+        .kpi-strip {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        .kpi-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: var(--radius-md);
+            padding: 14px 16px;
+            box-shadow: var(--shadow-sm);
+            border-top: 3px solid var(--accent);
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+        }
+        .kpi-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+        .kpi-card-label {
+            font-size: 10px; font-weight: 600;
+            text-transform: uppercase; letter-spacing: 0.06em;
+            color: var(--text-muted); margin-bottom: 6px;
+        }
+        .kpi-card-value {
+            font-size: 22px; font-weight: 800; color: var(--text);
             letter-spacing: -0.02em;
         }
-
-        .brand-sub {
-            font-size: 11px;
-            font-weight: 400;
-            color: rgba(255,255,255,0.7);
-            letter-spacing: 0.02em;
+        .kpi-card-delta {
+            font-size: 11px; font-weight: 500; margin-top: 4px;
         }
+        .kpi-card-delta.pos { color: var(--positive); }
+        .kpi-card-delta.neg { color: var(--negative); }
+        .kpi-card.revenue { border-top-color: #15803d; }
+        .kpi-card.ads { border-top-color: #0369a1; }
+        .kpi-card.dau { border-top-color: #7c3aed; }
+        .kpi-card.installs { border-top-color: #ea580c; }
+        .kpi-card.arpdau { border-top-color: #b45309; }
+        .kpi-card.payer { border-top-color: #be185d; }
 
-        .top-bar-actions {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        /* Theme Toggle */
-        .theme-toggle {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            background: rgba(255,255,255,0.1);
-            border: 1px solid rgba(255,255,255,0.2);
-            border-radius: 20px;
-            padding: 5px 12px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            backdrop-filter: blur(4px);
-        }
-
-        .theme-toggle:hover {
-            background: rgba(255,255,255,0.2);
-        }
-
-        .theme-toggle-icon {
-            font-size: 14px;
-            transition: transform 0.3s ease;
-        }
-
-        .theme-toggle-label {
-            font-size: 11px;
-            font-weight: 500;
-            color: rgba(255,255,255,0.9);
-        }
-
-        /* ===== PAGE CONTENT ===== */
-        .page-container {
-            max-width: 1560px;
-            margin: 0 auto;
-            padding: 28px 40px;
-        }
-
-        .page-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 24px;
-        }
-
-        .page-title {
-            font-size: 20px;
-            font-weight: 700;
-            color: var(--text);
-            letter-spacing: -0.025em;
-        }
-
-        .page-subtitle {
-            font-size: 12px;
-            color: var(--text-muted);
-            margin-top: 3px;
-            font-weight: 400;
-        }
-
-        /* View Toggle Switch */
-        .view-toggle-container {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .view-toggle {
-            display: flex;
-            background: var(--border-light);
-            border-radius: 10px;
-            padding: 4px;
+        /* ===== SECTION PANELS ===== */
+        .section-panel {
+            background: var(--surface);
             border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            margin-bottom: 16px;
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
         }
-
-        .view-toggle-btn {
-            padding: 8px 20px;
-            border: none;
-            background: transparent;
-            font-family: 'Inter', sans-serif;
-            font-size: 12px;
-            font-weight: 500;
-            color: var(--text-secondary);
-            border-radius: 7px;
+        .section-header {
+            background: var(--section-header);
+            padding: 10px 20px;
+            display: flex; align-items: center; justify-content: space-between;
             cursor: pointer;
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-            white-space: nowrap;
+        }
+        .section-header h3 {
+            font-size: 13px; font-weight: 700; color: #fff;
             letter-spacing: -0.01em;
         }
+        .section-header .section-toggle {
+            color: rgba(255,255,255,0.7); font-size: 10px;
+            transition: transform 0.2s ease;
+        }
+        .section-header .section-toggle.open { transform: rotate(90deg); }
+        .section-body { padding: 0; }
 
+        /* ===== WALK / VARIANCE TABLE ===== */
+        .walk-table {
+            width: 100%; border-collapse: collapse; font-size: 12px;
+        }
+        .walk-table thead th {
+            background: var(--header-bg);
+            padding: 8px 12px; text-align: right;
+            font-weight: 600; font-size: 10px; color: var(--text-muted);
+            text-transform: uppercase; letter-spacing: 0.05em;
+            border-bottom: 1px solid var(--border);
+        }
+        .walk-table thead th:first-child { text-align: left; min-width: 180px; }
+        .walk-table thead tr.walk-header-group th {
+            text-align: center; font-size: 11px; font-weight: 700;
+            color: var(--text-secondary); border-bottom: 1px solid var(--border); padding: 10px 12px;
+        }
+        .walk-table tbody tr { border-bottom: 1px solid var(--border-light); }
+        .walk-table tbody tr:hover { background: var(--row-hover); }
+        .walk-table tbody td {
+            padding: 8px 12px; text-align: right; white-space: nowrap;
+            font-variant-numeric: tabular-nums; color: var(--text-secondary);
+        }
+        .walk-table tbody td:first-child {
+            text-align: left; font-weight: 500; color: var(--text);
+        }
+        .walk-table tbody tr.walk-row-open td:first-child,
+        .walk-table tbody tr.walk-row-close td:first-child {
+            font-weight: 700; color: var(--text);
+        }
+        .walk-table tbody tr.walk-row-total {
+            border-top: 2px solid var(--border);
+            font-weight: 700;
+        }
+        .walk-table tbody tr.walk-row-total td { font-weight: 700; color: var(--text); padding: 10px 12px; }
+        .walk-table .walk-indent { padding-left: 24px; font-weight: 400; color: var(--text-secondary); }
+        .walk-table .val-pos { color: var(--walk-positive); font-weight: 500; }
+        .walk-table .val-neg { color: var(--walk-negative); font-weight: 500; }
+        .walk-table .val-flat { color: var(--neutral); }
+        .walk-table .arrow { font-size: 9px; margin-right: 2px; }
+
+        /* ===== DRILL DOWN SECTION ===== */
+        .page-header {
+            display: flex; align-items: center; justify-content: space-between;
+            margin-bottom: 16px;
+        }
+        .page-title { font-size: 16px; font-weight: 700; color: var(--text); letter-spacing: -0.02em; }
+        .page-subtitle { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+
+        .view-toggle {
+            display: flex; background: var(--border-light); border-radius: 8px; padding: 3px; border: 1px solid var(--border);
+        }
+        .view-toggle-btn {
+            padding: 6px 16px; border: none; background: transparent;
+            font-family: 'Inter', sans-serif; font-size: 11px; font-weight: 500;
+            color: var(--text-secondary); border-radius: 6px; cursor: pointer;
+            transition: all 0.2s ease; white-space: nowrap;
+        }
         .view-toggle-btn.active {
-            background: var(--surface);
-            color: var(--text);
-            font-weight: 600;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04);
+            background: var(--surface); color: var(--text); font-weight: 600;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
         }
+        .view-toggle-btn:hover:not(.active) { color: var(--text); background: var(--accent-light); }
 
-        .view-toggle-btn:hover:not(.active) {
-            color: var(--text);
-            background: var(--accent-light);
-        }
-
-        /* Dimension Ordering Panel */
+        /* Dimension Panel */
         .dimension-panel {
-            background: var(--dim-panel-bg);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-md);
-            padding: 14px 20px;
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            flex-wrap: wrap;
+            background: var(--dim-panel-bg); border: 1px solid var(--border);
+            border-radius: var(--radius-md); padding: 12px 16px; margin-bottom: 14px;
+            display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
             box-shadow: var(--shadow-sm);
         }
-
         .dimension-panel-label {
-            font-size: 10px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.08em;
-            color: var(--text-muted);
-            margin-right: 4px;
-            white-space: nowrap;
+            font-size: 10px; font-weight: 700; text-transform: uppercase;
+            letter-spacing: 0.08em; color: var(--text-muted); margin-right: 4px; white-space: nowrap;
         }
-
-        .dimension-chips {
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-        }
-
+        .dimension-chips { display: flex; gap: 6px; flex-wrap: wrap; }
         .dimension-chip {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 7px 14px;
-            background: var(--dim-chip-bg);
-            border: 1px solid var(--dim-chip-border);
-            border-radius: var(--radius-sm);
-            cursor: grab;
-            font-size: 12px;
-            font-weight: 500;
-            user-select: none;
-            transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
-            color: var(--text-secondary);
+            display: flex; align-items: center; gap: 6px;
+            padding: 5px 12px; background: var(--dim-chip-bg);
+            border: 1px solid var(--dim-chip-border); border-radius: var(--radius-sm);
+            cursor: grab; font-size: 11px; font-weight: 500;
+            user-select: none; transition: all 0.15s ease; color: var(--text-secondary);
         }
-
-        .dimension-chip:hover {
-            border-color: var(--accent-border);
-            background: var(--accent-light);
-            color: var(--text);
-        }
-
+        .dimension-chip:hover { border-color: var(--accent-border); background: var(--accent-light); color: var(--text); }
         .dimension-chip:active { cursor: grabbing; transform: scale(0.97); }
-
-        .dimension-chip.dragging {
-            opacity: 0.4;
-            border-color: var(--accent);
-        }
-
+        .dimension-chip.dragging { opacity: 0.4; border-color: var(--accent); }
         .dimension-chip.drag-over {
-            border-color: var(--accent);
-            background: var(--dim-chip-drag);
-            transform: scale(1.03);
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+            border-color: var(--accent); background: var(--dim-chip-drag);
+            transform: scale(1.03); box-shadow: 0 0 0 3px rgba(21,128,61,0.12);
         }
-
-        .dimension-chip .chip-icon { color: var(--text-muted); font-size: 11px; }
-
+        .dimension-chip .chip-icon { color: var(--text-muted); font-size: 10px; }
         .dimension-chip .chip-number {
-            background: var(--accent);
-            color: white;
-            width: 20px;
-            height: 20px;
-            border-radius: 6px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 10px;
-            font-weight: 700;
+            background: var(--accent); color: white;
+            width: 18px; height: 18px; border-radius: 5px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 9px; font-weight: 700;
         }
+        .reset-btn {
+            margin-left: auto; padding: 5px 12px; background: transparent;
+            border: 1px solid var(--border); border-radius: 6px;
+            font-family: 'Inter', sans-serif; font-size: 10px; font-weight: 500;
+            color: var(--text-secondary); cursor: pointer; transition: all 0.15s ease; white-space: nowrap;
+        }
+        .reset-btn:hover { background: var(--accent-light); border-color: var(--accent-border); color: var(--accent); }
 
-        /* ===== TABLE ===== */
+        /* ===== DRILL TABLE ===== */
         .table-container {
-            border: 1px solid var(--border);
-            border-radius: var(--radius-md);
-            overflow-x: auto;
-            background: var(--surface);
-            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border); border-radius: var(--radius-md);
+            overflow-x: auto; background: var(--surface); box-shadow: var(--shadow-sm);
         }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 12px;
-            min-width: 1200px;
+        table.drill-table { width: 100%; border-collapse: collapse; font-size: 12px; min-width: 1100px; }
+        .drill-table thead th {
+            background: var(--header-bg); padding: 8px 10px; text-align: right;
+            font-weight: 600; font-size: 10px; color: var(--text-muted);
+            text-transform: uppercase; letter-spacing: 0.05em;
+            border-bottom: 1px solid var(--border); white-space: nowrap;
+            position: sticky; top: 0; z-index: 10;
         }
-
-        thead th {
-            background: var(--header-bg);
-            padding: 10px 12px;
-            text-align: right;
-            font-weight: 600;
-            font-size: 10px;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            border-bottom: 1px solid var(--border);
-            white-space: nowrap;
-            position: sticky;
-            top: 0;
-            z-index: 10;
+        .drill-table thead th:first-child {
+            text-align: left; min-width: 280px; position: sticky; left: 0;
+            background: var(--header-bg); z-index: 11;
         }
-
-        thead th:first-child {
-            text-align: left;
-            min-width: 320px;
-            position: sticky;
-            left: 0;
-            background: var(--header-bg);
-            z-index: 11;
+        .drill-table thead tr.header-group th {
+            text-align: center; border-bottom: 1px solid var(--border);
+            font-size: 11px; font-weight: 700; color: var(--text-secondary); padding: 10px;
         }
-
-        thead tr.header-group th {
-            text-align: center;
-            border-bottom: 1px solid var(--border);
-            font-size: 11px;
-            font-weight: 700;
-            color: var(--text-secondary);
-            letter-spacing: 0.02em;
-            padding: 12px;
-        }
-
-        /* Rows */
-        tbody tr {
-            border-bottom: 1px solid var(--border-light);
-            transition: all 0.1s ease;
-        }
-
-        /* STRONG HOVER EFFECT */
-        tbody tr:hover {
-            background: var(--row-hover) !important;
-            box-shadow: inset 0 0 0 1px var(--accent-border);
-        }
-
-        tbody tr:hover td {
-            color: var(--row-hover-text) !important;
-        }
-
-        tbody tr:hover .row-name {
-            color: var(--row-hover-text) !important;
-        }
-
-        tbody tr:hover .val-neutral {
-            color: var(--row-hover-text) !important;
-        }
-
-        tbody td {
-            padding: 10px 12px;
-            text-align: right;
-            white-space: nowrap;
-            font-variant-numeric: tabular-nums;
-            font-size: 12px;
-            color: var(--text-secondary);
+        .drill-table tbody tr { border-bottom: 1px solid var(--border-light); transition: all 0.1s ease; }
+        .drill-table tbody tr:hover { background: var(--row-hover) !important; box-shadow: inset 0 0 0 1px var(--accent-border); }
+        .drill-table tbody tr:hover td { color: var(--row-hover-text) !important; }
+        .drill-table tbody tr:hover .row-name { color: var(--row-hover-text) !important; }
+        .drill-table tbody td {
+            padding: 8px 10px; text-align: right; white-space: nowrap;
+            font-variant-numeric: tabular-nums; font-size: 12px; color: var(--text-secondary);
             transition: color 0.1s ease;
         }
+        .drill-table tbody td:first-child { text-align: left; position: sticky; left: 0; background: inherit; z-index: 5; }
+        .drill-table tbody tr:hover td:first-child { background: var(--row-hover); }
+        .drill-table tbody tr.row-expanded { background: var(--surface); border-bottom: 1px solid var(--border); }
+        .drill-table tbody tr.row-child { background: var(--expanded-bg); }
+        .drill-table tbody tr.row-expanded > td:first-child { border-left: 3px solid var(--accent); padding-left: 7px; }
+        .drill-table tbody tr.row-child > td:first-child { border-left: 3px solid var(--accent-border); padding-left: 7px; }
 
-        tbody td:first-child {
-            text-align: left;
-            position: sticky;
-            left: 0;
-            background: inherit;
-            z-index: 5;
-        }
-
-        tbody tr:hover td:first-child {
-            background: var(--row-hover);
-        }
-
-        /* Expanded section styling */
-        tbody tr.row-expanded {
-            background: var(--surface);
-            border-bottom: 1px solid var(--border);
-        }
-
-        tbody tr.row-child { background: var(--expanded-bg); }
-        tbody tr.row-child-depth-3 { background: var(--border-light); }
-        tbody tr.row-child-depth-4 { background: var(--border-light); }
-
-        /* Active expanded row left accent */
-        tbody tr.row-expanded > td:first-child {
-            border-left: 3px solid var(--accent);
-            padding-left: 9px;
-        }
-
-        tbody tr.row-child > td:first-child {
-            border-left: 3px solid var(--accent-border);
-            padding-left: 9px;
-        }
-
-        /* Tree structure */
-        .row-label {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            cursor: pointer;
-        }
-
+        .row-label { display: flex; align-items: center; gap: 5px; cursor: pointer; }
         .row-drag-handle {
-            width: 16px;
-            height: 16px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--text-muted);
-            font-size: 10px;
-            cursor: grab;
-            opacity: 0;
-            transition: opacity 0.15s ease;
-            flex-shrink: 0;
-            border-radius: 3px;
+            width: 14px; height: 14px; display: flex; align-items: center; justify-content: center;
+            color: var(--text-muted); font-size: 9px; cursor: grab; opacity: 0;
+            transition: opacity 0.15s ease; flex-shrink: 0; border-radius: 3px;
         }
-
-        tbody tr:hover .row-drag-handle {
-            opacity: 1;
-        }
-
-        .row-drag-handle:hover {
-            background: var(--accent-light);
-            color: var(--accent);
-        }
-
-        .row-drag-handle:active { cursor: grabbing; }
-
+        .drill-table tbody tr:hover .row-drag-handle { opacity: 1; }
+        .row-drag-handle:hover { background: var(--accent-light); color: var(--accent); }
         .row-expand-icon {
-            width: 18px;
-            height: 18px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--expand-icon);
-            font-size: 9px;
-            flex-shrink: 0;
-            transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-            border-radius: 4px;
+            width: 16px; height: 16px; display: flex; align-items: center; justify-content: center;
+            color: var(--expand-icon); font-size: 8px; flex-shrink: 0;
+            transition: transform 0.2s ease; border-radius: 3px;
         }
-
-        .row-expand-icon:hover {
-            background: var(--accent-light);
-            color: var(--accent);
-        }
-
-        .row-expand-icon.expanded {
-            transform: rotate(90deg);
-            color: var(--accent);
-        }
-
+        .row-expand-icon:hover { background: var(--accent-light); color: var(--accent); }
+        .row-expand-icon.expanded { transform: rotate(90deg); color: var(--accent); }
         .row-expand-icon.leaf { visibility: hidden; }
-
         .row-name { font-weight: 400; color: var(--text-secondary); }
-
         .row-level-0 .row-name { font-weight: 700; color: var(--text); font-size: 13px; }
         .row-level-1 .row-name { font-weight: 600; color: var(--text); }
         .row-level-2 .row-name { font-weight: 500; color: var(--text); }
-        .row-level-3 .row-name { font-weight: 400; color: var(--text-secondary); }
-
-        /* Value colors */
         .val-positive { color: var(--positive); font-weight: 500; }
         .val-negative { color: var(--negative); font-weight: 500; }
         .val-neutral { color: var(--neutral); }
-
-        /* Total row */
         .row-total { font-weight: 700; background: var(--surface) !important; }
-        .row-total td {
-            border-bottom: 2px solid var(--border);
-            padding: 12px 12px;
-            color: var(--text);
-            font-weight: 600;
-        }
-
-        /* Row drag visual */
-        tbody tr.row-dragging { opacity: 0.35; }
-
-        tbody tr.row-drag-target-above {
-            border-top: 2px solid var(--drag-indicator);
-            box-shadow: inset 0 2px 0 var(--accent-light);
-        }
-
-        tbody tr.row-drag-target-below {
-            border-bottom: 2px solid var(--drag-indicator);
-            box-shadow: inset 0 -2px 0 var(--accent-light);
-        }
-
-        /* Drag ghost tooltip */
+        .row-total td { border-bottom: 2px solid var(--border); padding: 10px 10px; color: var(--text); font-weight: 600; }
+        .drill-table tbody tr.row-dragging { opacity: 0.35; }
+        .drill-table tbody tr.row-drag-target-above { border-top: 2px solid var(--drag-indicator); }
+        .drill-table tbody tr.row-drag-target-below { border-bottom: 2px solid var(--drag-indicator); }
         .drag-ghost {
-            position: fixed;
-            pointer-events: none;
-            z-index: 9999;
-            background: var(--accent);
-            color: white;
-            padding: 6px 14px;
-            border-radius: 6px;
-            font-size: 12px;
-            font-weight: 600;
-            box-shadow: var(--shadow-lg);
-            opacity: 0.95;
-            white-space: nowrap;
+            position: fixed; pointer-events: none; z-index: 9999;
+            background: var(--accent); color: white; padding: 5px 12px;
+            border-radius: 6px; font-size: 11px; font-weight: 600;
+            box-shadow: var(--shadow-lg); opacity: 0.95; white-space: nowrap;
         }
 
-        /* Reset button */
-        .reset-btn {
-            margin-left: auto;
-            padding: 6px 14px;
-            background: transparent;
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            font-family: 'Inter', sans-serif;
-            font-size: 11px;
-            font-weight: 500;
-            color: var(--text-secondary);
-            cursor: pointer;
-            transition: all 0.15s ease;
-            white-space: nowrap;
+        /* ===== GAME SELECTOR ===== */
+        .game-selector {
+            display: flex; align-items: center; gap: 10px; margin-bottom: 20px;
+        }
+        .game-selector label {
+            font-size: 11px; font-weight: 600; color: var(--text-muted);
+            text-transform: uppercase; letter-spacing: 0.06em;
+        }
+        .game-selector select {
+            font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 600;
+            padding: 8px 14px; border-radius: var(--radius-sm);
+            border: 1px solid var(--border); background: var(--surface);
+            color: var(--text); cursor: pointer;
         }
 
-        .reset-btn:hover {
-            background: var(--accent-light);
-            border-color: var(--accent-border);
-            color: var(--accent);
-        }
-
-        /* Responsive */
         @media (max-width: 768px) {
-            .page-container { padding: 16px; }
-            .dimension-panel { padding: 10px 14px; }
-            .page-header { flex-direction: column; align-items: flex-start; gap: 12px; }
-            .top-bar { padding: 12px 16px; }
+            .page-container { padding: 12px; }
+            .banner { padding: 14px 16px; }
+            .kpi-strip { grid-template-columns: repeat(2, 1fr); }
+            .banner-tagline { display: none; }
         }
     </style>
 </head>
 <body>
-    <!-- Top Navigation Bar with Branding -->
-    <div class="top-bar">
-        <div class="brand">
-            <div class="brand-logo">&#9654;</div>
-            <div class="brand-text">
-                <span class="brand-name">PlayGround</span>
-                <span class="brand-sub">Analytics</span>
-            </div>
+    <!-- Branded Commercial Banner -->
+    <div class="banner">
+        <div class="banner-left">
+            <div class="banner-logo">&#9654;</div>
+            <span class="banner-title">PlayGround</span>
+            <span class="banner-tagline">Making the World Playful</span>
         </div>
-        <div class="top-bar-actions">
-            <div class="theme-toggle" id="themeToggle" onclick="toggleTheme()">
+        <div class="banner-right">
+            <div class="banner-meta">
+                <div><strong>Week-ending 11 May 2026 W19</strong></div>
+                <div>Commercial Analytics</div>
+            </div>
+            <div class="theme-toggle" onclick="toggleTheme()">
                 <span class="theme-toggle-icon" id="themeIcon">&#9790;</span>
                 <span class="theme-toggle-label" id="themeLabel">Dark</span>
             </div>
@@ -603,73 +437,249 @@
     </div>
 
     <div class="page-container">
-        <!-- Header with title and toggle -->
-        <div class="page-header">
-            <div>
-                <div class="page-title" id="pageTitle">Game View</div>
-                <div class="page-subtitle">Click rows to drill down. Drag rows or chips to reorder the hierarchy.</div>
+        <!-- Game Selector -->
+        <div class="game-selector">
+            <label>Game:</label>
+            <select id="gameSelect" onchange="selectGame(this.value)">
+                <option value="all">All Games (Portfolio)</option>
+                <option value="ccs">Candy Crush Saga</option>
+                <option value="ccss">Candy Crush Soda Saga</option>
+                <option value="fhs">Farm Heroes Saga</option>
+                <option value="cs">Candy Solitaire</option>
+                <option value="cat">Catalog Games</option>
+            </select>
+        </div>
+
+        <!-- KPI Summary Cards -->
+        <div class="kpi-strip" id="kpiStrip">
+            <div class="kpi-card revenue">
+                <div class="kpi-card-label">IAP Gross Bookings</div>
+                <div class="kpi-card-value">$44.1M</div>
+                <div class="kpi-card-delta neg">&#9660; -4.6% WoW</div>
             </div>
-            <div class="view-toggle-container">
-                <div class="view-toggle">
-                    <button class="view-toggle-btn active" id="btnGameView" onclick="setView('game')">Game View</button>
-                    <button class="view-toggle-btn" id="btnKpiView" onclick="setView('kpi')">KPI View</button>
+            <div class="kpi-card ads">
+                <div class="kpi-card-label">Ads Revenue</div>
+                <div class="kpi-card-value">$8.2M</div>
+                <div class="kpi-card-delta pos">&#9650; +2.1% WoW</div>
+            </div>
+            <div class="kpi-card dau">
+                <div class="kpi-card-label">DAU</div>
+                <div class="kpi-card-value">12.4M</div>
+                <div class="kpi-card-delta neg">&#9660; -1.8% WoW</div>
+            </div>
+            <div class="kpi-card installs">
+                <div class="kpi-card-label">Installs</div>
+                <div class="kpi-card-value">842K</div>
+                <div class="kpi-card-delta pos">&#9650; +5.3% WoW</div>
+            </div>
+            <div class="kpi-card arpdau">
+                <div class="kpi-card-label">ARPDAU</div>
+                <div class="kpi-card-value">$0.042</div>
+                <div class="kpi-card-delta neg">&#9660; -2.9% WoW</div>
+            </div>
+            <div class="kpi-card payer">
+                <div class="kpi-card-label">Payer Conversion</div>
+                <div class="kpi-card-value">3.2%</div>
+                <div class="kpi-card-delta pos">&#9650; +0.1pp WoW</div>
+            </div>
+        </div>
+
+        <!-- Variance Analysis / Revenue Walk -->
+        <div class="section-panel" id="sectionWalk">
+            <div class="section-header" onclick="toggleSection('walk')">
+                <h3>Variance Analysis &mdash; IAP Gross Bookings $M</h3>
+                <span class="section-toggle open" id="toggleWalk">&#9654;</span>
+            </div>
+            <div class="section-body" id="bodyWalk">
+                <div class="table-container">
+                <table class="drill-table">
+                    <thead>
+                        <tr class="header-group">
+                            <th rowspan="2"></th>
+                            <th colspan="3">Week</th>
+                            <th colspan="3">MTD</th>
+                            <th colspan="3">QTD</th>
+                            <th colspan="3">YTD</th>
+                        </tr>
+                        <tr>
+                            <th>$M</th><th>% WoW</th><th>% Vs Fcst</th>
+                            <th>$M</th><th>% MoM</th><th>% Vs Fcst</th>
+                            <th>$M</th><th>% QoQ</th><th>% Vs Fcst</th>
+                            <th>$M</th><th>% YoY</th><th>% Vs AOP</th>
+                        </tr>
+                    </thead>
+                    <tbody id="walkBody"></tbody>
+                </table>
                 </div>
             </div>
         </div>
 
-        <!-- Dimension Order Panel -->
-        <div class="dimension-panel">
-            <span class="dimension-panel-label">Drill-down order</span>
-            <div class="dimension-chips" id="dimensionChips"></div>
-            <button class="reset-btn" onclick="resetOrder()" title="Reset to default order">&#8634; Reset</button>
+        <!-- Ads Revenue Walk -->
+        <div class="section-panel" id="sectionAds">
+            <div class="section-header" onclick="toggleSection('ads')">
+                <h3>Ads Revenue $M</h3>
+                <span class="section-toggle open" id="toggleAds">&#9654;</span>
+            </div>
+            <div class="section-body" id="bodyAds">
+                <div class="table-container">
+                <table class="drill-table">
+                    <thead>
+                        <tr class="header-group">
+                            <th rowspan="2"></th>
+                            <th colspan="3">Week</th>
+                            <th colspan="3">MTD</th>
+                            <th colspan="3">QTD</th>
+                            <th colspan="3">YTD</th>
+                        </tr>
+                        <tr>
+                            <th>$M</th><th>% WoW</th><th>% Vs Fcst</th>
+                            <th>$M</th><th>% MoM</th><th>% Vs Fcst</th>
+                            <th>$M</th><th>% QoQ</th><th>% Vs Fcst</th>
+                            <th>$M</th><th>% YoY</th><th>% Vs AOP</th>
+                        </tr>
+                    </thead>
+                    <tbody id="adsBody"></tbody>
+                </table>
+                </div>
+            </div>
         </div>
 
-        <!-- Analytics Table -->
-        <div class="table-container">
-            <table id="analyticsTable">
-                <thead>
-                    <tr class="header-group">
-                        <th rowspan="2"></th>
-                        <th colspan="3">Week</th>
-                        <th colspan="3">MTD</th>
-                        <th colspan="3">QTD</th>
-                        <th colspan="3">YTD</th>
-                    </tr>
-                    <tr>
-                        <th>$M</th>
-                        <th>% WoW</th>
-                        <th>% Vs Fcst</th>
-                        <th>$M</th>
-                        <th>% MoM</th>
-                        <th>% Vs Fcst</th>
-                        <th>$M</th>
-                        <th>% QoQ</th>
-                        <th>% Vs Fcst</th>
-                        <th>$M</th>
-                        <th>% YoY</th>
-                        <th>% Vs AOP</th>
-                    </tr>
-                </thead>
-                <tbody id="tableBody"></tbody>
-            </table>
+        <!-- Drill-Down Table Section -->
+        <div class="section-panel">
+            <div class="section-header" onclick="toggleSection('drill')">
+                <h3>Drill-Down Explorer</h3>
+                <span class="section-toggle open" id="toggleDrill">&#9654;</span>
+            </div>
+            <div class="section-body" id="bodyDrill" style="padding:16px;">
+                <div class="page-header">
+                    <div>
+                        <div class="page-title" id="pageTitle">Game View</div>
+                        <div class="page-subtitle">Click rows to drill down. Drag rows or chips to reorder.</div>
+                    </div>
+                    <div class="view-toggle">
+                        <button class="view-toggle-btn active" id="btnGameView" onclick="setView('game')">Game View</button>
+                        <button class="view-toggle-btn" id="btnKpiView" onclick="setView('kpi')">KPI View</button>
+                    </div>
+                </div>
+                <div class="dimension-panel">
+                    <span class="dimension-panel-label">Drill-down order</span>
+                    <div class="dimension-chips" id="dimensionChips"></div>
+                    <button class="reset-btn" onclick="resetOrder()" title="Reset to default order">&#8634; Reset</button>
+                </div>
+                <div class="table-container">
+                    <table class="drill-table" id="analyticsTable">
+                        <thead>
+                            <tr class="header-group">
+                                <th rowspan="2"></th>
+                                <th colspan="3">Week</th>
+                                <th colspan="3">MTD</th>
+                                <th colspan="3">QTD</th>
+                                <th colspan="3">YTD</th>
+                            </tr>
+                            <tr>
+                                <th>$M</th><th>% WoW</th><th>% Vs Fcst</th>
+                                <th>$M</th><th>% MoM</th><th>% Vs Fcst</th>
+                                <th>$M</th><th>% QoQ</th><th>% Vs Fcst</th>
+                                <th>$M</th><th>% YoY</th><th>% Vs AOP</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableBody"></tbody>
+                    </table>
+                </div>
+            </div>
         </div>
     </div>
 
     <script>
-    // ===== THEME TOGGLE =====
+    // ===== GLOBAL FUNCTIONS =====
     function toggleTheme() {
         const html = document.documentElement;
-        const current = html.getAttribute('data-theme');
-        const next = current === 'dark' ? 'light' : 'dark';
+        const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
         html.setAttribute('data-theme', next);
-        document.getElementById('themeIcon').textContent = next === 'dark' ? 'â˜€' : 'â˜¾';
+        document.getElementById('themeIcon').textContent = next === 'dark' ? '\u2600' : '\u263E';
         document.getElementById('themeLabel').textContent = next === 'dark' ? 'Light' : 'Dark';
     }
+
+    function toggleSection(id) {
+        const body = document.getElementById('body' + id.charAt(0).toUpperCase() + id.slice(1));
+        const toggle = document.getElementById('toggle' + id.charAt(0).toUpperCase() + id.slice(1));
+        if (body.style.display === 'none') {
+            body.style.display = '';
+            toggle.classList.add('open');
+        } else {
+            body.style.display = 'none';
+            toggle.classList.remove('open');
+        }
+    }
+
+    function selectGame(v) { /* placeholder for future game filtering */ }
     function setView(view) { window._app.setView(view); }
     function resetOrder() { window._app.reset(); }
     </script>
+
     <script>
     (function() {
+        // ===== WALK DATA =====
+        function vf(v, dp) {
+            dp = dp || 1;
+            const s = v.toFixed(dp);
+            return v > 0 ? '+' + s : s;
+        }
+        function vc(v) { return v > 0 ? 'val-pos' : v < 0 ? 'val-neg' : 'val-flat'; }
+        function arrow(v) { return v > 0 ? '<span class="arrow">&#9650;</span>' : v < 0 ? '<span class="arrow">&#9660;</span>' : ''; }
+        function dvc(v) { return v > 0 ? 'val-positive' : v < 0 ? 'val-negative' : 'val-neutral'; }
+        // Walk data: 4 periods (Week, MTD, QTD, YTD) x 3 cols ($M, %chg, %vsFcst) = 12 columns
+        const WALK_IAP = [
+            { label: 'Open', bold: true, wk: 44.1, wWow: 0.0, wVf: 0.0, m: 65.3, mMom: 0.0, mVf: 0.0, q: 261.8, qQoq: 0.0, qVf: 0.0, y: 2143.5, yYoy: 0.0, yAop: 0.0 },
+            { label: 'FX', indent: true, wk: 0.0, wWow: 0.0, wVf: -0.3, m: 0.1, mMom: 0.1, mVf: -0.4, q: 0.4, qQoq: 0.2, qVf: -1.2, y: 1.6, yYoy: 0.8, yAop: -3.8 },
+            { label: 'Price (DAGBPU)', indent: true, wk: -1.2, wWow: -2.7, wVf: -0.8, m: -1.8, mMom: -2.8, mVf: -1.1, q: -3.1, qQoq: -1.2, qVf: -2.4, y: -12.4, yYoy: -0.6, yAop: -8.6 },
+            { label: 'Vol (DPU)', indent: true, wk: -0.8, wWow: -1.8, wVf: 0.2, m: -1.1, mMom: -1.7, mVf: 0.3, q: -2.8, qQoq: -1.1, qVf: 1.1, y: -18.2, yYoy: -0.8, yAop: 5.4 },
+            { label: 'Region Mix', indent: true, wk: -0.1, wWow: -0.2, wVf: -0.1, m: -0.2, mMom: -0.3, mVf: -0.1, q: -0.4, qQoq: -0.2, qVf: -0.2, y: -2.1, yYoy: -0.1, yAop: -1.4 },
+            { label: 'Close', bold: true, wk: 42.0, wWow: -4.8, wVf: -2.3, m: 62.3, mMom: -4.6, mVf: -1.6, q: 255.9, qQoq: -2.3, qVf: -1.0, y: 2112.4, yYoy: -1.5, yAop: -0.4 },
+            { label: 'Total Variance', total: true, wk: -2.1, wWow: -4.8, wVf: -1.0, m: -3.0, mMom: -4.6, mVf: -1.6, q: -5.9, qQoq: -2.3, qVf: -2.7, y: -31.1, yYoy: -1.5, yAop: -8.4 },
+            { label: 'Total Variance %', total: true, wk: null, wWow: -4.8, wVf: -2.3, m: null, mMom: -4.6, mVf: -1.6, q: null, qQoq: -2.3, qVf: -1.0, y: null, yYoy: -1.5, yAop: -0.4 },
+        ];
+
+        const WALK_ADS = [
+            { label: 'Open', bold: true, wk: 8.0, wWow: 0.0, wVf: 0.0, m: 12.1, mMom: 0.0, mVf: 0.0, q: 32.4, qQoq: 0.0, qVf: 0.0, y: 245.6, yYoy: 0.0, yAop: 0.0 },
+            { label: 'Rev per DAU', indent: true, wk: 0.1, wWow: 1.3, wVf: 0.0, m: 0.1, mMom: 0.8, mVf: -0.1, q: 0.3, qQoq: 0.9, qVf: -0.2, y: 2.1, yYoy: 0.9, yAop: -1.4 },
+            { label: 'Enablement', indent: true, wk: 0.0, wWow: 0.0, wVf: 0.1, m: 0.1, mMom: 0.8, mVf: 0.3, q: 0.2, qQoq: 0.6, qVf: 0.4, y: 1.8, yYoy: 0.7, yAop: 3.2 },
+            { label: 'Vol (DAU)', indent: true, wk: 0.1, wWow: 1.3, wVf: -0.1, m: -0.1, mMom: -0.8, mVf: -0.2, q: -0.5, qQoq: -1.5, qVf: -0.3, y: -4.2, yYoy: -1.7, yAop: -2.8 },
+            { label: 'Close', bold: true, wk: 8.2, wWow: 2.5, wVf: 0.0, m: 12.2, mMom: 0.8, mVf: 0.0, q: 32.4, qQoq: 0.0, qVf: -0.1, y: 245.3, yYoy: -0.1, yAop: -1.0 },
+            { label: 'Total Variance', total: true, wk: 0.2, wWow: 2.5, wVf: 0.0, m: 0.1, mMom: 0.8, mVf: 0.0, q: 0.0, qQoq: 0.0, qVf: -0.1, y: -0.3, yYoy: -0.1, yAop: -1.0 },
+            { label: 'Total Variance %', total: true, wk: null, wWow: 2.5, wVf: 0.0, m: null, mMom: 0.8, mVf: 0.0, q: null, qQoq: 0.0, qVf: -0.3, y: null, yYoy: -0.1, yAop: -0.4 },
+        ];
+
+        function renderWalkTable(data, tbodyId) {
+            const tbody = document.getElementById(tbodyId);
+            let h = '';
+            data.forEach(r => {
+                const cls = r.total ? 'row-total' : r.bold ? 'row-level-0' : 'row-child';
+                const indent = r.indent ? ' style="padding-left:24px;"' : '';
+                h += `<tr class="${cls}">`;
+                h += `<td${indent}><span class="row-name">${r.label}</span></td>`;
+                // Week
+                h += r.wk !== null ? `<td><span class="val-neutral">${r.wk.toFixed(1)}</span></td>` : `<td></td>`;
+                h += `<td><span class="${dvc(r.wWow)}">(${r.wWow>0?'+':''}${r.wWow.toFixed(1)}%)</span></td>`;
+                h += `<td><span class="${dvc(r.wVf)}">(${r.wVf>0?'+':''}${r.wVf.toFixed(1)}%)</span></td>`;
+                // MTD
+                h += r.m !== null ? `<td><span class="val-neutral">${r.m.toFixed(1)}</span></td>` : `<td></td>`;
+                h += `<td><span class="${dvc(r.mMom)}">(${r.mMom>0?'+':''}${r.mMom.toFixed(1)}%)</span></td>`;
+                h += `<td><span class="${dvc(r.mVf)}">(${r.mVf>0?'+':''}${r.mVf.toFixed(1)}%)</span></td>`;
+                // QTD
+                h += r.q !== null ? `<td><span class="val-neutral">${r.q.toFixed(1)}</span></td>` : `<td></td>`;
+                h += `<td><span class="${dvc(r.qQoq)}">(${r.qQoq>0?'+':''}${r.qQoq.toFixed(1)}%)</span></td>`;
+                h += `<td><span class="${dvc(r.qVf)}">(${r.qVf>0?'+':''}${r.qVf.toFixed(1)}%)</span></td>`;
+                // YTD
+                h += r.y !== null ? `<td><span class="val-neutral">${r.y.toFixed(1)}</span></td>` : `<td></td>`;
+                h += `<td><span class="${dvc(r.yYoy)}">(${r.yYoy>0?'+':''}${r.yYoy.toFixed(1)}%)</span></td>`;
+                h += `<td><span class="${dvc(r.yAop)}">(${r.yAop>0?'+':''}${r.yAop.toFixed(1)}%)</span></td>`;
+                h += `</tr>`;
+            });
+            tbody.innerHTML = h;
+        }
+
+        // ===== DRILL-DOWN TABLE =====
         const GAMES = [
             'Candy Crush Saga', 'Candy Crush Soda Saga', 'Farm Heroes Saga',
             'Candy Solitaire', 'Catalog Games', 'Candy Crush Jelly Saga',
@@ -684,7 +694,6 @@
             'Installs (K)', 'ROAS (%)'
         ];
 
-        // ALL_DIMENSIONS: 0=Game, 1-6=standard, 7=KPI
         const ALL_DIMENSIONS = [
             { id: 'game', label: 'Game', values: GAMES },
             { id: 'installSource', label: 'Install Source', values: ['Paid', 'Organic'] },
@@ -707,7 +716,6 @@
 
         function getDims() { return ALL_DIMENSIONS; }
 
-        // === DATA ===
         let seed = 42;
         function sr() { seed = (seed * 16807) % 2147483647; return (seed - 1) / 2147483646; }
         function genMetrics(scale) {
@@ -750,18 +758,15 @@
             return -1;
         }
 
-        // === STATE ===
         const expanded = new Set();
 
-        // === RENDER ===
-        function vc(v) { return v > 0 ? 'val-positive' : v < 0 ? 'val-negative' : 'val-neutral'; }
         function metricCells(m) {
             const c = [
                 [m.week,0],[m.wow,1],[m.vsFcstW,1],[m.mtd,0],[m.mom,1],[m.vsFcstM,1],
                 [m.qtd,0],[m.qoq,1],[m.vsFcstQ,1],[m.ytd,0],[m.yoy,1],[m.vsAOP,1]
             ];
             return c.map(([v,p]) => p
-                ? `<td><span class="${vc(v)}">(${v>0?'+':''}${v.toFixed(1)}%)</span></td>`
+                ? `<td><span class="${dvc(v)}">(${v>0?'+':''}${v.toFixed(1)}%)</span></td>`
                 : `<td><span class="val-neutral">${v.toFixed(1)}</span></td>`
             ).join('');
         }
@@ -801,7 +806,7 @@
 
             let h = '';
             h += `<tr class="${dc} ${cc} ${ec}" data-row-path="${esc(pk)}" data-row-depth="${depth}" data-row-label="${esc(label)}" draggable="true">`;
-            h += `<td><div class="row-label" style="padding-left:${depth*20}px;">`;
+            h += `<td><div class="row-label" style="padding-left:${depth*18}px;">`;
             h += `<span class="row-drag-handle">&#8942;&#8942;</span>`;
             if (hasKids) {
                 h += `<span class="row-expand-icon ${isExp?'expanded':''}" data-path="${esc(pk)}">&#9654;</span>`;
@@ -820,7 +825,6 @@
             return h;
         }
 
-        // === HANDLERS ===
         function attachHandlers() {
             const tbody = document.getElementById('tableBody');
             tbody.querySelectorAll('.row-expand-icon:not(.leaf)').forEach(i => i.addEventListener('click', onExpand));
@@ -844,7 +848,6 @@
             renderTable();
         }
 
-        // Row DnD
         let dragLabel = null, dragGhost = null;
         function onRowStart(e) {
             const r = e.currentTarget;
@@ -854,7 +857,7 @@
             e.dataTransfer.setData('text/plain', dragLabel);
             dragGhost = document.createElement('div');
             dragGhost.className = 'drag-ghost';
-            dragGhost.textContent = 'â†• ' + dragLabel;
+            dragGhost.textContent = '\u2195 ' + dragLabel;
             document.body.appendChild(dragGhost);
             e.dataTransfer.setDragImage(dragGhost, 0, 0);
         }
@@ -879,12 +882,10 @@
             if (!dragLabel) return;
             const tl = tr.getAttribute('data-row-label');
             if (dragLabel === tl) return;
-
             const di = findDimForValue(dragLabel);
             if (di === -1) return;
             const dp = dimensionOrder.indexOf(di);
             if (dp === -1) return;
-
             let tp;
             if (tl === '__total__') { tp = 0; }
             else {
@@ -892,16 +893,13 @@
                 if (ti === -1) { tp = 0; }
                 else { tp = dimensionOrder.indexOf(ti); if (tp === -1) return; }
             }
-
             if (dp !== tp) {
                 const moved = dimensionOrder.splice(dp, 1)[0];
                 dimensionOrder.splice(tp, 0, moved);
-                renderChips();
-                renderTable();
+                renderChips(); renderTable();
             }
         }
 
-        // === VIEW & RESET ===
         window._app = {
             setView(v) {
                 currentView = v;
@@ -919,7 +917,6 @@
             }
         };
 
-        // === CHIPS ===
         function renderChips() {
             const c = document.getElementById('dimensionChips');
             c.innerHTML = '';
@@ -954,7 +951,9 @@
             }
         }
 
-        // === INIT ===
+        // ===== INIT =====
+        renderWalkTable(WALK_IAP, 'walkBody');
+        renderWalkTable(WALK_ADS, 'adsBody');
         expanded.add('__total__');
         renderChips();
         renderTable();
