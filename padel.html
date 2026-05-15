@@ -421,20 +421,19 @@
     <script>
         // ===== SESSION DATA =====
         // Generate upcoming sessions based on the schedule:
-        // - Every other Tuesday evening: 6:00-7:00 PM
-        // - Second to last Thursday of the month: 12:00-1:00 PM
+        // - Every other Tuesday evening: 6:00-7:00 PM (starting 2 June 2026)
+        // - Second to last Thursday of the month: 12:00-1:00 PM (starting 21 May 2026)
 
         function getUpcomingSessions() {
             const sessions = [];
             const now = new Date();
             const maxSessions = 6;
 
-            // Find upcoming Tuesday evenings (every other week)
-            // Start from a known Tuesday anchor: May 20, 2026 (a Tuesday)
-            const tuesdayAnchor = new Date(2026, 4, 20); // May 20, 2026
+            // Every other Tuesday starting 2 June 2026
+            const tuesdayAnchor = new Date(2026, 5, 2); // June 2, 2026
             let tuesday = new Date(tuesdayAnchor);
             
-            // Move to next even-week Tuesday from anchor
+            // Move forward if anchor is in the past
             while (tuesday < now) {
                 tuesday.setDate(tuesday.getDate() + 14);
             }
@@ -442,20 +441,20 @@
             for (let i = 0; i < 4; i++) {
                 const d = new Date(tuesday);
                 d.setDate(d.getDate() + (i * 14));
-                if (d > now) {
-                    sessions.push({
-                        date: d,
-                        type: 'evening',
-                        label: formatDate(d),
-                        time: '6:00 – 7:00 PM'
-                    });
-                }
+                sessions.push({
+                    date: d,
+                    type: 'evening',
+                    label: formatDate(d),
+                    time: '6:00 – 7:00 PM'
+                });
             }
 
-            // Find second-to-last Thursdays
-            for (let monthOffset = 0; monthOffset < 3; monthOffset++) {
-                const targetMonth = now.getMonth() + monthOffset;
-                const targetYear = now.getFullYear() + Math.floor(targetMonth / 12);
+            // Second to last Thursday of each month (starting 21 May 2026)
+            // Start from May 2026 and go forward
+            const startMonth = new Date(2026, 4, 1); // May 2026
+            for (let monthOffset = 0; monthOffset < 6; monthOffset++) {
+                const targetMonth = startMonth.getMonth() + monthOffset;
+                const targetYear = startMonth.getFullYear() + Math.floor(targetMonth / 12);
                 const adjustedMonth = targetMonth % 12;
 
                 const lastDay = new Date(targetYear, adjustedMonth + 1, 0);
@@ -468,7 +467,7 @@
 
                 if (thursdays.length >= 2) {
                     const secondToLast = thursdays[thursdays.length - 2];
-                    if (secondToLast > now) {
+                    if (secondToLast >= now) {
                         sessions.push({
                             date: secondToLast,
                             type: 'lunchtime',
