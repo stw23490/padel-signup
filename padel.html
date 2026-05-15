@@ -384,7 +384,14 @@
                     <span>£15.00</span>
                 </div>
                 <div class="price-tag">£15.00 <span>per person</span></div>
-                <button class="btn btn-primary" id="btn-pay" onclick="openPayPal()">💳 Pay £15.00 with PayPal</button>
+                <div id="pay-step-1">
+                    <button class="btn btn-primary" id="btn-pay" onclick="openPayPal()">💳 Pay £15.00 with PayPal</button>
+                </div>
+                <div id="pay-step-2" style="display:none;">
+                    <p style="text-align:center;color:#5a6a8a;font-size:14px;margin-bottom:12px;">Complete your payment in the PayPal window, then confirm below.</p>
+                    <button class="btn btn-primary" onclick="confirmPayment()">✅ I've Completed Payment</button>
+                    <button class="btn btn-secondary" onclick="openPayPal()">🔄 Reopen PayPal</button>
+                </div>
                 <div class="payment-error" id="payment-error">Payment was not completed. Please try again.</div>
             </div>
             <button class="btn btn-secondary" onclick="goToStep(2)">← Back</button>
@@ -669,7 +676,19 @@
                 cancel_return: window.location.href
             }).toString();
 
-            // Save registration
+            // Open PayPal in new tab
+            window.open(paypalUrl, '_blank');
+
+            // Show "I've paid" confirmation button
+            document.getElementById('pay-step-1').style.display = 'none';
+            document.getElementById('pay-step-2').style.display = 'block';
+        }
+
+        function confirmPayment() {
+            const name = document.getElementById('input-name').value.trim();
+            const email = document.getElementById('input-email').value.trim();
+
+            // Only save registration after user confirms payment
             const registration = {
                 name,
                 email,
@@ -686,9 +705,6 @@
                 body: JSON.stringify(registration)
             }).catch(() => console.log('Offline - registration saved locally'));
 
-            // Open PayPal in new tab
-            window.open(paypalUrl, '_blank');
-
             // Show confirmation
             goToStep(4);
         }
@@ -699,8 +715,10 @@
             document.getElementById('input-email').value = '';
             document.getElementById('btn-to-step2').disabled = true;
             document.getElementById('btn-to-step3').disabled = true;
+            document.getElementById('pay-step-1').style.display = 'block';
+            document.getElementById('pay-step-2').style.display = 'none';
             document.querySelectorAll('.date-option').forEach(el => el.classList.remove('selected'));
-            renderSessions();
+            fetchRegistrations();
             goToStep(1);
         }
     </script>
