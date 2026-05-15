@@ -318,6 +318,64 @@
             margin-top: 12px;
             display: none;
         }
+
+        .manage-link {
+            text-align: center;
+            margin-top: 16px;
+            font-size: 13px;
+        }
+
+        .manage-link a {
+            color: #5a6a8a;
+            text-decoration: underline;
+            cursor: pointer;
+        }
+
+        .booking-item {
+            border: 2px solid #e8ecf4;
+            border-radius: 12px;
+            padding: 14px 16px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .booking-item .booking-info {
+            flex: 1;
+        }
+
+        .booking-item .booking-info .booking-session {
+            font-weight: 700;
+            font-size: 14px;
+        }
+
+        .booking-item .booking-info .booking-time {
+            font-size: 13px;
+            color: #5a6a8a;
+        }
+
+        .btn-cancel {
+            background: #ffebee;
+            color: #c62828;
+            border: none;
+            padding: 8px 14px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .btn-cancel:hover {
+            background: #ffcdd2;
+        }
+
+        .no-bookings {
+            text-align: center;
+            color: #5a6a8a;
+            padding: 20px;
+            font-size: 14px;
+        }
     </style>
 </head>
 <body>
@@ -339,6 +397,9 @@
                 </div>
             </div>
             <button class="btn btn-primary" id="btn-to-step2" disabled onclick="goToStep(2)">Continue</button>
+            <div class="manage-link">
+                <a onclick="goToStep(5)">Need to cancel? Manage your booking</a>
+            </div>
         </div>
 
         <!-- Step 2: Enter Name -->
@@ -383,6 +444,10 @@
                     <span>£15.00</span>
                 </div>
                 <div class="price-tag">£15.00 <span>per person</span></div>
+                <div class="info-box" style="background:#fff3e0;margin-bottom:16px;">
+                    <strong>⚠️ Cancellation Policy</strong>
+                    Cancellations made more than 48 hours before the session receive a full refund. Cancellations within 48 hours are non-refundable.
+                </div>
                 <div id="pay-step-1">
                     <button class="btn btn-primary" id="btn-pay" onclick="openPayPal()">💳 Pay £15.00 with PayPal</button>
                 </div>
@@ -410,11 +475,34 @@
                     73A South Lambeth Road, London SW8 1SP<br><br>
                     <strong>🚇 Nearest Station</strong>
                     Vauxhall (Mainline & Victoria Line) – 7 min walk<br><br>
+                    <strong>⚠️ Cancellation Policy</strong>
+                    Full refund if cancelled more than 48 hours before the session. No refund within 48 hours.<br><br>
                     <strong>❓ Questions?</strong>
                     Stephen Wood – stephen.wood@king.com
                 </div>
             </div>
             <button class="btn btn-secondary" onclick="resetForm()">Sign Up for Another Session</button>
+        </div>
+
+        <!-- Step 5: Manage Booking -->
+        <div class="step" id="step-5">
+            <div class="card">
+                <h2>🔍 Find Your Booking</h2>
+                <div class="form-group">
+                    <label>Email address you signed up with</label>
+                    <input type="email" id="input-lookup-email" placeholder="e.g. john.smith@king.com" autocomplete="email">
+                </div>
+                <button class="btn btn-primary" id="btn-lookup" disabled onclick="lookupBookings()">Find My Bookings</button>
+                <div class="info-box" style="background:#fff3e0;margin-top:16px;">
+                    <strong>⚠️ Cancellation Policy</strong>
+                    Cancellations made more than 48 hours before the session receive a full refund. Cancellations within 48 hours are non-refundable.
+                </div>
+            </div>
+            <div class="card" id="bookings-result" style="display:none;">
+                <h2>📋 Your Bookings</h2>
+                <div id="bookings-list"></div>
+            </div>
+            <button class="btn btn-secondary" onclick="resetForm()">← Back to Sign Up</button>
         </div>
     </div>
 
@@ -626,6 +714,8 @@
                 } else {
                     card.style.display = 'none';
                 }
+                // Re-check form validity in case fields are pre-filled
+                checkForm();
             }
 
             // Validation
@@ -643,16 +733,30 @@
             document.querySelectorAll('.step').forEach(el => el.classList.remove('active'));
             document.getElementById(`step-${step}`).classList.add('active');
 
-            // Update dots
-            for (let i = 1; i <= 3; i++) {
-                const dot = document.getElementById(`dot-${i}`);
-                dot.classList.remove('active', 'done');
-                if (i === step) dot.classList.add('active');
-                else if (i < step) dot.classList.add('done');
+            // Update dots - hide for manage booking step
+            const stepIndicator = document.querySelector('.step-indicator');
+            if (step === 5) {
+                stepIndicator.style.display = 'none';
+            } else {
+                stepIndicator.style.display = 'flex';
+                for (let i = 1; i <= 3; i++) {
+                    const dot = document.getElementById(`dot-${i}`);
+                    dot.classList.remove('active', 'done');
+                    if (i === step) dot.classList.add('active');
+                    else if (i < step) dot.classList.add('done');
+                }
             }
         }
 
         // ===== FORM VALIDATION =====
+        function checkForm() {
+            const nameInput = document.getElementById('input-name');
+            const emailInput = document.getElementById('input-email');
+            const btn = document.getElementById('btn-to-step3');
+            const valid = nameInput.value.trim().length > 0 && emailInput.value.trim().includes('@');
+            btn.disabled = !valid;
+        }
+
         document.addEventListener('DOMContentLoaded', () => {
             renderSessions();
             fetchRegistrations(); // Fetch real sign-up counts
@@ -660,15 +764,11 @@
 
             const nameInput = document.getElementById('input-name');
             const emailInput = document.getElementById('input-email');
-            const btn = document.getElementById('btn-to-step3');
-
-            function checkForm() {
-                const valid = nameInput.value.trim().length > 0 && emailInput.value.trim().includes('@');
-                btn.disabled = !valid;
-            }
 
             nameInput.addEventListener('input', checkForm);
             emailInput.addEventListener('input', checkForm);
+            nameInput.addEventListener('change', checkForm);
+            emailInput.addEventListener('change', checkForm);
         });
 
         // ===== PAYPAL PAYMENT =====
@@ -733,6 +833,82 @@
             document.querySelectorAll('.date-option').forEach(el => el.classList.remove('selected'));
             fetchRegistrations();
             goToStep(1);
+        }
+
+        // ===== MANAGE BOOKING =====
+        document.addEventListener('DOMContentLoaded', () => {
+            const lookupInput = document.getElementById('input-lookup-email');
+            const lookupBtn = document.getElementById('btn-lookup');
+            lookupInput.addEventListener('input', () => {
+                lookupBtn.disabled = !lookupInput.value.trim().includes('@');
+            });
+            lookupInput.addEventListener('change', () => {
+                lookupBtn.disabled = !lookupInput.value.trim().includes('@');
+            });
+        });
+
+        async function lookupBookings() {
+            const email = document.getElementById('input-lookup-email').value.trim();
+            const resultCard = document.getElementById('bookings-result');
+            const listEl = document.getElementById('bookings-list');
+
+            try {
+                const res = await fetch(`/api/padel/my-registrations?email=${encodeURIComponent(email)}`);
+                const bookings = await res.json();
+
+                if (bookings.length === 0) {
+                    resultCard.style.display = 'block';
+                    listEl.innerHTML = '<div class="no-bookings">No bookings found for this email address.</div>';
+                    return;
+                }
+
+                resultCard.style.display = 'block';
+                listEl.innerHTML = bookings.map(b => `
+                    <div class="booking-item" id="booking-${b.id}">
+                        <div class="booking-info">
+                            <div class="booking-session">${b.session}</div>
+                            <div class="booking-time">${b.time}</div>
+                        </div>
+                        <button class="btn-cancel" onclick="cancelBooking(${b.id}, '${email.replace(/'/g, "\\'")}')">Cancel</button>
+                    </div>
+                `).join('');
+            } catch (e) {
+                resultCard.style.display = 'block';
+                listEl.innerHTML = '<div class="no-bookings">Could not look up bookings. Please try again.</div>';
+            }
+        }
+
+        async function cancelBooking(id, email) {
+            if (!confirm('Are you sure you want to cancel this booking? Refunds are only available for cancellations made more than 48 hours before the session.')) return;
+
+            try {
+                const res = await fetch('/api/padel/cancel', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id, email })
+                });
+
+                if (res.ok) {
+                    const data = await res.json();
+                    document.getElementById(`booking-${id}`).style.display = 'none';
+                    // Check if any bookings remain visible
+                    const remaining = document.querySelectorAll('.booking-item[style*="display: none"]');
+                    const total = document.querySelectorAll('.booking-item');
+                    if (remaining.length === total.length) {
+                        document.getElementById('bookings-list').innerHTML = '<div class="no-bookings">All bookings cancelled.</div>';
+                    }
+                    if (data.refundEligible) {
+                        alert('Booking cancelled. A refund request has been submitted – you should receive your £15 back shortly.');
+                    } else {
+                        alert('Booking cancelled. Unfortunately this is within 48 hours of the session so a refund cannot be issued.');
+                    }
+                    fetchRegistrations(); // Refresh session counts
+                } else {
+                    alert('Could not cancel booking. Please try again.');
+                }
+            } catch (e) {
+                alert('Could not cancel booking. Please try again.');
+            }
         }
     </script>
 </body>

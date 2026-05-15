@@ -8,6 +8,7 @@ const express = require('express');
 const cors = require('cors');
 const fs = require('fs');
 const path = require('path');
+const nodemailer = require('nodemailer');
 require('dotenv').config();
 
 // ===== CONFIGURATION =====
@@ -401,12 +402,178 @@ api.post('/api/padel/register', (req, res) => {
     registrations.push(entry);
     savePadelRegistrations(registrations);
     console.log(`🎾 Padel registration: ${name} for ${session} ${time}`);
+
+    // Send calendar invite
+    sendCalendarInvite(entry).catch(err => {
+        console.error('Failed to send calendar invite:', err.message);
+    });
+
     res.status(201).json(entry);
 });
 
 api.get('/api/padel/registrations', (req, res) => {
     res.json(loadPadelRegistrations());
 });
+
+api.get('/api/padel/my-registrations', (req, res) => {
+    const email = (req.query.email || '').trim().toLowerCase();
+    if (!email) {
+        return res.status(400).json({ error: 'Email is required.' });
+    }
+    const registrations = loadPadelRegistrations();
+    const mine = registrations.filter(r => r.email.toLowerCase() === email);
+    res.json(mine);
+});
+
+api.post('/api/padel/cancel', (req, res) => {
+    const { id, email } = req.body;
+    if (!id || !email) {
+        return res.status(400).json({ error: 'Registration ID and email are required.' });
+    }
+    let registrations = loadPadelRegistrations();
+    const index = registrations.findIndex(r => r.id === id && r.email.toLowerCase() === email.trim().toLowerCase());
+    if (index === -1) {
+        return res.status(404).json({ error: 'Registration not found.' });
+    }
+    const cancelled = registrations.splice(index, 1)[0];
+    savePadelRegistrations(registrations);
+
+    // Check if cancellation is more than 48 hours before the session
+    const sessionDate = new Date(cancelled.date);
+    const now = new Date();
+    const hoursUntilSession = (sessionDate - now) / (1000 * 60 * 60);
+    const refundEligible = hoursUntilSession > 48;
+
+    console.log(`🎾 Padel cancellation: ${cancelled.name} for ${cancelled.session} ${cancelled.time} | Refund eligible: ${refundEligible}`);
+
+    // Send refund request email if eligible
+    if (refundEligible) {
+        sendRefundEmail(cancelled).catch(err => {
+            console.error('Failed to send refund email:', err.message);
+        });
+    }
+
+    res.json({ success: true, cancelled, refundEligible });
+});
+
+// ===== REFUND EMAIL =====
+async function sendRefundEmail(registration) {
+    const transporter = nodemailer.createTransport({
+        host: process.env.SMTP_HOST || 'smtp.office365.com',
+        port: parseInt(process.env.SMTP_PORT || '587'),
+        secure: false,
+        auth: {
+            user: process.env.SMTP_USER,
+            pass: process.env.SMTP_PASS
+        }
+    });
+
+    const mailOptions = {
+        from: process.env.SMTP_USER || 'noreply@king.com',
+        to: 'stephen.wood@king.com',
+        subject: `🎾 Padel Refund Request – ${registration.name}`,
+        text: `A refund is required for the following cancelled padel booking:\n\nName: ${registration.name}\nEmail: ${registration.email}\nSession: ${registration.session}\nTime: ${registration.time}\nAmount: £15.00\nOriginal booking date: ${registration.registeredAt}\nCancelled: ${new Date().toISOString()}\n\nThis cancellation was made more than 48 hours before the session and is eligible for a full refund.\n\nPlease process the refund via PayPal to: ${registration.email}`,
+        html: `<h2>🎾 Padel Refund Request</h2>
+<p>A refund is required for the following cancelled padel booking:</p>
+<table style="border-collapse:collapse;">
+<tr><td style="padding:4px 12px 4px 0;font-weight:bold;">Name:</td><td>${registration.name}</td></tr>
+<tr><td style="padding:4px 12px 4px 0;font-weight:bold;">Email:</td><td>${registration.email}</td></tr>
+<tr><td style="padding:4px 12px 4px 0;font-weight:bold;">Session:</td><td>${registration.session}</td></tr>
+<tr><td style="padding:4px 12px 4px 0;font-weight:bold;">Time:</td><td>${registration.time}</td></tr>
+<tr><td style="padding:4px 12px 4px 0;font-weight:bold;">Amount:</td><td>£15.00</td></tr>
+<tr><td style="padding:4px 12px 4px 0;font-weight:bold;">Booked:</td><td>${registration.registeredAt}</td></tr>
+<tr><td style="padding:4px 12px 4px 0;font-weight:bold;">Cancelled:</td><td>${new Date().toISOString()}</td></tr>
+</table>
+<p style="margin-top:16px;">This cancellation was made more than 48 hours before the session and is eligible for a full refund.</p>
+<p><strong>Please process the refund via PayPal to:</strong> ${registration.email}</p>`
+    };
+
+    await transporter.sendMail(mailOptions);
+    console.log(`📧 Refund email sent for ${registration.name}`);
+}
+
+// ===== CALENDAR INVITE =====
+async function sendCalendarInvite(registration) {
+    const transporter = nodemailer.createTransport({
+        host: process.env.SMTP_HOST || 'smtp.office365.com',
+        port: parseInt(process.env.SMTP_PORT || '587'),
+        secure: false,
+        auth: {
+            user: process.env.SMTP_USER,
+            pass: process.env.SMTP_PASS
+        }
+    });
+
+    // Parse session start/end times
+    const sessionDate = new Date(registration.date);
+    const year = sessionDate.getFullYear();
+    const month = String(sessionDate.getMonth() + 1).padStart(2, '0');
+    const day = String(sessionDate.getDate()).padStart(2, '0');
+
+    let startHour, endHour;
+    if (registration.time && registration.time.includes('12:00')) {
+        startHour = '12';
+        endHour = '13';
+    } else {
+        startHour = '18';
+        endHour = '19';
+    }
+
+    const dtStart = `${year}${month}${day}T${startHour}0000`;
+    const dtEnd = `${year}${month}${day}T${endHour}0000`;
+    const uid = `padel-${registration.id}@king.com`;
+    const now = new Date().toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '');
+
+    const icsContent = [
+        'BEGIN:VCALENDAR',
+        'VERSION:2.0',
+        'PRODID:-//King//Padel Sessions//EN',
+        'METHOD:REQUEST',
+        'BEGIN:VEVENT',
+        `UID:${uid}`,
+        `DTSTAMP:${now}`,
+        `DTSTART;TZID=Europe/London:${dtStart}`,
+        `DTEND;TZID=Europe/London:${dtEnd}`,
+        `SUMMARY:🎾 Padel Session`,
+        `DESCRIPTION:Padel session at Vauxhall Padel Yard (Game4Padel)\\n73A South Lambeth Road\\, London SW8 1SP\\n\\nNearest station: Vauxhall (Victoria Line) - 7 min walk\\n\\nQuestions? stephen.wood@king.com`,
+        `LOCATION:Vauxhall Padel Yard "Game4Padel"\\, 73A South Lambeth Road\\, London SW8 1SP`,
+        `ORGANIZER;CN=Stephen Wood:mailto:stephen.wood@king.com`,
+        `ATTENDEE;ROLE=REQ-PARTICIPANT;PARTSTAT=ACCEPTED;CN=${registration.name}:mailto:${registration.email}`,
+        'STATUS:CONFIRMED',
+        'BEGIN:VALARM',
+        'TRIGGER:-PT1H',
+        'ACTION:DISPLAY',
+        'DESCRIPTION:Padel session in 1 hour!',
+        'END:VALARM',
+        'END:VEVENT',
+        'END:VCALENDAR'
+    ].join('\r\n');
+
+    const mailOptions = {
+        from: process.env.SMTP_USER || 'noreply@king.com',
+        to: registration.email,
+        subject: `🎾 Padel Session – ${registration.session}, ${registration.time}`,
+        text: `Hi ${registration.name},\n\nYour padel session is booked!\n\nSession: ${registration.session}\nTime: ${registration.time}\nLocation: Vauxhall Padel Yard "Game4Padel", 73A South Lambeth Road, London SW8 1SP\nNearest station: Vauxhall (Mainline & Victoria Line) – 7 min walk\n\nA calendar invite is attached.\n\nCancellation policy: Full refund if cancelled more than 48 hours before the session.\n\nSee you on court! 🎾\nStephen Wood`,
+        html: `<h2>🎾 Your Padel Session is Booked!</h2>
+<p>Hi ${registration.name},</p>
+<p>You're confirmed for padel:</p>
+<table style="border-collapse:collapse;">
+<tr><td style="padding:4px 12px 4px 0;font-weight:bold;">Session:</td><td>${registration.session}</td></tr>
+<tr><td style="padding:4px 12px 4px 0;font-weight:bold;">Time:</td><td>${registration.time}</td></tr>
+<tr><td style="padding:4px 12px 4px 0;font-weight:bold;">Location:</td><td>Vauxhall Padel Yard "Game4Padel", 73A South Lambeth Road, London SW8 1SP</td></tr>
+<tr><td style="padding:4px 12px 4px 0;font-weight:bold;">Nearest station:</td><td>Vauxhall (Mainline & Victoria Line) – 7 min walk</td></tr>
+</table>
+<p style="margin-top:12px;color:#5a6a8a;font-size:13px;">⚠️ Cancellation policy: Full refund if cancelled more than 48 hours before the session.</p>
+<p>See you on court! 🎾<br>Stephen Wood</p>`,
+        icalEvent: {
+            method: 'REQUEST',
+            content: icsContent
+        }
+    };
+
+    await transporter.sendMail(mailOptions);
+    console.log(`📅 Calendar invite sent to ${registration.email}`);
+}
 
 // Health check
 api.get('/api/health', (req, res) => {
