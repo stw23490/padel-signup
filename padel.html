@@ -359,6 +359,10 @@
                     <input type="email" id="input-email" placeholder="e.g. john.smith@king.com" autocomplete="email">
                 </div>
             </div>
+            <div class="card" id="signed-up-card" style="display:none;">
+                <h2>🎾 Already Signed Up</h2>
+                <div id="signed-up-list"></div>
+            </div>
             <button class="btn btn-primary" id="btn-to-step3" disabled onclick="goToStep(3)">Continue to Payment (£15)</button>
             <button class="btn btn-secondary" onclick="goToStep(1)">← Back</button>
         </div>
@@ -615,6 +619,21 @@
 
         // ===== NAVIGATION =====
         function goToStep(step) {
+            // Show who's already signed up when entering step 2
+            if (step === 2 && selectedSession) {
+                const names = registrations
+                    .filter(r => r.session === selectedSession.label && r.time === selectedSession.time)
+                    .map(r => r.name);
+                const card = document.getElementById('signed-up-card');
+                const list = document.getElementById('signed-up-list');
+                if (names.length > 0) {
+                    card.style.display = 'block';
+                    list.innerHTML = names.map(n => `<div style="padding:6px 0;border-bottom:1px solid #f0f0f0;font-size:14px;">🙋 ${n}</div>`).join('');
+                } else {
+                    card.style.display = 'none';
+                }
+            }
+
             // Validation
             if (step === 3) {
                 const name = document.getElementById('input-name').value.trim();
